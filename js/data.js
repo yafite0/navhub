@@ -3,10 +3,15 @@
  * ------------------------------------------------------------
  *  【设计原则】
  *   主页只放"精挑细选"的站点：找起来麻烦、或者不太好找到官网入口的。
- *   大众都知道入口的网站（B站、淘宝等）不占主页位置，放在 searchOnly 里，
- *   搜索时仍然能找到，但主页不展示。
+ *   大众都知道入口的网站（B站、淘宝等）不占主页位置，放在 index 里，
+ *   搜索和「其他网页」页里仍然能找到，但主页不展示。
  *
- *  【怎么加一个网站】往 categories 里对应分类的 sites 数组加一项：
+ *  【分类结构】两层：groups（大类）→ categories（小类）→ sites（站点）
+ *   小类用 group 字段指到大类，不是嵌套写的 —— 加小类只动一行。
+ *   小类没写 group 时会自己单独成一组，所以老的扁平分类直接放进来也不会崩。
+ *   小类的 id 是稳定标识（sites.html?cat=xxx 用的就是它），改名没事，改 id 会断链接。
+ *
+ *  【怎么加一个网站】往对应小类的 sites 数组加一项：
  *   {
  *     name:  'Steam',                      显示名字
  *     url:   'https://store.steampowered.com/',  官方网址
@@ -23,7 +28,8 @@
  *     }
  *   }
  *
- *  【怎么加一个分类】复制一整块 { id, name, icon, desc, sites } 改内容。
+ *  【怎么加一个小类】复制一整块 { id, group, name, icon, desc, sites } 改内容。
+ *  【怎么加一个大类】往 groups 里加一项，再给相关小类写上 group。
  *  【图标】不用手动准备，会自动抓官网图标；抓不到就显示名字首字。
  * ============================================================ */
 
@@ -33,7 +39,7 @@ window.NAV_CONFIG = {
   tip: '启航 · 精选网站导航',
   defaultCity: '北京',
   /* 网页最后更新时间（静态、手动维护）：格式 YYYY-MM-DD HH:MM，精确到分钟 */
-  lastUpdated: '2026-10-06 19:00',
+  lastUpdated: '2026-10-07 17:30',
   notice: '内容在持续补充中 —— 每个分类只放真正值得收藏的官方站点',
 
   /* 顶栏「关于本站」弹窗里的文案，想改介绍就改这里 */
@@ -65,9 +71,55 @@ window.NAV_CONFIG = {
     note: '整站都是纯静态文件，托管在 GitHub Pages 上，没有后端、不会保存你输入的任何内容。'
   },
 
+  /* ---------- 大类 ----------
+     分类现在是两层：groups（大类）→ categories（小类）→ sites（站点）。
+     小类用 group 字段指到自己所属的大类（要和下面的 id 对上）。
+
+     要新开一个大类，就在这里加一项，再给相关小类写上 group；
+     要往大类里加小类，就直接往 categories 里加，写上 group 即可。
+     小类的 id 是稳定标识（sites.html?cat=xxx 用的就是它），改了会断链接。 */
+  /* 【顺序就是主页的显示顺序，改这里就能调整大类的先后】 */
+  groups: [
+    {
+      id: 'software',
+      name: '常用软件',
+      icon: '🧰',
+      desc: '装机绕不开的那几类 —— 解压、剪视频、修图，只放官网下载入口'
+    },
+    {
+      id: 'hardware',
+      name: '显卡与驱动',
+      icon: '🖥️',
+      desc: '先认出自己是什么卡，再去对应官网下驱动'
+    },
+    {
+      id: 'ai',
+      name: 'AI 工具',
+      icon: '🤖',
+      desc: '对话、Agent、本地部署 —— 能用 AI 干活的地方都汇总在这一类'
+    },
+    {
+      id: 'game',
+      name: '游戏',
+      icon: '🎮',
+      desc: '从买游戏、做游戏，到做游戏要用到的各种工具，都收在这里'
+    }
+  ],
+
+  /* 「完整索引」里的站点是按 cat 分组的，这张表说明每个分组属于哪个大类，
+     让「其他网页」页也能按大类归位；没写在这里的分组会自己单独成组。
+     左边是小类名（要和 categories 里的 name 完全一致才会合并），右边是大类 id。 */
+  indexGroupOf: {
+    '游戏平台': 'game',
+    'AI 对话': 'ai',
+    'AI Agent': 'ai'
+  },
+
+  /* ---------- 小类（分类） ---------- */
   categories: [
     {
       id: 'game-store',
+      group: 'game',
       name: '游戏商城',
       icon: '🕹️',
       desc: '买 PC 游戏、领免费游戏、查手游的地方',
@@ -104,6 +156,7 @@ window.NAV_CONFIG = {
         },
         {
           name: 'Epic Games Store',
+          alias: ['EGS'],
           url: 'https://store.epicgames.com/',
           region: 'global',
           short: '每周都能白领游戏',
@@ -193,12 +246,14 @@ window.NAV_CONFIG = {
     },
     {
       id: 'game-engine',
+      group: 'game',
       name: '游戏引擎',
       icon: '🧩',
       desc: '想做游戏从这儿开始 —— 三大主流引擎的官网',
       sites: [
         {
           name: 'Unreal Engine',
+          alias: ['UE', '虚幻引擎'],
           url: 'https://www.unrealengine.com/zh-CN',
           region: 'global',
           short: '画面最强，3A 大厂在用',
@@ -292,8 +347,9 @@ window.NAV_CONFIG = {
     },
     {
       id: 'ai-chat',
-      name: 'AI 工具',
-      icon: '🤖',
+      group: 'ai',
+      name: 'AI 对话',
+      icon: '💬',
       desc: '打开网页就能直接聊，官网里也都能找到手机和电脑版',
       sites: [
         {
@@ -382,6 +438,7 @@ window.NAV_CONFIG = {
         },
         {
           name: '通义千问',
+          alias: ['Qwen'],
           url: 'https://www.tongyi.com/',
           short: '阿里出品，家族很大',
           key: 'AI 对话 人工智能 qwen 阿里 通义 千问 写作',
@@ -438,6 +495,7 @@ window.NAV_CONFIG = {
         },
         {
           name: '文心一言',
+          alias: ['ERNIE'],
           url: 'https://wenxin.baidu.com/',
           short: '百度出品，能画图做 PPT',
           key: 'AI 对话 人工智能 百度 ernie 文心 一言 画图 PPT',
@@ -469,6 +527,7 @@ window.NAV_CONFIG = {
     },
     {
       id: 'ai-agent',
+      group: 'ai',
       name: 'AI Agent',
       icon: '🧠',
       desc: '不只是聊天 —— 能自己规划步骤、调用工具、把活干完',
@@ -532,6 +591,7 @@ window.NAV_CONFIG = {
         },
         {
           name: 'DeepSeek Harness',
+          alias: ['DSH'],
           url: 'https://www.deepseek.com/harness/',
           short: '开源 Agent，能装插件',
           key: 'AI agent 智能体 编程 插件 开源 deepseek harness dsh',
@@ -561,7 +621,141 @@ window.NAV_CONFIG = {
       ]
     },
     {
+      id: 'ai-api',
+      group: 'ai',
+      name: 'API 提供商',
+      icon: '🔌',
+      desc: '想自己写程序调模型，就来这儿拿密钥 —— 聚合平台一个密钥能调好几家',
+      sites: [
+        {
+          name: '硅基流动',
+          alias: ['SiliconFlow'],
+          url: 'https://siliconflow.cn/',
+          short: '国内聚合平台，一个密钥调多数开源模型',
+          key: 'siliconflow 硅基流动 api 聚合 开源模型 接口 密钥 中转',
+          region: 'cn',
+          shotUpdated: '2026-10-07',
+          shots: [
+            { src: 'assets/shots/siliconflow-1.jpg', t: '官网首页' },
+            { src: 'assets/shots/siliconflow-2.jpg', t: '开发文档' }
+          ],
+          intro: {
+            tagline: '国内的模型 API 聚合平台，一个密钥调多数开源模型',
+            pros: [
+              '一个密钥就能调 DeepSeek、Qwen、GLM 等一批开源模型，不用挨个平台注册',
+              '国内服务器，不用折腾网络，调用速度稳定',
+              '按量计费，新用户通常有赠送额度，试错成本低',
+              '文档是中文的，接口兼容 OpenAI 格式，现有代码改个地址就能用'
+            ],
+            cons: [
+              '主打开源模型，最新的闭源旗舰模型这里一般没有',
+              '高峰期部分热门模型会排队，高并发场景要提前测',
+              '模型上下架比较频繁，长期项目要注意别用被下线的型号'
+            ],
+            best: '想写个小程序调模型、又不想挨个平台注册的开发者',
+            tips: '先在模型广场挑一个免费的试试，跑通了再充钱换大模型。接口地址和密钥在控制台里生成。'
+          }
+        },
+        {
+          name: 'DeepSeek 开放平台',
+          url: 'https://platform.deepseek.com/',
+          short: 'DeepSeek 官方的 API 控制台',
+          key: 'deepseek api 开放平台 密钥 key 接口 充值 便宜',
+          region: 'cn',
+          shotUpdated: '2026-10-07',
+          shots: [
+            { src: 'assets/shots/deepseekapi-1.jpg', t: 'DeepSeek 官网' },
+            { src: 'assets/shots/deepseekapi-2.jpg', t: 'API 文档' },
+            { src: 'assets/shots/deepseekapi-3.jpg', t: '价格页' }
+          ],
+          intro: {
+            tagline: 'DeepSeek 官方的 API 控制台，便宜是它最大的标签',
+            pros: [
+              '价格便宜得离谱，同样任务的花费常常只有国外模型的零头',
+              '缓存命中还能再打折，反复处理同一份长文档时特别划算',
+              '中文能力强，写中文内容、处理中文文档不用额外调教',
+              '接口兼容 OpenAI 格式，把地址和密钥一换就能跑'
+            ],
+            cons: [
+              '页面本身要登录才能看到内容，第一次进来会觉得有点空',
+              '高峰期偶尔会限流，重要业务最好准备好备用渠道',
+              '只有自家的模型，想对比别家的得另外去别处开账号'
+            ],
+            best: '预算有限、主要处理中文内容的个人开发者和中小团队',
+            tips: '充值前先看看文档里的价格页，把「缓存命中」的用法搞清楚，能省不少钱。密钥只生成一次，记得立刻存好。'
+          }
+        }
+      ]
+    },
+    {
+      id: 'ai-local-chat',
+      group: 'ai',
+      name: '本地对话',
+      icon: '💻',
+      desc: '装在自己电脑上的对话客户端，记录留在本机，模型可以自己挑',
+      sites: [
+        {
+          name: 'Chatbox',
+          url: 'https://chatboxai.app/zh',
+          short: '装机量最大的桌面客户端',
+          key: 'chatbox 客户端 桌面 本地 对话 多模型 开源',
+          region: 'global',
+          shotUpdated: '2026-10-07',
+          shots: [
+            { src: 'assets/shots/chatbox-1.jpg', t: '官网首页' },
+            { src: 'assets/shots/chatbox-2.jpg', t: '下载页' }
+          ],
+          intro: {
+            tagline: '装机量最大的桌面 AI 客户端，装上就能换着模型聊',
+            pros: [
+              'Windows、macOS、Linux、手机都有，界面一致，换设备不用重新适应',
+              '可以填任何兼容 OpenAI 格式的接口，国内的国外的都能接',
+              '聊天记录存在本机，也可以让它连自己电脑上跑的本地模型',
+              '免费版够用，没有强制登录，打开就能填密钥开始聊'
+            ],
+            cons: [
+              '要自己准备 API 密钥，不像网页版那样注册完直接能用',
+              '不带模型，模型的能力和费用取决于你接的是哪家',
+              '高级功能（比如团队协作、云同步）要付费'
+            ],
+            best: '想在一个软件里同时用好几家模型、又不想被某个平台绑住的人',
+            tips: '装好后在设置里选「OpenAI API 兼容」，把硅基流动或 DeepSeek 的地址和密钥填进去就能用了。'
+          }
+        },
+        {
+          name: 'SillyTavern',
+          alias: ['酒馆'],
+          url: 'https://sillytavern.app/',
+          short: '角色扮演专用前端',
+          key: 'sillytavern 酒馆 角色扮演 卡 前端 开源',
+          region: 'global',
+          shotUpdated: '2026-10-07',
+          shots: [
+            { src: 'assets/shots/sillytavern-1.jpg', t: '官网首页' },
+            { src: 'assets/shots/sillytavern-2.jpg', t: '使用文档' }
+          ],
+          intro: {
+            tagline: '专门做角色扮演和长对话的前端，圈内都叫它「酒馆」',
+            pros: [
+              '角色卡、世界书、记忆管理这些功能是别的客户端没有的',
+              '可以调很多细节：发言顺序、上下文长度、预设提示词',
+              '完全开源免费，接哪家的模型由你决定',
+              '社区活跃，现成的角色卡和预设非常多'
+            ],
+            cons: [
+              '要自己装（本地跑或者 Docker），不是装个 exe 就能用',
+              '功能多、选项杂，第一眼看着会有点懵',
+              '中文资料相对少，很多设置得看英文文档'
+            ],
+            best: '喜欢角色扮演、或者想把对话调得很细的人',
+            tips: '官方文档里有详细的安装步骤。新手建议先用现成的预设，别一上来就自己调参数。'
+          }
+        }
+      ]
+    },
+    {
       id: 'gpu-driver',
+      group: 'hardware',
       name: '显卡与驱动',
       icon: '🖥️',
       desc: '先认出自己是什么卡，再去对应官网下驱动',
@@ -574,6 +768,7 @@ window.NAV_CONFIG = {
       sites: [
         {
           name: 'NVIDIA',
+          alias: ['英伟达'],
           url: 'https://www.nvidia.cn/geforce/drivers/',
           short: 'N 卡驱动，RTX / GTX 都是它',
           key: 'nvidia 英伟达 n卡 显卡 驱动 下载 更新 geforce rtx gtx 自动检测',
@@ -634,6 +829,7 @@ window.NAV_CONFIG = {
         },
         {
           name: 'Intel',
+          alias: ['英特尔'],
           url: 'https://www.intel.cn/content/www/cn/zh/download-center/home.html',
           short: '核显与 Arc 独显驱动',
           key: 'intel 英特尔 核显 集显 arc 显卡 驱动 下载 更新 无线网卡 芯片组',
@@ -663,6 +859,204 @@ window.NAV_CONFIG = {
           }
         }
       ]
+    },
+    {
+      id: 'unzip',
+      group: 'software',
+      name: '解压压缩',
+      icon: '📦',
+      desc: '装完系统第一个要装的东西 —— 只从官网下，别用下载站里的捆绑版',
+      sites: [
+        {
+          name: '7-Zip',
+          alias: ['7z'],
+          url: 'https://www.7-zip.org/',
+          short: '最经典的开源压缩工具',
+          key: '7zip 7-zip 压缩 解压 免费 开源 rar zip 极简',
+          region: 'global',
+          shotUpdated: '2026-10-07',
+          shots: [
+            { src: 'assets/shots/sevenzip-1.jpg', t: '官网首页' },
+            { src: 'assets/shots/sevenzip-2.jpg', t: '下载页' }
+          ],
+          intro: {
+            tagline: '最经典的开源压缩工具，装完就没它什么事了',
+            pros: [
+              '完全免费、开源，没有任何广告和捆绑',
+              '压缩率通常比 WinRAR 还高一点，尤其是 7z 格式',
+              '体积小、运行快，老电脑上也毫无压力',
+              '官网干净，下载页清清楚楚列出各个版本'
+            ],
+            cons: [
+              '界面是上世纪的风格，谈不上好看',
+              '不能直接创建 rar 文件（rar 是收费格式，别人家也做不了）',
+              '官网是英文的，且下载要自己根据系统位数挑安装包'
+            ],
+            best: '想要一个干净、免费、能一直用的解压软件的任何人',
+            tips: '下载页里 64-bit Windows 选「x64」，32 位选「32-bit」。装的时候可以把「关联格式」全勾上，以后双击压缩包直接用它打开。'
+          }
+        },
+        {
+          name: 'WinRAR',
+          alias: ['RAR'],
+          url: 'https://www.winrar.com.cn/',
+          short: '老牌，能一直试用',
+          key: 'winrar rar 压缩 解压 试用 老牌',
+          region: 'cn',
+          shotUpdated: '2026-10-07',
+          shots: [
+            { src: 'assets/shots/winrar-1.jpg', t: '官网首页' },
+            { src: 'assets/shots/winrar-2.jpg', t: '下载页' }
+          ],
+          intro: {
+            tagline: '用了二十多年的老牌压缩软件，能一直试用下去',
+            pros: [
+              '界面是中文的，新手拿起来就会用',
+              '能创建 rar 格式，接受 rar 文件时最省事',
+              '有修复压缩包的功能，包损坏时能救回一部分',
+              '中文官网的下载入口很清楚，不容易下错'
+            ],
+            cons: [
+              '是商业软件，试用期过了会一直弹购买提示（但不影响使用）',
+              '压缩率不如 7-Zip，速度也慢一些',
+              '安装包体积明显比 7-Zip 大'
+            ],
+            best: '经常要处理 rar 文件、又想要中文界面的人',
+            tips: '中文官网是代理商维护的，认准 winrar.com.cn。别在下载站下「破解版」，那类包是捆绑软件的重灾区。'
+          }
+        }
+      ]
+    },
+    {
+      id: 'video-edit',
+      group: 'software',
+      name: '视频剪辑',
+      icon: '🎬',
+      desc: '从手机剪到专业调色，还有转码和录屏的工具',
+      sites: [
+        {
+          name: '剪映',
+          alias: ['CapCut'],
+          url: 'https://www.capcut.cn/',
+          short: '上手最快，模板多',
+          key: '剪映 capcut 剪辑 视频 抖音 模板 免费',
+          region: 'cn',
+          shotUpdated: '2026-10-07',
+          shots: [
+            { src: 'assets/shots/jianying-1.jpg', t: '官网首页' }
+          ],
+          intro: {
+            tagline: '上手最快的剪辑软件，手机上也能剪',
+            pros: [
+              '操作逻辑和手机版一致，学会了在哪都能剪',
+              '自带大量模板、转场和音乐，套一套就能出片',
+              '自动字幕准确率不错，省掉大量打字时间',
+              '基础功能免费，导出没有水印'
+            ],
+            cons: [
+              '高级素材和部分特效要开会员',
+              '导出画质和码率的可调项比专业软件少',
+              '长视频、多轨道项目会比较卡'
+            ],
+            best: '做短视频、Vlog，想快速出片的人',
+            tips: '手机版和电脑版是同一个账号，草稿能同步。想做长视频或者需要精确控制时，再考虑换 DaVinci。'
+          }
+        },
+        {
+          name: '必剪',
+          alias: ['Bcut'],
+          url: 'https://bcut.bilibili.cn/',
+          short: 'B 站出的，投稿很顺',
+          key: '必剪 bcut b站 哔哩哔哩 剪辑 视频 投稿',
+          region: 'cn',
+          shotUpdated: '2026-10-07',
+          shots: [
+            { src: 'assets/shots/bcut-1.jpg', t: '官网首页' }
+          ],
+          intro: {
+            tagline: 'B 站官方出的剪辑软件，投稿是它最顺的地方',
+            pros: [
+              '和 B 站账号打通，剪完直接投稿，不用来回导出上传',
+              '内置 B 站风格的素材、贴纸和梗，做二次元内容很顺手',
+              '免费，没有水印',
+              '有手机版，能云端同步草稿'
+            ],
+            cons: [
+              '功能比剪映略少，尤其是商用向的模板',
+              '主要面向 B 站，投别的平台要手动导文件',
+              '更新节奏比剪映慢一些'
+            ],
+            best: '主要往 B 站投稿的 UP 主',
+            tips: '如果只是想在 B 站更新，用它能省掉导出再上传这一整步。'
+          }
+        },
+        {
+          name: 'DaVinci Resolve',
+          alias: ['达芬奇'],
+          url: 'https://www.blackmagicdesign.com/products/davinciresolve',
+          short: '专业调色，免费版就够用',
+          key: '达芬奇 davinci resolve 调色 剪辑 专业 免费 黑魔法',
+          region: 'global',
+          shotUpdated: '2026-10-07',
+          shots: [
+            { src: 'assets/shots/davinci-1.jpg', t: '产品页' }
+          ],
+          intro: {
+            tagline: '专业级剪辑调色软件，免费版的规格就顶得住商单',
+            pros: [
+              '调色是它的看家本领，好莱坞级别的项目也在用',
+              '免费版几乎没有功能阉割，不是「体验版」那种',
+              '剪辑、调色、特效、音频、交付全在一个软件里',
+              '一次安装，Windows / macOS / Linux 都有'
+            ],
+            cons: [
+              '对电脑配置要求高，显卡差或者内存小会很卡',
+              '上手比剪映陡得多，得花时间学',
+              '界面术语偏专业，第一次打开容易不知道从哪下手'
+            ],
+            best: '想认真做视频、对画质和调色有要求的人',
+            tips: '官网下载页先看清楚是免费版（DaVinci Resolve）还是付费版（Studio）。免费版就能调用显卡加速，装完先在设置里确认下。'
+          }
+        }
+      ]
+    },
+    {
+      id: 'image-edit',
+      group: 'software',
+      name: '图像处理',
+      icon: '🖼️',
+      desc: '修图、画画、做设计的官网入口，免费开源和商业软件都有',
+      sites: [
+        {
+          name: 'Photoshop',
+          alias: ['PS'],
+          url: 'https://www.adobe.com/products/photoshop.html',
+          short: '行业标准，订阅制',
+          key: 'ps photoshop adobe 修图 图像处理 订阅',
+          region: 'global',
+          shotUpdated: '2026-10-07',
+          shots: [
+            { src: 'assets/shots/photoshop-1.jpg', t: '产品页' }
+          ],
+          intro: {
+            tagline: '图像处理的事实标准，几乎所有教程和素材都为它准备',
+            pros: [
+              '功能最全，别的软件做不了的效果基本都能在这儿实现',
+              '全网教程和插件最多，遇到问题一搜就有答案',
+              '和 Illustrator、After Effects 等 Adobe 软件配合得很顺',
+              'AI 功能（生成式填充、创成式扩展）已经融进常规工作流'
+            ],
+            cons: [
+              '订阅制，按月付费，不能买断',
+              '安装包大、吃内存，老电脑跑起来吃力',
+              '正版订阅在国内购买和续费都比较麻烦',
+              '功能太多，新手一打开会不知道从哪开始'
+            ],
+            best: '做设计、修图当职业，或者需要和团队交换 PSD 文件的人',
+            tips: '只是偶尔修修图的话，可以先用 Photopea（网页版，免费）顶着。真要长期做这行，再考虑订阅正版。'
+          }
+        }
+      ]
     }
   ],
 
@@ -674,6 +1068,48 @@ window.NAV_CONFIG = {
    *  region: 'cn' 国内站点（含国内镜像） / 'global' 国外站点
    * ------------------------------------------------------------ */
   index: [
+    /* --- 下面这批来自「API 提供商 / 本地对话 / 解压压缩 / 视频剪辑 / 图像处理」，
+           它们只在「其他网页」页和搜索里出现，不进主页精选。
+           主页精选要够常用、并且配了官网截图和介绍才行。 --- */
+    { name: '阿里云百炼', url: 'https://bailian.console.aliyun.com/', desc: '通义千问全系列，企业用得多', cat: 'API 提供商', region: 'cn', key: '阿里 百炼 通义千问 qwen api 密钥 大模型 接口' },
+    { name: '火山方舟', url: 'https://www.volcengine.com/product/ark', desc: '字节的豆包大模型 API', cat: 'API 提供商', region: 'cn', key: '火山 方舟 字节 豆包 doubao api 密钥 大模型' },
+    { name: '智谱 AI', alias: ['GLM'], url: 'https://open.bigmodel.cn/', desc: '清华系的 GLM 系列模型', cat: 'API 提供商', region: 'cn', key: '智谱 glm 清言 api 密钥 大模型 开放平台' },
+    { name: '月之暗面', url: 'https://platform.moonshot.cn/', desc: 'Kimi 背后的模型 API', cat: 'API 提供商', region: 'cn', key: '月之暗面 moonshot kimi api 密钥 长文本 开放平台' },
+    { name: '百度千帆', url: 'https://qianfan.cloud.baidu.com/', desc: '文心一言的开放平台', cat: 'API 提供商', region: 'cn', key: '百度 千帆 文心一言 ernie api 密钥 大模型' },
+    { name: '腾讯混元', alias: ['Hunyuan'], url: 'https://cloud.tencent.com/product/hunyuan', desc: '腾讯自研的混元大模型', cat: 'API 提供商', region: 'cn', key: '腾讯 混元 hunyuan api 密钥 大模型 接口' },
+    { name: 'OpenRouter', url: 'https://openrouter.ai/', desc: '一个密钥调遍各家主流模型', cat: 'API 提供商', region: 'global', key: 'openrouter 聚合 中转 api 多模型 密钥 比价' },
+    { name: 'OpenAI Platform', url: 'https://platform.openai.com/', desc: 'GPT 系列的官方控制台', cat: 'API 提供商', region: 'global', key: 'openai gpt api 密钥 key 接口 官方' },
+    { name: 'Anthropic Console', url: 'https://console.anthropic.com/', desc: 'Claude 系列的官方控制台', cat: 'API 提供商', region: 'global', key: 'anthropic claude api 密钥 key 接口 官方' },
+    { name: 'Google AI Studio', alias: ['AI Studio'], url: 'https://aistudio.google.com/', desc: 'Gemini 的试验台，有免费额度', cat: 'API 提供商', region: 'global', key: 'google gemini aistudio api 密钥 免费 额度' },
+    { name: 'Groq', url: 'https://groq.com/', desc: '出了名的快，跑开源模型', cat: 'API 提供商', region: 'global', key: 'groq 快 推理 api 开源模型 密钥' },
+    { name: 'Mistral', url: 'https://console.mistral.ai/', desc: '欧洲的开源模型厂商', cat: 'API 提供商', region: 'global', key: 'mistral 法国 欧洲 开源模型 api 密钥' },
+
+    { name: 'Cherry Studio', url: 'https://cherry-ai.com/', desc: '国产开源，功能给得很足', cat: '本地对话', region: 'cn', key: 'cherry studio 樱桃 客户端 国产 开源 多模型 知识库' },
+    { name: 'LobeChat', url: 'https://lobehub.com/zh', desc: '界面最讲究的一个', cat: '本地对话', region: 'cn', key: 'lobe lobehub 客户端 网页 好看 插件 开源' },
+    { name: 'NextChat', alias: ['ChatGPT-Next-Web'], url: 'https://nextchat.club/', desc: '轻量，一键就能部署', cat: '本地对话', region: 'cn', key: 'nextchat chatgpt-next-web 轻量 部署 客户端 开源' },
+    { name: 'Open WebUI', url: 'https://openwebui.com/', desc: '自托管的 ChatGPT 替代品', cat: '本地对话', region: 'global', key: 'open webui 自托管 ollama 界面 开源 部署' },
+    { name: 'Ollama', url: 'https://ollama.com/', desc: '一行命令跑本地模型', cat: '本地对话', region: 'global', key: 'ollama 本地 部署 跑模型 命令行 llama qwen 开源' },
+    { name: 'LM Studio', url: 'https://lmstudio.ai/', desc: '带界面的本地模型运行器', cat: '本地对话', region: 'global', key: 'lm studio 本地 图形界面 跑模型 gguf 开源' },
+    { name: 'AnythingLLM', url: 'https://anythingllm.com/', desc: '把自家文档喂给本地模型', cat: '本地对话', region: 'global', key: 'anythingllm 本地 知识库 文档 rag 离线 模型' },
+
+    { name: 'NanaZip', url: 'https://github.com/M2Team/NanaZip', desc: '7-Zip 的 Windows 现代化版', cat: '解压压缩', region: 'global', key: 'nanazip 压缩 解压 7zip 现代 win11 国产 开源' },
+    { name: 'Bandizip', url: 'https://www.bandisoft.com/bandizip/', desc: '自动识别编码，不乱码', cat: '解压压缩', region: 'global', key: 'bandizip 压缩 解压 乱码 编码 韩国 好用' },
+
+    { name: 'OBS Studio', alias: ['OBS'], url: 'https://obsproject.com/', desc: '录屏和直播推流，不做剪辑', cat: '视频剪辑', region: 'global', key: 'obs 录屏 直播 推流 开源 免费 studio' },
+    { name: 'HandBrake', url: 'https://handbrake.fr/', desc: '视频转码压缩专用', cat: '视频剪辑', region: 'global', key: 'handbrake 转码 压缩 格式转换 开源 视频' },
+    { name: 'FFmpeg', url: 'https://ffmpeg.org/', desc: '命令行里的视频万金油', cat: '视频剪辑', region: 'global', key: 'ffmpeg 转码 命令行 音视频 处理 神器' },
+
+    { name: 'GIMP', url: 'https://www.gimp.org/', desc: '免费开源的 Photoshop', cat: '图像处理', region: 'global', key: 'gimp 修图 ps 替代 开源 免费 图像处理' },
+    { name: 'Krita', url: 'https://krita.org/', desc: '专为画画而生', cat: '图像处理', region: 'global', key: 'krita 绘画 插画 数位板 开源 免费 画图' },
+    { name: 'Paint.NET', url: 'https://www.getpaint.net/', desc: '轻量，比画图好用得多', cat: '图像处理', region: 'global', key: 'paint.net 修图 轻量 windows 免费 图像' },
+    { name: 'Affinity Photo', url: 'https://affinity.serif.com/zh-cn/photo/', desc: '买断制的修图软件', cat: '图像处理', region: 'global', key: 'affinity photo 买断 修图 ps 替代 便宜' },
+    { name: 'Photopea', url: 'https://www.photopea.com/', desc: '网页版 PS，打开就能用', cat: '图像处理', region: 'global', key: 'photopea 网页 ps 在线 修图 免费 免安装 psd' },
+    { name: 'Inkscape', url: 'https://inkscape.org/', desc: '开源的矢量图工具', cat: '图像处理', region: 'global', key: 'inkscape 矢量 svg 开源 免费 illustrator 替代' },
+    { name: 'Figma', url: 'https://www.figma.com/', desc: '做界面设计的都在用', cat: '图像处理', region: 'global', key: 'figma ui 设计 界面 协作 原型 网页' },
+    { name: 'Canva 可画', alias: ['可画'], url: 'https://www.canva.cn/', desc: '套模板就能出图', cat: '图像处理', region: 'cn', key: 'canva 可画 海报 模板 设计 在线 作图' },
+    { name: '稿定设计', alias: ['稿定'], url: 'https://www.gaoding.com/', desc: '国内的在线设计工具', cat: '图像处理', region: 'cn', key: '稿定 设计 海报 抠图 模板 在线 国产' },
+    { name: 'remove.bg', url: 'https://www.remove.bg/zh', desc: '一键抠图去背景', cat: '图像处理', region: 'global', key: '抠图 去背景 在线 免费 ai remove bg' },
+
     { name: 'WeGame', url: 'https://www.wegame.com.cn', desc: '腾讯的游戏平台', cat: '游戏平台', region: 'cn', key: 'wegame 腾讯游戏 英雄联盟 下载客户端 游戏大厅 LOL' },
     { name: 'GOG', url: 'https://www.gog.com', desc: '没有防盗版的游戏商城', cat: '游戏平台', region: 'global', key: 'gog 无drm 老游戏 经典游戏 波兰 单机' },
     { name: '杉果游戏', url: 'https://www.sonkwo.com', desc: '国内正版游戏商城', cat: '游戏平台', region: 'cn', key: '杉果 正版 折扣 国区 激活码' },
@@ -690,8 +1126,8 @@ window.NAV_CONFIG = {
     /* 更多 Agent 工具：和主页那个「AI Agent」分类合并展示（cat 名字保持一致即可） */
     { name: 'TRAE', url: 'https://www.trae.com.cn/', desc: '字节的 AI 编程 IDE', cat: 'AI Agent', region: 'cn', key: 'AI 编程 ide 智能体 agent 写代码 字节 trae 自动补全' },
     { name: '通义灵码', url: 'https://lingma.aliyun.com/', desc: '阿里的编程助手', cat: 'AI Agent', region: 'cn', key: 'AI 编程 代码助手 agent 智能体 阿里 通义灵码 补全' },
-    { name: '文心快码', url: 'https://comate.baidu.com/', desc: '百度的编程助手', cat: 'AI Agent', region: 'cn', key: 'AI 编程 代码助手 agent 智能体 百度 文心快码 comate' },
-    { name: '扣子 Coze', url: 'https://coze.cn/', desc: '搭自己的 AI 智能体', cat: 'AI Agent', region: 'cn', key: 'AI agent 智能体 搭建 bot 工作流 字节 扣子 coze 自动化' },
+    { name: '文心快码', alias: ['Comate'], url: 'https://comate.baidu.com/', desc: '百度的编程助手', cat: 'AI Agent', region: 'cn', key: 'AI 编程 代码助手 agent 智能体 百度 文心快码 comate' },
+    { name: '扣子 Coze', alias: ['Coze'], url: 'https://coze.cn/', desc: '搭自己的 AI 智能体', cat: 'AI Agent', region: 'cn', key: 'AI agent 智能体 搭建 bot 工作流 字节 扣子 coze 自动化' },
     { name: 'Qoder', url: 'https://qoder.com/', desc: '阿里的 AI 原生 IDE', cat: 'AI Agent', region: 'cn', key: 'AI 编程 ide agent 智能体 阿里 qoder 原生' },
     { name: 'Cursor', url: 'https://cursor.com/', desc: '国外最火的 AI 编辑器', cat: 'AI Agent', region: 'global', key: 'AI 编程 编辑器 ide agent 智能体 cursor 补全' },
     { name: 'Manus', url: 'https://manus.im/', desc: '能自己干活的通用智能体', cat: 'AI Agent', region: 'global', key: 'AI agent 智能体 通用 自动化 任务 manus 自主' },
@@ -704,12 +1140,12 @@ window.NAV_CONFIG = {
     { name: 'OpenHands', url: 'https://www.all-hands.dev/', desc: '开源的全能开发 Agent', cat: 'AI Agent', region: 'global', key: 'AI 编程 agent 智能体 开源 openhands 开发 自主' },
 
     /* 国外 AI 助手：官网主页地址，不是对话页 —— 和国内那几个一样，认准域名 */
-    { name: 'ChatGPT', url: 'https://openai.com/', desc: 'OpenAI 的对话助手', cat: 'AI 工具', region: 'global', key: 'AI 对话 人工智能 openai 聊天 gpt chatgpt 写作' },
-    { name: 'Gemini', url: 'https://gemini.google.com/', desc: 'Google 的 AI 助手', cat: 'AI 工具', region: 'global', key: 'AI 对话 人工智能 google 谷歌 gemini 多模态' },
-    { name: 'Claude', url: 'https://claude.ai/', desc: 'Anthropic 的 AI 助手', cat: 'AI 工具', region: 'global', key: 'AI 对话 人工智能 anthropic 克劳德 claude 写作 长文' },
-    { name: 'Grok', url: 'https://grok.com/', desc: 'xAI 的 AI 助手', cat: 'AI 工具', region: 'global', key: 'AI 对话 人工智能 xai 马斯克 grok 实时' },
-    { name: 'Microsoft Copilot', url: 'https://copilot.microsoft.com/', desc: '微软的 AI 助手', cat: 'AI 工具', region: 'global', key: 'AI 对话 人工智能 微软 microsoft copilot bing 必应' },
-    { name: 'Perplexity', url: 'https://www.perplexity.ai/', desc: '会给出处的 AI 搜索', cat: 'AI 工具', region: 'global', key: 'AI 搜索 问答 人工智能 perplexity 引用 来源 查资料' }
+    { name: 'ChatGPT', url: 'https://openai.com/', desc: 'OpenAI 的对话助手', cat: 'AI 对话', region: 'global', key: 'AI 对话 人工智能 openai 聊天 gpt chatgpt 写作' },
+    { name: 'Gemini', url: 'https://gemini.google.com/', desc: 'Google 的 AI 助手', cat: 'AI 对话', region: 'global', key: 'AI 对话 人工智能 google 谷歌 gemini 多模态' },
+    { name: 'Claude', url: 'https://claude.ai/', desc: 'Anthropic 的 AI 助手', cat: 'AI 对话', region: 'global', key: 'AI 对话 人工智能 anthropic 克劳德 claude 写作 长文' },
+    { name: 'Grok', url: 'https://grok.com/', desc: 'xAI 的 AI 助手', cat: 'AI 对话', region: 'global', key: 'AI 对话 人工智能 xai 马斯克 grok 实时' },
+    { name: 'Microsoft Copilot', url: 'https://copilot.microsoft.com/', desc: '微软的 AI 助手', cat: 'AI 对话', region: 'global', key: 'AI 对话 人工智能 微软 microsoft copilot bing 必应' },
+    { name: 'Perplexity', url: 'https://www.perplexity.ai/', desc: '会给出处的 AI 搜索', cat: 'AI 对话', region: 'global', key: 'AI 搜索 问答 人工智能 perplexity 引用 来源 查资料' }
   ],
 
   /* ------------------------------------------------------------

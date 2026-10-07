@@ -37,7 +37,7 @@
         seen[s.url] = true;
         sites.push({
           name: s.name, url: s.url, desc: s.short || '',
-          icon: s.icon, key: s.key || '',
+          icon: s.icon, key: s.key || '', alias: s.alias || null,
           region: s.region || 'global', top: true
         });
       });
@@ -46,6 +46,9 @@
           id: cat.id || cat.name,
           title: cat.name,
           emoji: cat.icon || '',
+          group: cat.group || '',
+          /* 分类自带的额外入口（如显卡检测），跟着一起带过去 */
+          tool: cat.tool || null,
           sites: sites
         });
       }
@@ -59,7 +62,7 @@
       if (!byCat[c]) { byCat[c] = []; order.push(c); }
       byCat[c].push({
         name: s.name, url: s.url, desc: s.desc || '',
-        icon: s.icon, key: s.key || '',
+        icon: s.icon, key: s.key || '', alias: s.alias || null,
         region: s.region || 'global', top: false
       });
     });
@@ -74,9 +77,19 @@
       if (merged) {
         byCat[c].forEach(function (s) { merged.sites.push(s); });
       } else {
-        out.push({ id: 'so-' + c, title: c, emoji: '', sites: byCat[c] });
+        /* 这些分组来自「完整索引」，用 data.js 的 indexGroupOf 说明它归哪个大类 */
+        out.push({
+          id: 'so-' + c, title: c, emoji: '',
+          group: (CFG.indexGroupOf || {})[c] || '',
+          sites: byCat[c]
+        });
       }
     });
+
+    /* 每个分组标上大类名，并按大类的顺序排在一起 */
+    var GNAMES = {};
+    (CFG.groups || []).forEach(function (g) { GNAMES[g.id || g.name] = g.name; });
+    out.forEach(function (g) { g.groupName = GNAMES[g.group] || ''; });
 
     /* 组内按字母排序，同时拆成国内 / 国外两段 */
     out.forEach(function (g) {
@@ -84,7 +97,56 @@
       g.global = g.sites.filter(function (s) { return s.region !== 'cn'; }).sort(byName);
     });
 
+    /* 同一个大类的分组排到一起，顺序跟着 data.js 里 groups 的声明走；
+       没归大类的排在最后。 */
+    var GORDER = {};
+    (CFG.groups || []).forEach(function (g, i) { GORDER[g.id || g.name] = i; });
+    out.sort(function (a, b) {
+      var ia = a.group in GORDER ? GORDER[a.group] : 999;
+      var ib = b.group in GORDER ? GORDER[b.group] : 999;
+      return ia - ib;
+    });
+
     return out;
+  })();
+
+  /* 再往上归一层：把小类按大类归并成「大类 → 小类」的树。
+     主页是两层，这里跟着两层，两页的分类体系才一致。 */
+  var TREE = (function () {
+    var out = [];
+    var byId = {};
+
+    (CFG.groups || []).forEach(function (g) {
+      var gid = g.id || g.name;
+      if (byId[gid]) return;
+      var item = {
+        id: gid,
+        name: g.name,
+        icon: g.icon || '',
+        desc: g.desc || '',
+        cats: []
+      };
+      out.push(item);
+      byId[gid] = item;
+    });
+
+    GROUPS.forEach(function (c) {
+      var bucket = byId[c.group];
+      if (!bucket) {
+        bucket = {
+          id: c.group || ('solo-' + c.id),
+          name: c.groupName || c.title,
+          icon: c.emoji || '',
+          desc: '',
+          cats: []
+        };
+        out.push(bucket);
+        byId[bucket.id] = bucket;
+      }
+      bucket.cats.push(c);
+    });
+
+    return out.filter(function (g) { return g.cats.length; });
   })();
 
   var TOTAL = GROUPS.reduce(function (n, g) { return n + g.sites.length; }, 0);
@@ -106,7 +168,13 @@
     else ico.textContent = (s.name.charAt(0) || '?').toUpperCase();
 
     var text = el('span', 'as-text');
-    text.appendChild(el('b', null, s.name));
+    var b = el('b');
+    b.appendChild(document.createTextNode(s.name));
+    /* 别名跟在名字后面：Photoshop（PS） */
+    if (s.alias && s.alias.length) {
+      b.appendChild(el('span', 'name-alias', '（' + s.alias.slice(0, 2).join('、') + '）'));
+    }
+    text.appendChild(b);
     if (s.desc) text.appendChild(el('em', null, s.desc));
     a.appendChild(text);
 
@@ -141,32 +209,87 @@
     box.textContent = '';
     var shown = 0;
 
-    GROUPS.forEach(function (g) {
-      if (onlyGroup && g.id !== onlyGroup) return;
+    TREE.forEach(function (grp) {
+      if (onlyGroup && grp.id !== onlyGroup) return;
 
-      function hit(s) {
+      function hit(s, catTitle) {
         if (!key) return true;
-        return (s.name + ' ' + s.desc + ' ' + s.key + ' ' + g.title).toLowerCase().indexOf(key) > -1;
+        /* 别名也参与筛选，输「PS」「酒馆」都能筛到 */
+        var alias = (s.alias || []).join(' ');
+        return (s.name + ' ' + alias + ' ' + s.desc + ' ' + s.key + ' ' + catTitle + ' ' + grp.name)
+          .toLowerCase().indexOf(key) > -1;
       }
 
-      var cn = g.cn.filter(hit);
-      var gl = g.global.filter(hit);
-      if (!cn.length && !gl.length) return;
-      shown += cn.length + gl.length;
+      /* 先算每个小类命中多少，空的小类不占位置 */
+      var blocks = [];
+      var grpNum = 0;
+
+      grp.cats.forEach(function (cat) {
+        var cn = cat.cn.filter(function (s) { return hit(s, cat.title); });
+        var gl = cat.global.filter(function (s) { return hit(s, cat.title); });
+        if (!cn.length && !gl.length) return;
+        grpNum += cn.length + gl.length;
+        blocks.push({ cat: cat, cn: cn, gl: gl });
+      });
+
+      if (!blocks.length) return;
+      shown += grpNum;
 
       var sec = el('section', 'as-group');
-      sec.id = 'g-' + g.id;
+      sec.id = 'g-' + grp.id;
 
       var head = el('div', 'as-group-head');
       var h2 = el('h2');
-      if (g.emoji) h2.appendChild(el('span', 'as-group-emoji', g.emoji));
-      h2.appendChild(document.createTextNode(g.title));
+      if (grp.icon) h2.appendChild(el('span', 'as-group-emoji', grp.icon));
+      h2.appendChild(document.createTextNode(grp.name));
       head.appendChild(h2);
-      head.appendChild(el('span', 'as-group-num', (cn.length + gl.length) + ' 个'));
+      head.appendChild(el('span', 'as-group-num', grpNum + ' 个'));
       sec.appendChild(head);
 
-      if (cn.length) sec.appendChild(subBlock('国内站点', cn, false));
-      if (gl.length) sec.appendChild(subBlock('国外站点', gl, true));
+      if (grp.desc) sec.appendChild(el('p', 'as-group-desc', grp.desc));
+
+      /* 大类底下只剩一个小类时把小类标题省掉，免得和上面重复 */
+      var solo = blocks.length === 1;
+
+      blocks.forEach(function (b) {
+        var catSec = el('div', 'as-cat');
+        catSec.id = 'gc-' + b.cat.id;
+
+        /* 分类自带的工具入口（如显卡检测）。放在标题判断外面 ——
+           因为「显卡与驱动」这种只有一个小类的情况会省掉标题，
+           但检测入口还是得有。 */
+        if (b.cat.tool && b.cat.tool.href) {
+          var toolBar = el('a', 'as-cat-tool');
+          toolBar.href = b.cat.tool.href;
+
+          var tIco = el('span', 'as-cat-tool-ico');
+          tIco.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+            '<rect x="3.5" y="5" width="17" height="11" rx="2"/><path d="M8 20h8M12 16v4"/></svg>';
+          toolBar.appendChild(tIco);
+
+          var tTxt = el('div', 'as-cat-tool-txt');
+          tTxt.appendChild(el('b', null, b.cat.tool.label || '用工具测一下'));
+          if (b.cat.tool.note) tTxt.appendChild(el('small', null, b.cat.tool.note));
+          toolBar.appendChild(tTxt);
+
+          toolBar.appendChild(el('span', 'as-cat-tool-go', '去检测 →'));
+          catSec.appendChild(toolBar);
+        }
+
+        if (!solo) {
+          var cHead = el('div', 'as-cat-head');
+          var h3 = el('h3');
+          if (b.cat.emoji) h3.appendChild(el('span', 'as-cat-emoji', b.cat.emoji));
+          h3.appendChild(document.createTextNode(b.cat.title));
+          cHead.appendChild(h3);
+          cHead.appendChild(el('span', 'as-cat-num', (b.cn.length + b.gl.length) + ' 个'));
+          catSec.appendChild(cHead);
+        }
+
+        if (b.cn.length) catSec.appendChild(subBlock('国内站点', b.cn, false));
+        if (b.gl.length) catSec.appendChild(subBlock('国外站点', b.gl, true));
+        sec.appendChild(catSec);
+      });
 
       box.appendChild(sec);
     });
@@ -198,10 +321,12 @@
     all.addEventListener('click', function () { pick(all, ''); });
     box.appendChild(all);
 
-    GROUPS.forEach(function (g) {
-      var b = el('button', 'as-chip', (g.emoji ? g.emoji + ' ' : '') + g.title);
+    /* 快捷词按大类排，点一下看整个大类 —— 免得「游戏商城 / 游戏引擎 / 游戏平台」
+       三个挤在一起，看着像三个不相干的东西。 */
+    TREE.forEach(function (grp) {
+      var b = el('button', 'as-chip', (grp.icon ? grp.icon + ' ' : '') + grp.name);
       b.type = 'button';
-      b.addEventListener('click', function () { pick(b, g.id); });
+      b.addEventListener('click', function () { pick(b, grp.id); });
       box.appendChild(b);
     });
   }
@@ -228,9 +353,22 @@
     if (want) {
       var chips = $('asChips');
       var idx = -1;
-      GROUPS.forEach(function (g, i) { if (g.id === want) idx = i; });
+      TREE.forEach(function (g, i) { if (g.id === want) idx = i; });
 
-      /* chips 的第 0 个是「全部」，所以分类在 chips 里要往后挪一位 */
+      /* 主页的「更多」传的是小类 id（如 game-store），
+         chips 上只有大类，这时就退回到它所属的大类。 */
+      if (idx < 0) {
+        var owner = '';
+        for (var i = 0; i < GROUPS.length; i++) {
+          if (GROUPS[i].id === want) { owner = GROUPS[i].group; break; }
+        }
+        if (owner) {
+          want = owner;
+          TREE.forEach(function (g, j) { if (g.id === want) idx = j; });
+        }
+      }
+
+      /* chips 的第 0 个是「全部」，所以大类在 chips 里要往后挪一位 */
       var target = (chips && idx >= 0) ? chips.children[idx + 1] : null;
       if (target) {
         Array.prototype.forEach.call(chips.children, function (n) { n.classList.remove('is-active'); });

@@ -274,8 +274,14 @@ main { padding-bottom: 40px; }
 }
 .search-item.is-on, .search-item:hover { background: var(--brand-tint); }
 .search-item .site-ico { width: 34px; height: 34px; border-radius: 10px; font-size: 14px; }
-.search-item .site-text { flex: 1; }
-.search-item .si-name { font-weight: 600; font-size: 14.5px; }
+.search-item .site-text { flex: 1; min-width: 0; }
+.search-item .si-name {
+  font-weight: 600; font-size: 14.5px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.search-item .site-desc {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 .search-item .si-cat { margin-left: 10px; font-size: 12px; color: var(--text-3); white-space: nowrap; }
 
 /* 第三档：只保留网址的站点，无图标、弱化处理 */
@@ -422,6 +428,14 @@ main { padding-bottom: 40px; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
+/* 网站名后面的别名，比如 Unreal Engine（UE、虚幻引擎） */
+.name-alias {
+  font-size: .86em;
+  font-weight: 500;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
 /* ---------- 精选卡片 ---------- */
 .pick-grid,
 .featured-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(272px, 1fr)); gap: 14px; }
@@ -459,7 +473,13 @@ main { padding-bottom: 40px; }
 
 .pick-bottom { position: relative; height: 38px; }
 .pick-host {
-  position: absolute; inset: 0; display: flex; align-items: center;
+  position: absolute; inset: 0; display: block;
+  line-height: 38px;
+  /* 长网址（比如 Davinci Resolve 那条）必须截断，否则会把卡片撑变形，
+     同一行的卡片就对不齐了。完整地址在悬停提示里。 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 12.5px; color: var(--text-3);
   font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
   transition: opacity .2s;
@@ -543,22 +563,65 @@ main { padding-bottom: 40px; }
 
 .chip-hint { align-self: center; margin-left: 3px; font-size: 12.5px; color: var(--text-3); }
 
-/* ---------- 分类块 ---------- */
-.category-list { display: flex; flex-direction: column; gap: 16px; }
-.category {
+/* ---------- 分类块（大类 → 小类） ---------- */
+.category-list { display: flex; flex-direction: column; gap: 18px; }
+
+/* 大类：一张卡片，装着底下的若干小类 */
+.group {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: 20px 22px 22px;
   box-shadow: var(--shadow-xs);
 }
-.category-head { display: flex; align-items: center; gap: 13px; margin-bottom: 16px; }
-.cat-icon {
-  flex: none; width: 40px; height: 40px; border-radius: 13px;
-  display: grid; place-items: center; font-size: 20px;
+/* 大类标题整行可点，用来展开 / 折叠 */
+.group-head {
+  display: flex; align-items: center; gap: 13px;
+  width: 100%; text-align: left;
+  padding: 0 0 15px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: opacity .18s;
+}
+.group-head:hover { opacity: .78; }
+.group-head:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px; border-radius: 8px;
+}
+
+.group-body { padding-top: 18px; }
+.group.is-collapsed .group-body { display: none; }
+/* 折叠时底下什么都没有，分隔线留着反而多余 */
+.group.is-collapsed .group-head { padding-bottom: 0; border-bottom-color: transparent; }
+
+.group-toggle {
+  flex: none; display: grid; place-items: center;
+  width: 30px; height: 30px; border-radius: 50%;
+  color: var(--text-3); background: var(--surface-2);
+  border: 1px solid var(--border);
+  transition: transform .22s, color .18s, background .18s;
+}
+.group-head:hover .group-toggle { color: var(--brand); background: var(--brand-tint); }
+.group.is-collapsed .group-toggle { transform: rotate(-90deg); }
+.group-icon {
+  flex: none; width: 44px; height: 44px; border-radius: 14px;
+  display: grid; place-items: center; font-size: 22px;
   background: var(--brand-tint); border: 1px solid var(--brand-tint-2);
 }
-.category-head h3 { font-size: 16.5px; font-weight: 700; }
+.group-title h3 { font-size: 18px; font-weight: 800; letter-spacing: -.3px; }
+.group-desc { margin-top: 2px; font-size: 12.5px; color: var(--text-3); }
+.group-count { margin-left: auto; flex: none; font-size: 12.5px; color: var(--text-3); }
+
+/* 小类：不再单独成卡，是大类里面的一段，标题比大类小一号 */
+.category { margin-bottom: 22px; }
+.group .category:last-child { margin-bottom: 0; }
+.category-head { display: flex; align-items: center; gap: 12px; margin-bottom: 13px; }
+.cat-icon {
+  flex: none; width: 34px; height: 34px; border-radius: 11px;
+  display: grid; place-items: center; font-size: 17px;
+  background: var(--brand-tint); border: 1px solid var(--brand-tint-2);
+}
+.category-head h4 { font-size: 15px; font-weight: 700; }
 .category-head .cat-desc { font-size: 12.5px; color: var(--text-3); }
 .cat-count {
   margin-left: auto; font-size: 12px; color: var(--brand);

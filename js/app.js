@@ -4,7 +4,7 @@
 (function () {
   'use strict';
 
-  var CFG = window.NAV_CONFIG || { siteName: '启航', categories: [] };
+  var CFG = window.NAV_CONFIG || { siteName: '启航', groups: [], categories: [] };
 
   var ICON_COLORS = [
     ['#4D6BFE', '#7B9BFF'], ['#2E9BFF', '#68C4FF'], ['#6C5CE7', '#A29BFE'],
@@ -108,13 +108,21 @@
     var top = el('div', 'pick-top');
     top.appendChild(buildIcon(site));
     var title = el('div', 'pick-title');
-    title.appendChild(el('h4', null, site.name));
+    var h4 = el('h4');
+    h4.appendChild(document.createTextNode(site.name));
+    /* 别名跟在名字后面：Unreal Engine（UE、虚幻引擎） */
+    if (site.alias && site.alias.length) {
+      h4.appendChild(el('span', 'name-alias', '（' + site.alias.slice(0, 2).join('、') + '）'));
+    }
+    title.appendChild(h4);
     title.appendChild(el('p', 'pick-short', site.short || site.desc || domainOf(site.url)));
     top.appendChild(title);
     card.appendChild(top);
 
     var bottom = el('div', 'pick-bottom');
-    bottom.appendChild(el('span', 'pick-host', site.url));
+    var host = el('span', 'pick-host', site.url);
+    host.title = site.url;          // 截断后用悬停提示补全
+    bottom.appendChild(host);
 
     var actions = el('div', 'pick-actions');
     if (site.intro) {
@@ -462,24 +470,68 @@
     list.forEach(function (x) { box.appendChild(buildPickCard(x.site)); });
   }
 
-  function renderCategories() {
-    var box = document.getElementById('categoryList');
-    if (!box) return;
-    box.textContent = '';
+  /* 把 categories 按 group 字段归到大类下。
+     没写 group 的分类会自己单独成一组（标题就用分类名），
+     这样以后往 data.js 里塞一条扁平分类也不会崩。 */
+  function buildGroups() {
+    var out = [];
+    var byId = {};
+
+    (CFG.groups || []).forEach(function (g) {
+      var gid = g.id || g.name;
+      if (byId[gid]) return;
+      var item = {
+        id: gid,
+        name: g.name,
+        icon: g.icon || '📁',
+        desc: g.desc || '',
+        cats: []
+      };
+      out.push(item);
+      byId[gid] = item;
+    });
 
     (CFG.categories || []).forEach(function (cat) {
-      var sec = el('section', 'category');
-      sec.id = 'cat-' + (cat.id || cat.name);
+      if (!(cat.sites || []).length) return;
+      var gid = cat.group || '';
+      var bucket = byId[gid];
 
+      if (!bucket) {
+        bucket = {
+          id: gid || ('solo-' + (cat.id || cat.name)),
+          name: gid || cat.name,
+          icon: cat.icon || '📁',
+          desc: '',
+          cats: []
+        };
+        out.push(bucket);
+        byId[bucket.id] = bucket;
+      }
+      bucket.cats.push(cat);
+    });
+
+    return out.filter(function (g) { return g.cats.length; });
+  }
+
+  /* 单个小类：标题 + 数量 + 「更多」+ 卡片网格。
+     solo 表示它所在的大类只有它自己，这时标题和数量都省掉 ——
+     免得「显卡与驱动」这种大类下面再重复一遍同样的名字。 */
+  function buildCategory(cat, solo) {
+    var sec = el('section', 'category');
+    sec.id = 'cat-' + (cat.id || cat.name);
+
+    if (!solo) {
       var head = el('div', 'category-head');
       head.appendChild(el('span', 'cat-icon', cat.icon || '📁'));
+
       var titleBox = el('div');
-      titleBox.appendChild(el('h3', null, cat.name));
+      titleBox.appendChild(el('h4', null, cat.name));
       if (cat.desc) titleBox.appendChild(el('p', 'cat-desc', cat.desc));
       head.appendChild(titleBox);
+
       head.appendChild(el('span', 'cat-count', (cat.sites || []).length + ' 个'));
 
-      /* 主页每个分类只挑了几个最值得收藏的，这里给一个出口，
+      /* 主页每个小类只挑了几个最值得收藏的，这里给一个出口，
          免得访客以为「就这些了」。点进去是「其他网页」页并直接筛到该分类。 */
       var more = el('a', 'cat-more');
       more.href = 'sites.html?cat=' + encodeURIComponent(cat.id || cat.name);
@@ -489,30 +541,85 @@
       head.appendChild(more);
 
       sec.appendChild(head);
+    }
 
-      /* 分类自带的额外入口（比如「显卡与驱动」里先做一次配置检测） */
-      if (cat.tool && cat.tool.href) {
-        var bar = el('a', 'cat-tool');
-        bar.href = cat.tool.href;
+    /* 分类自带的额外入口（比如「显卡与驱动」里先做一次配置检测） */
+    if (cat.tool && cat.tool.href) {
+      var bar = el('a', 'cat-tool');
+      bar.href = cat.tool.href;
 
-        var ico = el('span', 'cat-tool-ico');
-        ico.innerHTML = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
-          '<rect x="3.5" y="5" width="17" height="11" rx="2"/><path d="M8 20h8M12 16v4"/></svg>';
-        bar.appendChild(ico);
+      var ico = el('span', 'cat-tool-ico');
+      ico.innerHTML = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+        '<rect x="3.5" y="5" width="17" height="11" rx="2"/><path d="M8 20h8M12 16v4"/></svg>';
+      bar.appendChild(ico);
 
-        var barTxt = el('div', 'cat-tool-txt');
-        barTxt.appendChild(el('b', null, cat.tool.label));
-        if (cat.tool.note) barTxt.appendChild(el('small', null, cat.tool.note));
-        bar.appendChild(barTxt);
+      var barTxt = el('div', 'cat-tool-txt');
+      barTxt.appendChild(el('b', null, cat.tool.label));
+      if (cat.tool.note) barTxt.appendChild(el('small', null, cat.tool.note));
+      bar.appendChild(barTxt);
 
-        bar.appendChild(el('span', 'cat-tool-go', '去检测 →'));
-        sec.appendChild(bar);
+      bar.appendChild(el('span', 'cat-tool-go', '去检测 →'));
+      sec.appendChild(bar);
+    }
+
+    var grid = el('div', 'pick-grid');
+    (cat.sites || []).forEach(function (s) { grid.appendChild(buildPickCard(s)); });
+    sec.appendChild(grid);
+
+    return sec;
+  }
+
+  function renderCategories() {
+    var box = document.getElementById('categoryList');
+    if (!box) return;
+    box.textContent = '';
+
+    buildGroups().forEach(function (grp) {
+      var wrap = el('section', 'group');
+      wrap.id = 'grp-' + grp.id;
+
+      /* 大类默认折叠 —— 站点一多，全展开能把主页拉得很长 */
+      wrap.classList.add('is-collapsed');
+
+      var gHead = el('button', 'group-head');
+      gHead.type = 'button';
+      gHead.setAttribute('aria-expanded', 'false');
+      gHead.appendChild(el('span', 'group-icon', grp.icon));
+
+      var gTitle = el('div', 'group-title');
+      gTitle.appendChild(el('h3', null, grp.name));
+      if (grp.desc) gTitle.appendChild(el('p', 'group-desc', grp.desc));
+      gHead.appendChild(gTitle);
+
+      var total = grp.cats.reduce(function (n, c) { return n + (c.sites || []).length; }, 0);
+      gHead.appendChild(el('span', 'group-count',
+        grp.cats.length > 1 ? (grp.cats.length + ' 个小类 · ' + total + ' 个') : (total + ' 个')));
+
+      var toggle = el('span', 'group-toggle');
+      toggle.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9.5 12 15.5l6-6"/></svg>';
+      gHead.appendChild(toggle);
+
+      gHead.addEventListener('click', function () {
+        var open = wrap.classList.toggle('is-collapsed') === false;
+        gHead.setAttribute('aria-expanded', open ? 'true' : 'false');
+        try { localStorage.setItem('navhub.grp.' + grp.id, open ? '1' : '0'); } catch (e) { }
+      });
+
+      wrap.appendChild(gHead);
+
+      var body = el('div', 'group-body');
+      grp.cats.forEach(function (cat) { body.appendChild(buildCategory(cat, grp.cats.length === 1)); });
+      wrap.appendChild(body);
+
+      /* 上次手动展开过的大类，这次进来就保持展开 */
+      var keep = null;
+      try { keep = localStorage.getItem('navhub.grp.' + grp.id); } catch (e) { }
+      if (keep === '1') {
+        wrap.classList.remove('is-collapsed');
+        gHead.setAttribute('aria-expanded', 'true');
       }
 
-      var grid = el('div', 'pick-grid');
-      (cat.sites || []).forEach(function (s) { grid.appendChild(buildPickCard(s)); });
-      sec.appendChild(grid);
-      box.appendChild(sec);
+      box.appendChild(wrap);
     });
 
     if (CFG.notice) {
@@ -527,14 +634,20 @@
     if (!box) return;
     box.textContent = '';
 
-    var cats = (CFG.categories || []).filter(function (c) { return (c.sites || []).length; });
-    cats.forEach(function (cat) {
+    /* 快捷词只放大类，免得小类一多就排成一大片 */
+    buildGroups().forEach(function (grp) {
       var b = el('button', 'chip');
       b.type = 'button';
-      b.textContent = (cat.icon || '') + ' ' + cat.name;
+      b.textContent = (grp.icon || '') + ' ' + grp.name;
       b.addEventListener('click', function () {
-        var target = document.getElementById('cat-' + (cat.id || cat.name));
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        var target = document.getElementById('grp-' + grp.id);
+        if (!target) return;
+        /* 折叠着的话先展开再滚，否则滚过去是一片空白 */
+        if (target.classList.contains('is-collapsed')) {
+          var head = target.querySelector('.group-head');
+          if (head) head.click();
+        }
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
       box.appendChild(b);
     });
@@ -561,6 +674,7 @@
   function score(entry, q) {
     var s = entry.site;
     var name = (s.name || '').toLowerCase();
+    var alias = (s.alias || []).join(' ').toLowerCase();
     var desc = (s.desc || s.short || '').toLowerCase();
     var key = (s.key || '').toLowerCase();
     var cat = ((entry.cat && entry.cat.name) || s.cat || '').toLowerCase();
@@ -574,9 +688,15 @@
       var t = qs[k];
       var n = 0;
 
+      /* 别名精确命中要压过「名字里恰好包含」，否则搜「PS」会被 DeepSeek
+         （deePS eek 里真的含 ps）顶到前面去。 */
+      var aliasExact = alias.split(' ').indexOf(t) > -1;
+
       if (name === t) n = 120;
+      else if (aliasExact) n = 116;
       else if (name.indexOf(t) === 0) n = 100;
       else if (name.indexOf(t) > -1) n = 80;
+      else if (alias.indexOf(t) > -1) n = 72;
       else if (key.indexOf(t) > -1) n = 62;
       else if (cat.indexOf(t) > -1) n = 46;
       else if (desc.indexOf(t) > -1) n = 36;
@@ -679,7 +799,12 @@
         if (!bare) a.appendChild(buildIcon(r.site));
 
         var txt = el('div', 'site-text');
-        txt.appendChild(el('div', 'si-name', r.site.name));
+        var nameEl = el('div', 'si-name');
+        nameEl.appendChild(document.createTextNode(r.site.name));
+        if (r.site.alias && r.site.alias.length) {
+          nameEl.appendChild(el('span', 'name-alias', '（' + r.site.alias.slice(0, 2).join('、') + '）'));
+        }
+        txt.appendChild(nameEl);
         var sub = r.site.short || r.site.desc;
         txt.appendChild(el('div', 'site-desc', sub || domainOf(r.url)));
         if (!bare) txt.appendChild(el('div', 'si-url', r.url));
