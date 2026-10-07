@@ -52,7 +52,7 @@ window.NAV_CONFIG = {
       }
     ],
     tags: ['完全免费', '无广告', '不收集数据', '开源'],
-    github: '',
+    github: 'https://github.com/yafite0/navhub',
     githubText: '在 GitHub 上查看源码',
     sponsor: 'https://afdian.com/a/L1295598306',
     sponsorText: '请我喝杯奶茶',
