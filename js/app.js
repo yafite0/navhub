@@ -478,6 +478,16 @@
       if (cat.desc) titleBox.appendChild(el('p', 'cat-desc', cat.desc));
       head.appendChild(titleBox);
       head.appendChild(el('span', 'cat-count', (cat.sites || []).length + ' 个'));
+
+      /* 主页每个分类只挑了几个最值得收藏的，这里给一个出口，
+         免得访客以为「就这些了」。点进去是「其他网页」页并直接筛到该分类。 */
+      var more = el('a', 'cat-more');
+      more.href = 'sites.html?cat=' + encodeURIComponent(cat.id || cat.name);
+      more.title = '主页只挑了其中最值得收藏的几个，点这里看「' + cat.name + '」的完整列表';
+      more.appendChild(document.createTextNode('更多'));
+      more.appendChild(el('span', 'cat-more-arrow', '→'));
+      head.appendChild(more);
+
       sec.appendChild(head);
 
       /* 分类自带的额外入口（比如「显卡与驱动」里先做一次配置检测） */

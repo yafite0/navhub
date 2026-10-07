@@ -220,6 +220,33 @@
     initChips();
     render('');
 
+    /* 从主页分类的「更多」按钮跳过来时会带 ?cat=xxx，
+       这里直接把筛选切到那个分类，并滚过去。 */
+    var want = '';
+    try { want = new URLSearchParams(location.search).get('cat') || ''; } catch (e) { }
+
+    if (want) {
+      var chips = $('asChips');
+      var idx = -1;
+      GROUPS.forEach(function (g, i) { if (g.id === want) idx = i; });
+
+      /* chips 的第 0 个是「全部」，所以分类在 chips 里要往后挪一位 */
+      var target = (chips && idx >= 0) ? chips.children[idx + 1] : null;
+      if (target) {
+        Array.prototype.forEach.call(chips.children, function (n) { n.classList.remove('is-active'); });
+        target.classList.add('is-active');
+        render('', want);
+
+        var sec = document.getElementById('g-' + want);
+        if (sec) {
+          window.setTimeout(function () {
+            try { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+            catch (e) { sec.scrollIntoView(); }
+          }, 140);
+        }
+      }
+    }
+
     var input = $('asFilter');
     var timer = null;
 
