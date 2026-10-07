@@ -1,0 +1,13 @@
+# 编辑器 / IDE 的本地数据（保留在本地，不提交）
+.codebuddy/
+.vscode/
+.idea/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 本地验证时产生的临时文件
+tmp-*.html
+tmp-*.js

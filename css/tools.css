@@ -1,0 +1,123 @@
+/* ============================================================
+   小工具页 —— 只放这个页面用到的样式（其余复用 style.css）
+   ============================================================ */
+
+.topbar-inner .top-btn { margin-left: auto; }
+
+.tw-main { padding-bottom: 40px; }
+
+.tw-head { padding: 20px 0 18px; }
+.tw-head h1 {
+  font-size: clamp(23px, 2.6vw, 29px);
+  font-weight: 800; letter-spacing: -.4px;
+}
+.tw-head p {
+  margin-top: 7px; font-size: 14px; line-height: 1.75; color: var(--text-2);
+}
+.tw-head strong { color: var(--brand); }
+
+.tw-panel { display: none; }
+.tw-panel.is-active { display: block; }
+
+.tw-card { padding: 22px 24px 24px; }
+.tw-card-narrow { max-width: 760px; }
+
+/* ---------- 查看我的电脑配置 ---------- */
+/* 检测结果在左边、说明块在右边：一屏之内能看全，不用往下滚 */
+.tw-spec-card { max-width: 1060px; }
+
+/* 页面顶部那块大标题和卡片里的标题是重复的，进这个工具时收起，
+   把省下来的竖向空间留给检测结果本身 */
+body:has(.tw-panel[data-tool-panel="specs"].is-active) .tw-head { display: none; }
+body:has(.tw-panel[data-tool-panel="specs"].is-active) .tw-main { padding-top: 22px; }
+.spec-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 20px;
+  align-items: start;
+}
+.spec-main { min-width: 0; }
+
+.spec-hero {
+  padding: 14px 18px 15px;
+  border-radius: var(--r-sm);
+  background: var(--brand-tint);
+  border: 1px solid var(--brand-soft);
+  margin-bottom: 12px;
+}
+.spec-hero-label {
+  display: block; margin-bottom: 7px;
+  font-size: 12.5px; font-weight: 600; color: var(--brand);
+}
+.spec-hero-val {
+  display: block;
+  font-size: clamp(19px, 2.4vw, 25px);
+  font-weight: 800; letter-spacing: -.4px; line-height: 1.3;
+  color: var(--text);
+  word-break: break-word;
+}
+.spec-hero-val.is-unknown { font-size: 17px; font-weight: 600; color: var(--text-3); }
+.spec-hero-sub {
+  margin: 8px 0 0; font-size: 13px; line-height: 1.7; color: var(--text-2);
+}
+.spec-hero-sub b { color: var(--text); }
+.spec-drv { margin-top: 14px; }
+.spec-drv[hidden] { display: none; }
+
+.spec-list {
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+.spec-row {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 7px 15px 8px;
+  font-size: 13.5px;
+}
+.spec-row + .spec-row { border-top: 1px solid var(--border); }
+.spec-row:nth-child(odd) { background: var(--surface-2); }
+.spec-key {
+  flex: none; width: 88px; padding-top: 1px;
+  font-size: 12.5px; color: var(--text-3);
+}
+.spec-val { flex: 1; min-width: 0; }
+.spec-val b { display: block; font-weight: 600; color: var(--text); word-break: break-word; }
+.spec-val b:empty { display: none; }
+.spec-val small { display: block; margin-top: 1px; font-size: 11.5px; line-height: 1.5; color: var(--text-3); }
+
+/* 检测页的操作按钮紧一点，别把内容顶出屏幕 */
+.spec-main .cnt-actions { margin-top: 12px; }
+
+.spec-help {
+  margin: 0; padding: 15px 17px 16px;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: 12.5px; line-height: 1.8; color: var(--text-3);
+}
+.spec-help > b { display: block; margin-bottom: 8px; font-size: 13.5px; color: var(--text); }
+.spec-help p { margin: 0; }
+.spec-help p + p { margin-top: 8px; }
+.spec-help b { color: var(--text-2); font-weight: 600; }
+.spec-help code {
+  padding: 1.5px 6px; border-radius: 5px;
+  background: var(--surface-3);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11.5px; color: var(--brand);
+  white-space: nowrap;
+}
+.spec-os { margin: 9px 0 0; padding-left: 17px; }
+.spec-os li { margin-top: 4px; }
+.spec-os b { color: var(--text-2); }
+
+/* 窄屏放不下两栏，说明块回到下方 */
+@media (max-width: 900px) {
+  .spec-grid { grid-template-columns: 1fr; gap: 16px; }
+}
+
+@media (max-width: 720px) {
+  .tw-head { padding-top: 12px; }
+  .tw-card { padding: 18px 16px 20px; }
+  .spec-row { flex-direction: column; gap: 3px; }
+  .spec-key { width: auto; }
+}

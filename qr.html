@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>二维码生成 · 启航</title>
+<meta name="description" content="离线二维码生成：把网址或文字变成二维码，纯浏览器本地生成，不联网也不上传。" />
+<meta name="theme-color" content="#4D6BFE" />
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="stylesheet" href="css/style.css?v=20261007e" />
+<link rel="stylesheet" href="css/qr.css?v=20261007e" />
+</head>
+<body>
+<div class="bg-decor" aria-hidden="true">
+  <span class="glow glow-a"></span>
+  <span class="glow glow-b"></span>
+</div>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">启</span>
+      <span class="brand-text">
+        <strong>启航</strong>
+        <small>二维码生成</small>
+      </span>
+    </a>
+
+    <a class="top-btn" href="index.html">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H6M11 5.5 4.5 12 11 18.5"/>
+      </svg>
+      <span>返回首页</span>
+    </a>
+
+    <button id="themeBtn" class="icon-btn" type="button" title="切换深浅色" aria-label="切换深浅色">
+      <svg class="ico-sun" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/>
+      </svg>
+      <svg class="ico-moon" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 14.2A8.4 8.4 0 1 1 9.8 4a6.9 6.9 0 0 0 10.2 10.2Z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<main class="wrap qr-main">
+  <section class="qr-head">
+    <h1>二维码生成</h1>
+    <p>把网址或文字变成二维码，手机扫一下就能打开。全部在<b>你的浏览器里现场生成</b>，不联网、不上传。</p>
+  </section>
+
+  <section class="qr-grid">
+    <div class="card qr-panel">
+      <div class="qr-block">
+        <label class="qr-label" for="qrText">要生成的内容</label>
+        <textarea id="qrText" class="qr-text" spellcheck="false"
+          placeholder="粘贴网址，例如 https://store.steampowered.com/&#10;也可以放任意文字"></textarea>
+        <div class="qr-chips">
+          <button class="mini-btn" id="qrSiteUrl" type="button">用本站地址</button>
+          <button class="mini-btn" id="qrPaste" type="button">粘贴</button>
+          <button class="mini-btn" id="qrClear" type="button">清空</button>
+        </div>
+      </div>
+
+      <div class="qr-block">
+        <span class="qr-label">外观设置</span>
+
+        <div class="qr-row">
+          <span class="qr-row-label">尺寸</span>
+          <input type="range" id="qrSize" min="140" max="520" step="20" value="300" />
+          <b id="qrSizeVal">300</b>
+        </div>
+
+        <div class="qr-row">
+          <span class="qr-row-label">纠错等级</span>
+          <select id="qrLevel" class="conv-select">
+            <option value="L">L · 最省空间</option>
+            <option value="M" selected>M · 推荐</option>
+            <option value="Q">Q · 较耐损</option>
+            <option value="H">H · 最耐损</option>
+          </select>
+        </div>
+
+        <div class="qr-row">
+          <span class="qr-row-label">颜色</span>
+          <input type="color" id="qrFg" class="qr-color" value="#17203A" aria-label="前景色" />
+          <input type="color" id="qrBg" class="qr-color" value="#FFFFFF" aria-label="背景色" />
+          <button class="mini-btn" id="qrResetColor" type="button">恢复默认</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card qr-panel qr-preview-panel">
+      <div class="qr-stage">
+        <div class="qr-canvas" id="qrCanvas"></div>
+        <p class="qr-empty" id="qrEmpty">左边输入内容，这里会实时出现二维码</p>
+      </div>
+
+      <div class="qr-actions">
+        <button class="primary-btn" id="qrPng" type="button">下载 PNG</button>
+        <button class="mini-btn" id="qrSvg" type="button">下载 SVG</button>
+        <button class="mini-btn" id="qrCopy" type="button">复制图片</button>
+      </div>
+      <p class="qr-note" id="qrNote">下载的 PNG 是 1024×1024 高清图，适合打印</p>
+    </div>
+  </section>
+
+  <section class="card qr-about">
+    <h2>关于这个工具</h2>
+    <div class="about-grid">
+      <div class="about-item">
+        <h4>用的什么技术</h4>
+        <p>用开源库 <b>qrcode-generator</b>（MIT 协议，作者 Kazuhiko Arase），按 QR Code 国际标准
+        （ISO/IEC 18004）在你浏览器里现场绘制，没有任何服务器参与。</p>
+      </div>
+      <div class="about-item">
+        <h4>安全性怎么样</h4>
+        <p>生成过程<b>不发送任何网络请求</b>，你输入的内容和生成的图片都不会离开这台电脑。
+        没有上传、没有记录、没有统计，断网之后照样能用。</p>
+      </div>
+      <div class="about-item">
+        <h4>要注意什么</h4>
+        <p>二维码本身就是公开信息，<b>谁扫都能看到里面的内容</b>。
+        不要拿它传密码、身份证号、验证码这类敏感信息。</p>
+      </div>
+      <div class="about-item">
+        <h4>纠错等级怎么选</h4>
+        <p>等级越高，二维码被遮挡或磨损后越容易被扫出来，但图案会更密。
+        屏幕上展示用 <b>M</b> 就够；打算打印、或者想在中间放 logo，用 <b>Q</b> 或 <b>H</b>。</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>启航 · 二维码生成</span>
+    <span class="footer-tip">纯前端离线生成，不收集任何数据</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="assets/js/qrcode.min.js?v=20261007e"></script>
+<script src="js/qr.js?v=20261007e"></script>
+</body>
+</html>

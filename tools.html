@@ -1,0 +1,273 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>小工具 · 启航</title>
+<meta name="description" content="小工具：单位换算与汇率、字数统计与 Token 预估。全部在你自己的浏览器里运行，数据不会上传。" />
+<meta name="theme-color" content="#4D6BFE" />
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="stylesheet" href="css/style.css?v=20261007e" />
+<link rel="stylesheet" href="css/tools.css?v=20261007e" />
+</head>
+<body>
+<div class="bg-decor" aria-hidden="true">
+  <span class="glow glow-a"></span>
+  <span class="glow glow-b"></span>
+</div>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">启</span>
+      <span class="brand-text">
+        <strong>启航</strong>
+        <small>小工具</small>
+      </span>
+    </a>
+
+    <a class="top-btn" href="index.html">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H6M11 5.5 4.5 12 11 18.5"/>
+      </svg>
+      <span>返回首页</span>
+    </a>
+
+    <button id="themeBtn" class="icon-btn" type="button" title="切换深浅色" aria-label="切换深浅色">
+      <svg class="ico-sun" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/>
+      </svg>
+      <svg class="ico-moon" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 14.2A8.4 8.4 0 1 1 9.8 4a6.9 6.9 0 0 0 10.2 10.2Z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<main class="wrap tw-main">
+  <section class="tw-head">
+    <h1 id="twTitle">小工具</h1>
+    <p id="twDesc">不用装软件、不用注册，打开就能用。<strong>全部在你的浏览器里运行</strong>，输入的内容不会上传到任何地方。</p>
+  </section>
+
+  <!-- 单位 / 汇率 -->
+  <section class="tw-panel" data-tool-panel="unit">
+    <div class="card tw-card">
+      <div class="tool-head">
+        <h3>单位换算 / 汇率</h3>
+        <div class="tabs" id="convTabs">
+          <button class="tab is-active" data-tab="unit" type="button">单位换算</button>
+          <button class="tab" data-tab="fx" type="button">汇率</button>
+        </div>
+      </div>
+
+      <div class="tool-body tab-panel is-active" data-panel="unit">
+        <div class="unit-cats" id="unitCats"></div>
+        <div class="conv-row">
+          <div class="conv-col">
+            <input class="conv-input" id="unitFrom" type="number" inputmode="decimal" value="1" aria-label="原数值" />
+            <select class="conv-select" id="unitFromSel" aria-label="原单位"></select>
+          </div>
+          <button class="swap-btn" id="unitSwap" type="button" title="互换" aria-label="互换单位">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 8.5h13M14 5.5l3 3-3 3M20 15.5H7M10 12.5l-3 3 3 3"/>
+            </svg>
+          </button>
+          <div class="conv-col">
+            <input class="conv-input" id="unitTo" type="number" inputmode="decimal" aria-label="结果" />
+            <select class="conv-select" id="unitToSel" aria-label="目标单位"></select>
+          </div>
+        </div>
+        <p class="tool-note" id="unitNote"></p>
+      </div>
+
+      <div class="tool-body tab-panel" data-panel="fx">
+        <div class="conv-row">
+          <div class="conv-col">
+            <input class="conv-input" id="fxFrom" type="number" inputmode="decimal" value="100" aria-label="金额" />
+            <select class="conv-select" id="fxFromSel" aria-label="原币种"></select>
+          </div>
+          <button class="swap-btn" id="fxSwap" type="button" title="互换" aria-label="互换币种">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 8.5h13M14 5.5l3 3-3 3M20 15.5H7M10 12.5l-3 3 3 3"/>
+            </svg>
+          </button>
+          <div class="conv-col">
+            <input class="conv-input" id="fxTo" type="number" inputmode="decimal" aria-label="换算结果" />
+            <select class="conv-select" id="fxToSel" aria-label="目标币种"></select>
+          </div>
+        </div>
+        <div class="fx-quick" id="fxQuick"></div>
+        <p class="tool-note" id="fxNote">正在获取最新汇率…</p>
+
+        <div class="fx-src">
+          <div class="fx-src-head">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="8.5"/><path d="M12 10.8v5.4M12 7.9h.01"/>
+            </svg>
+            <b>汇率数据来源：open.er-api.com</b>
+            <a href="https://www.exchangerate-api.com/" target="_blank" rel="noopener noreferrer">接口官网 ↗</a>
+          </div>
+          <p>
+            汇率<b>不是这台电脑算出来的</b> —— 计算机本身没有行情数据，也拿不到实时成交价。
+            这里的数字来自
+            <a href="https://open.er-api.com/" target="_blank" rel="noopener noreferrer">open.er-api.com</a>
+            提供的免费公开接口（无需注册、无需密钥），它汇总公开市场的参考汇率，每个交易日更新一次。
+            页面每 6 小时重新拉取一次，并把结果缓存在你自己的浏览器里。
+          </p>
+          <p>
+            换算方式：先把金额换算成基准币种，再换算成目标币种，因此<b>两个输入框都可以直接修改</b>。
+          </p>
+          <p class="fx-src-warn">
+            数据仅供参考，不构成任何交易或投资依据。实际换汇请以银行、卡组织或支付平台当时的成交价为准。
+          </p>
+          <p class="fx-src-time" id="fxUpdated">上次获取：—</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 字数 / Token / 费用 -->
+  <section class="tw-panel" data-tool-panel="counter">
+    <div class="card tw-card">
+      <div class="tool-head">
+        <h3>字数 · Token · 费用</h3>
+        <span class="tool-badge" id="cntBadge">0 字</span>
+      </div>
+
+      <div class="tool-body counter-grid">
+        <div class="cnt-col">
+          <textarea id="cntText" class="cnt-text" spellcheck="false"
+            placeholder="把文字粘贴到这里，下面会自动统计字数，并预估 token 用量和费用"></textarea>
+
+          <div class="stat-grid">
+            <div class="stat"><b id="statAll">0</b><span>含标点字数</span></div>
+            <div class="stat"><b id="statNoPunct">0</b><span>不含标点</span></div>
+            <div class="stat"><b id="statHan">0</b><span>汉字</span></div>
+            <div class="stat"><b id="statWord">0</b><span>英文单词</span></div>
+            <div class="stat"><b id="statChar">0</b><span>字符(含空格)</span></div>
+            <div class="stat"><b id="statLine">0</b><span>行数</span></div>
+          </div>
+
+          <div class="cnt-actions">
+            <button class="mini-btn" id="cntCopy" type="button">复制文本</button>
+            <button class="mini-btn" id="cntClear" type="button">清空</button>
+          </div>
+        </div>
+
+        <div class="calc-col">
+          <div class="sub-block">
+            <div class="sub-head">
+              <span>Token 预估</span>
+              <select id="tkModel" class="conv-select tk-model" aria-label="选择模型"></select>
+            </div>
+            <div class="tk-num"><b id="tkNum">0</b><small>tokens</small></div>
+            <p class="tool-note" id="tkNote"></p>
+          </div>
+
+          <div class="sub-block">
+            <div class="sub-head">
+              <span>费用预估</span>
+              <span class="unit-tag">价格单位：元 / 百万 token</span>
+            </div>
+
+            <div class="field-grid">
+              <label class="field"><span>缓存命中价</span>
+                <input id="prCache" class="field-input" type="number" min="0" step="0.01" placeholder="0.2" /></label>
+              <label class="field"><span>输入价</span>
+                <input id="prIn" class="field-input" type="number" min="0" step="0.01" placeholder="2" /></label>
+              <label class="field"><span>输出价</span>
+                <input id="prOut" class="field-input" type="number" min="0" step="0.01" placeholder="3" /></label>
+            </div>
+
+            <div class="field-grid">
+              <label class="field"><span>输入 token</span>
+                <input id="tkIn" class="field-input" type="number" min="0" step="1" placeholder="自动" /></label>
+              <label class="field"><span>其中缓存命中</span>
+                <input id="tkCache" class="field-input" type="number" min="0" step="1" placeholder="0" /></label>
+              <label class="field"><span>输出 token</span>
+                <input id="tkOut" class="field-input" type="number" min="0" step="1" placeholder="0" /></label>
+            </div>
+
+            <div class="cost-box">
+              <div class="cost-line"><span>输入（未命中）</span><b id="costIn">—</b></div>
+              <div class="cost-line"><span>缓存命中</span><b id="costCache">—</b></div>
+              <div class="cost-line"><span>输出</span><b id="costOut">—</b></div>
+              <div class="cost-sum"><span>合计</span><b id="costSum">—</b></div>
+            </div>
+
+            <div class="cnt-actions">
+              <button class="mini-btn" id="pricePreset" type="button">填入 DeepSeek 参考价</button>
+              <a class="mini-btn" id="priceLink" href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing"
+                target="_blank" rel="noopener noreferrer">核对官方价格 ↗</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 查看我的电脑配置 -->
+  <section class="tw-panel" data-tool-panel="specs">
+    <div class="card tw-card tw-spec-card">
+      <div class="tool-head">
+        <h3>查看我的电脑配置</h3>
+        <span class="tool-badge">本机运行</span>
+      </div>
+
+      <div class="tool-body is-active">
+        <div class="spec-grid">
+          <div class="spec-main">
+            <div class="spec-hero">
+              <span class="spec-hero-label">显卡型号</span>
+              <b class="spec-hero-val" id="specGpu">检测中…</b>
+              <p class="spec-hero-sub" id="specGpuSub"></p>
+              <a class="primary-btn spec-drv" id="specDrv" href="#" target="_blank" rel="noopener noreferrer" hidden>
+                <span id="specDrvTxt">去官网下载驱动</span>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 5h5v5M19 5l-8 8M18 14v4.5A1.5 1.5 0 0 1 16.5 20h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/>
+                </svg>
+              </a>
+            </div>
+
+            <div class="spec-list" id="specList"></div>
+
+            <div class="cnt-actions">
+              <button class="mini-btn" id="specCopy" type="button">复制配置信息</button>
+              <button class="mini-btn" id="specAgain" type="button">重新检测</button>
+            </div>
+          </div>
+
+          <aside class="spec-help">
+            <b>为什么看不到 CPU 型号和硬盘容量？</b>
+            <p>
+              浏览器出于防追踪的考虑，<b>故意不把这些信息开放给网页</b> —— 任何网站都读不到你的 CPU 具体型号、
+              硬盘多大、主板是什么。左边这些已经是网页能拿到的全部了，而且<b>只在你本机读取，不会上传</b>。
+            </p>
+            <p>想看完整配置，用系统自带的工具就够，不用装任何软件：</p>
+            <ul class="spec-os">
+              <li><b>Windows</b>：按 <code>Win + R</code>，输 <code>dxdiag</code> 看显卡和 CPU，输 <code>msinfo32</code> 看全部</li>
+              <li><b>macOS</b>：左上角苹果标 →「关于本机」→ 更多信息 →「系统报告」</li>
+              <li><b>Linux</b>：终端里 <code>lscpu</code>（CPU）、<code>lspci | grep -i vga</code>（显卡）、<code>free -h</code>（内存）</li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>启航 · 小工具</span>
+    <span class="footer-tip">全部本地运行，数据不会离开你的浏览器</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="js/widgets.js?v=20261007e"></script>
+<script src="js/tools.js?v=20261007e"></script>
+<script src="js/specs.js?v=20261007e"></script>
+</body>
+</html>
