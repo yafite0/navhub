@@ -359,6 +359,18 @@
         (data.tags || []).forEach(function (t) { tags.appendChild(el('span', null, t)); });
       }
 
+      /* 署名行：data.credit 留空时整行隐藏 */
+      var creditBox = document.getElementById('aboutCredit');
+      var creditText = document.getElementById('aboutCreditText');
+      if (creditBox && creditText) {
+        if (data.credit) {
+          creditText.textContent = data.credit;
+          creditBox.hidden = false;
+        } else {
+          creditBox.hidden = true;
+        }
+      }
+
       var gh = document.getElementById('githubBtn');
       var ghText = document.getElementById('githubText');
       if (gh && ghText) {
