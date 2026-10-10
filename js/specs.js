@@ -305,6 +305,72 @@
 
   var lastText = '';
 
+  /* ---------- 右侧的显卡官网列表 ----------
+     数据来自 data.js 里的 gpuDrivers（主页不再单列这个分类了）。
+     认出是哪家就把哪一条高亮出来。 */
+  function paintGpuLinks(gpu) {
+    var box = $('gpuLinks');
+    if (!box) return;
+
+    var list = (window.NAV_CONFIG && window.NAV_CONFIG.gpuDrivers) || [];
+    box.textContent = '';
+
+    if (!list.length) {
+      var tip = document.createElement('p');
+      tip.className = 'gpu-empty';
+      tip.textContent = '显卡官网列表没加载出来，刷新一下试试';
+      box.appendChild(tip);
+      return;
+    }
+
+    var vendor = (gpu && gpu.vendor && gpu.vendor.k) ? gpu.vendor.k : '';
+
+    list.forEach(function (g) {
+      var a = document.createElement('a');
+      a.className = 'gpu-item';
+      a.href = g.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+
+      if (vendor && String(g.name).toLowerCase().indexOf(vendor) > -1) {
+        a.className += ' is-hit';
+      }
+
+      var ico = document.createElement('span');
+      ico.className = 'site-ico';
+      a.appendChild(ico);
+      if (window.paintIcon) window.paintIcon(ico, g);
+      else ico.textContent = (g.name.charAt(0) || '?').toUpperCase();
+
+      var txt = document.createElement('div');
+      txt.className = 'gpu-item-txt';
+
+      var b = document.createElement('b');
+      b.appendChild(document.createTextNode(g.name));
+      if (g.alias && g.alias.length) {
+        var al = document.createElement('span');
+        al.className = 'name-alias';
+        al.textContent = '（' + g.alias.slice(0, 2).join('、') + '）';
+        b.appendChild(al);
+      }
+      txt.appendChild(b);
+
+      if (g.short) {
+        var em = document.createElement('em');
+        em.textContent = g.short;
+        txt.appendChild(em);
+      }
+      a.appendChild(txt);
+
+      var go = document.createElement('span');
+      go.className = 'gpu-item-go';
+      go.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>';
+      a.appendChild(go);
+
+      box.appendChild(a);
+    });
+  }
+
   function render(d) {
     var gpuEl = $('specGpu');
     var subEl = $('specGpuSub');
@@ -337,6 +403,8 @@
         drvEl.hidden = true;
       }
     }
+
+    paintGpuLinks(d.gpu);
 
     if (!listEl) return;
     listEl.textContent = '';

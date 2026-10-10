@@ -15,7 +15,7 @@
  *   {
  *     name:  'Steam',                      显示名字
  *     url:   'https://store.steampowered.com/',  官方网址
- *     short: '游戏最全、打折最狠',           卡片上的一句话
+ *     short: '全球最大的电脑游戏商城',           卡片上的一句话
  *     key:   '蒸汽 游戏平台 买游戏',         搜索用的额外关键词
  *     shots: [{ src, t }],                  官网截图 2~3 张（介绍弹窗顶部，可全屏查看）
  *     shotUpdated: '2026-10-06',            截图更新日期
@@ -87,12 +87,6 @@ window.NAV_CONFIG = {
       desc: '装机绕不开的那几类 —— 解压、剪视频、修图，只放官网下载入口'
     },
     {
-      id: 'hardware',
-      name: '显卡与驱动',
-      icon: '🖥️',
-      desc: '先认出自己是什么卡，再去对应官网下驱动'
-    },
-    {
       id: 'ai',
       name: 'AI 工具',
       icon: '🤖',
@@ -128,7 +122,7 @@ window.NAV_CONFIG = {
           name: 'Steam',
           url: 'https://store.steampowered.com/',
           region: 'global',
-          short: '游戏最全、打折最狠',
+          short: '全球最大的电脑游戏商城',
           key: '蒸汽 游戏平台 买游戏 正版游戏',
           shotUpdated: '2026-10-06',
           shots: [
@@ -159,7 +153,7 @@ window.NAV_CONFIG = {
           alias: ['EGS'],
           url: 'https://store.epicgames.com/',
           region: 'global',
-          short: '每周都能白领游戏',
+          short: '每周固定送游戏，领了永久入库',
           key: 'epic eg 平台 免费游戏 白嫖',
           shotUpdated: '2026-10-06',
           shots: [
@@ -188,7 +182,7 @@ window.NAV_CONFIG = {
           name: 'itch.io',
           url: 'https://itch.io/',
           region: 'global',
-          short: '独立小游戏的宝库',
+          short: '独立开发者聚集地，大量免费小游戏',
           key: '独立游戏 小游戏 免费游戏 开发者',
           shotUpdated: '2026-10-06',
           shots: [
@@ -217,7 +211,7 @@ window.NAV_CONFIG = {
           name: 'TapTap',
           url: 'https://www.taptap.cn/',
           region: 'cn',
-          short: '在电脑上查手机游戏',
+          short: '在电脑上查手机游戏评分和榜单',
           key: 'taptap 手游 手机游戏 安卓游戏 手游商城 排行榜',
           shotUpdated: '2026-10-06',
           shots: [
@@ -256,7 +250,7 @@ window.NAV_CONFIG = {
           alias: ['UE', '虚幻引擎'],
           url: 'https://www.unrealengine.com/zh-CN',
           region: 'global',
-          short: '画面最强，3A 大厂在用',
+          short: '画面上限最高，影视级效果',
           key: '虚幻引擎 虚幻 unreal ue ue5 epic 3a 大作 游戏开发 引擎',
           shotUpdated: '2026-10-06',
           shots: [
@@ -286,7 +280,7 @@ window.NAV_CONFIG = {
           name: 'Unity',
           url: 'https://unity.com/cn',
           region: 'global',
-          short: '上手最容易，手游主力',
+          short: '上手最快，手机游戏用得最多',
           key: 'unity 手游 引擎 游戏开发 移动游戏 独立游戏',
           shotUpdated: '2026-10-06',
           shots: [
@@ -316,7 +310,7 @@ window.NAV_CONFIG = {
           name: 'Godot',
           url: 'https://godotengine.org/',
           region: 'global',
-          short: '完全免费、体积超小',
+          short: '完全免费，不用花一分钱',
           key: 'godot 开源 免费 2d 游戏引擎 独立游戏 轻量',
           shotUpdated: '2026-10-06',
           shots: [
@@ -355,7 +349,7 @@ window.NAV_CONFIG = {
         {
           name: 'DeepSeek',
           url: 'https://www.deepseek.com/',
-          short: '免费、能深度思考',
+          short: '超高性价比，推理速度快',
           key: 'AI 对话 大模型 人工智能 深度求索 写代码 写作 深度思考',
           region: 'cn',
           shotUpdated: '2026-10-06',
@@ -384,7 +378,7 @@ window.NAV_CONFIG = {
         {
           name: '豆包',
           url: 'https://www.doubao.com/',
-          short: '字节家的，功能全',
+          short: '多模态能力最全',
           key: 'AI 对话 人工智能 字节 doubao 写作 语音',
           region: 'cn',
           shotUpdated: '2026-10-06',
@@ -411,7 +405,7 @@ window.NAV_CONFIG = {
         {
           name: 'Kimi',
           url: 'https://www.kimi.com/',
-          short: '读长文档特别强',
+          short: '超长上下文，一次读完长文档',
           key: 'AI 对话 长文本 读文档 人工智能 月之暗面 kimi',
           region: 'cn',
           shotUpdated: '2026-10-06',
@@ -440,7 +434,7 @@ window.NAV_CONFIG = {
           name: '通义千问',
           alias: ['Qwen'],
           url: 'https://www.tongyi.com/',
-          short: '阿里出品，家族很大',
+          short: '阿里巴巴出品，开源型号最多',
           key: 'AI 对话 人工智能 qwen 阿里 通义 千问 写作',
           region: 'cn',
           shotUpdated: '2026-10-06',
@@ -468,7 +462,7 @@ window.NAV_CONFIG = {
         {
           name: '腾讯元宝',
           url: 'https://yuanbao.tencent.com/',
-          short: '能读公众号文章',
+          short: '多模态，能读微信公众号文章',
           key: 'AI 对话 人工智能 腾讯 yuanbao 元宝 公众号',
           region: 'cn',
           shotUpdated: '2026-10-06',
@@ -497,7 +491,7 @@ window.NAV_CONFIG = {
           name: '文心一言',
           alias: ['ERNIE'],
           url: 'https://wenxin.baidu.com/',
-          short: '百度出品，能画图做 PPT',
+          short: '百度出品，中文理解扎实',
           key: 'AI 对话 人工智能 百度 ernie 文心 一言 画图 PPT',
           region: 'cn',
           shotUpdated: '2026-10-06',
@@ -535,7 +529,7 @@ window.NAV_CONFIG = {
         {
           name: 'CodeBuddy',
           url: 'https://www.codebuddy.ai/',
-          short: '帮程序员写代码',
+          short: '在编辑器里直接改代码',
           key: 'AI 编程 代码助手 agent 智能体 写代码 codebuddy 腾讯',
           region: 'cn',
           shotUpdated: '2026-10-06',
@@ -564,7 +558,7 @@ window.NAV_CONFIG = {
         {
           name: 'WorkBuddy',
           url: 'https://workbuddy.tencent.com/',
-          short: '帮你把办公的活干完',
+          short: '办公场景的自动化助手',
           key: 'AI 办公 agent 智能体 自动化 报告 PPT 腾讯 workbuddy',
           region: 'cn',
           shotUpdated: '2026-10-06',
@@ -593,7 +587,7 @@ window.NAV_CONFIG = {
           name: 'DeepSeek Harness',
           alias: ['DSH'],
           url: 'https://www.deepseek.com/harness/',
-          short: '开源 Agent，能装插件',
+          short: '开源的桌面智能体',
           key: 'AI agent 智能体 编程 插件 开源 deepseek harness dsh',
           region: 'cn',
           shotUpdated: '2026-10-06',
@@ -631,7 +625,7 @@ window.NAV_CONFIG = {
           name: '硅基流动',
           alias: ['SiliconFlow'],
           url: 'https://siliconflow.cn/',
-          short: '国内聚合平台，一个密钥调多数开源模型',
+          short: '一个密钥调多数开源模型',
           key: 'siliconflow 硅基流动 api 聚合 开源模型 接口 密钥 中转',
           region: 'cn',
           shotUpdated: '2026-10-07',
@@ -659,7 +653,7 @@ window.NAV_CONFIG = {
         {
           name: 'DeepSeek 开放平台',
           url: 'https://platform.deepseek.com/',
-          short: 'DeepSeek 官方的 API 控制台',
+          short: 'DeepSeek 官方 API，用量查看清晰',
           key: 'deepseek api 开放平台 密钥 key 接口 充值 便宜',
           region: 'cn',
           shotUpdated: '2026-10-07',
@@ -697,7 +691,7 @@ window.NAV_CONFIG = {
         {
           name: 'Chatbox',
           url: 'https://chatboxai.app/zh',
-          short: '装机量最大的桌面客户端',
+          short: '一个界面同时连多家模型',
           key: 'chatbox 客户端 桌面 本地 对话 多模型 开源',
           region: 'global',
           shotUpdated: '2026-10-07',
@@ -726,7 +720,7 @@ window.NAV_CONFIG = {
           name: 'SillyTavern',
           alias: ['酒馆'],
           url: 'https://sillytavern.app/',
-          short: '角色扮演专用前端',
+          short: '角色扮演专用，能设人设和记忆',
           key: 'sillytavern 酒馆 角色扮演 卡 前端 开源',
           region: 'global',
           shotUpdated: '2026-10-07',
@@ -754,113 +748,6 @@ window.NAV_CONFIG = {
       ]
     },
     {
-      id: 'gpu-driver',
-      group: 'hardware',
-      name: '显卡与驱动',
-      icon: '🖥️',
-      desc: '先认出自己是什么卡，再去对应官网下驱动',
-      /* 分类级的额外入口：会在分类标题下多渲染一个引导条 */
-      tool: {
-        href: 'tools.html?tool=specs',
-        label: '先查查我是什么显卡',
-        note: '在浏览器里直接读，不用装软件，也不会把信息传到任何地方'
-      },
-      sites: [
-        {
-          name: 'NVIDIA',
-          alias: ['英伟达'],
-          url: 'https://www.nvidia.cn/geforce/drivers/',
-          short: 'N 卡驱动，RTX / GTX 都是它',
-          key: 'nvidia 英伟达 n卡 显卡 驱动 下载 更新 geforce rtx gtx 自动检测',
-          region: 'global',
-          shotUpdated: '2026-10-07',
-          shots: [
-            { src: 'assets/shots/nvidia-drv.jpg', t: '驱动下载页' },
-            { src: 'assets/shots/nvidia-home.jpg', t: '官网首页' },
-            { src: 'assets/shots/nvidia-gpu.jpg', t: '显卡产品页' }
-          ],
-          icon: 'assets/icons/nvidia.com.png',
-          intro: {
-            tagline: 'N 卡（GeForce RTX / GTX）的驱动官网',
-            pros: [
-              '支持自动检测显卡型号，不用自己查配置就能找到对应驱动',
-              '驱动分 Game Ready（玩游戏）和 Studio（剪辑设计）两条线，按用途挑',
-              '官网直接下载，不会被捆绑装上一堆没用的软件',
-              'CUDA、AI 相关的工具包也在这里，做深度学习的一并搞定'
-            ],
-            cons: [
-              '驱动包体积大（通常五六百 MB），下载要等一会儿',
-              '太老的显卡会停止驱动更新，只能下到某个历史版本',
-              '第一次进页面会弹 Cookie 提示，要先点一下同意'
-            ],
-            best: '用 N 卡的人，尤其是刚装好机器需要打新驱动的',
-            tips: '不知道自己是什么卡？按 Win+R 输入 dxdiag，在「显示」标签页就能看到显卡型号。驱动只从官网下，别用各种「驱动大师」——那类软件经常顺手装一堆用不着的东西。'
-          }
-        },
-        {
-          name: 'AMD',
-          url: 'https://www.amd.com/zh-cn/support/download/drivers.html',
-          short: 'A 卡与锐龙芯片组驱动',
-          key: 'amd a卡 显卡 驱动 下载 更新 radeon 锐龙 ryzen 芯片组 自动检测',
-          region: 'global',
-          shotUpdated: '2026-10-07',
-          shots: [
-            { src: 'assets/shots/amd-drv.jpg', t: '驱动下载页' },
-            { src: 'assets/shots/amd-home.jpg', t: '官网首页' },
-            { src: 'assets/shots/amd-gpu.jpg', t: '显卡产品页' }
-          ],
-          icon: 'assets/icons/amd.com.png',
-          intro: {
-            tagline: 'A 卡（Radeon）和锐龙芯片组的驱动官网',
-            pros: [
-              '显卡驱动和主板芯片组驱动在同一个页面，装机时一次下全',
-              '提供自动检测工具，装上就能识别型号并提示该更新哪个',
-              'Windows 和 Linux 两条下载线都有，玩 Linux 的也能用',
-              '老卡的支持周期比较长，几年前买的型号一般还能找到驱动'
-            ],
-            cons: [
-              '国内访问不太稳定，有时候要刷新几次或者换个网络再试',
-              '驱动更新比较勤，每次的安装包都不小',
-              '老型号在页面上藏得比较深，得往下翻或者用搜索框找'
-            ],
-            best: '用 AMD 显卡，或者装了锐龙平台需要打芯片组驱动的人',
-            tips: 'AMD 驱动分「推荐版（Recommended）」和「可选版（Optional）」两种，求稳就选推荐版，可选版是给想尝鲜的人试新功能的。'
-          }
-        },
-        {
-          name: 'Intel',
-          alias: ['英特尔'],
-          url: 'https://www.intel.cn/content/www/cn/zh/download-center/home.html',
-          short: '核显与 Arc 独显驱动',
-          key: 'intel 英特尔 核显 集显 arc 显卡 驱动 下载 更新 无线网卡 芯片组',
-          region: 'global',
-          shotUpdated: '2026-10-07',
-          shots: [
-            { src: 'assets/shots/intel-drv.jpg', t: '驱动下载中心' },
-            { src: 'assets/shots/intel-home.jpg', t: '官网首页' },
-            { src: 'assets/shots/intel-gpu.jpg', t: 'Arc 显卡产品页' }
-          ],
-          icon: 'assets/icons/intel.com.png',
-          intro: {
-            tagline: 'Intel 核显和 Arc 独显的驱动中心',
-            pros: [
-              '核显、Arc 独显、无线网卡、芯片组驱动全在同一个下载中心里',
-              '有「自动更新工具」，装一次以后会主动提醒你该更新了',
-              '核显驱动在这里更新最省事，比翻笔记本品牌官网快',
-              '中文页面完整，按产品分类挑就行'
-            ],
-            cons: [
-              '产品线太杂，第一次进去容易在「选择您的产品」里挑花眼',
-              '一部分驱动要登录 Intel 账号才能下载',
-              '笔记本厂商定制的驱动版本可能和官网不一样，装之前最好确认'
-            ],
-            best: '用 Intel 核显的轻薄本用户，或者用 Arc 独显的人',
-            tips: '轻薄本要注意：有些品牌会锁驱动版本。如果官网的通用驱动装不上或者装完花屏，就回笔记本品牌的官网下定制版。'
-          }
-        }
-      ]
-    },
-    {
       id: 'unzip',
       group: 'software',
       name: '解压压缩',
@@ -871,7 +758,7 @@ window.NAV_CONFIG = {
           name: '7-Zip',
           alias: ['7z'],
           url: 'https://www.7-zip.org/',
-          short: '最经典的开源压缩工具',
+          short: '完全免费开源，无广告',
           key: '7zip 7-zip 压缩 解压 免费 开源 rar zip 极简',
           region: 'global',
           shotUpdated: '2026-10-07',
@@ -900,7 +787,7 @@ window.NAV_CONFIG = {
           name: 'WinRAR',
           alias: ['RAR'],
           url: 'https://www.winrar.com.cn/',
-          short: '老牌，能一直试用',
+          short: '老牌解压工具，中文界面',
           key: 'winrar rar 压缩 解压 试用 老牌',
           region: 'cn',
           shotUpdated: '2026-10-07',
@@ -938,7 +825,7 @@ window.NAV_CONFIG = {
           name: '剪映',
           alias: ['CapCut'],
           url: 'https://www.capcut.cn/',
-          short: '上手最快，模板多',
+          short: '手机电脑通用，上手最快',
           key: '剪映 capcut 剪辑 视频 抖音 模板 免费',
           region: 'cn',
           shotUpdated: '2026-10-07',
@@ -966,7 +853,7 @@ window.NAV_CONFIG = {
           name: '必剪',
           alias: ['Bcut'],
           url: 'https://bcut.bilibili.cn/',
-          short: 'B 站出的，投稿很顺',
+          short: '哔哩哔哩官方出品，一键投稿',
           key: '必剪 bcut b站 哔哩哔哩 剪辑 视频 投稿',
           region: 'cn',
           shotUpdated: '2026-10-07',
@@ -994,7 +881,7 @@ window.NAV_CONFIG = {
           name: 'DaVinci Resolve',
           alias: ['达芬奇'],
           url: 'https://www.blackmagicdesign.com/products/davinciresolve',
-          short: '专业调色，免费版就够用',
+          short: '专业调色，免费版不缩水',
           key: '达芬奇 davinci resolve 调色 剪辑 专业 免费 黑魔法',
           region: 'global',
           shotUpdated: '2026-10-07',
@@ -1031,7 +918,7 @@ window.NAV_CONFIG = {
           name: 'Photoshop',
           alias: ['PS'],
           url: 'https://www.adobe.com/products/photoshop.html',
-          short: '行业标准，订阅制',
+          short: '修图行业的通用标准',
           key: 'ps photoshop adobe 修图 图像处理 订阅',
           region: 'global',
           shotUpdated: '2026-10-07',
@@ -1060,6 +947,102 @@ window.NAV_CONFIG = {
     }
   ],
 
+  /* 显卡官网 —— 给「驱动工具」那个小工具用。
+     主页不再单列「显卡与驱动」分类，功能合并到 tools.html?tool=specs 里。 */
+  gpuDrivers: [
+      {
+        name: 'NVIDIA',
+        alias: ['英伟达'],
+        url: 'https://www.nvidia.cn/geforce/drivers/',
+        short: 'N 卡驱动，RTX / GTX 都是它',
+        key: 'nvidia 英伟达 n卡 显卡 驱动 下载 更新 geforce rtx gtx 自动检测',
+        region: 'global',
+        shotUpdated: '2026-10-07',
+        shots: [
+          { src: 'assets/shots/nvidia-drv.jpg', t: '驱动下载页' },
+          { src: 'assets/shots/nvidia-home.jpg', t: '官网首页' },
+          { src: 'assets/shots/nvidia-gpu.jpg', t: '显卡产品页' }
+        ],
+        icon: 'assets/icons/nvidia.com.png',
+        intro: {
+          tagline: 'N 卡（GeForce RTX / GTX）的驱动官网',
+          pros: [
+            '支持自动检测显卡型号，不用自己查配置就能找到对应驱动',
+            '驱动分 Game Ready（玩游戏）和 Studio（剪辑设计）两条线，按用途挑',
+            '官网直接下载，不会被捆绑装上一堆没用的软件',
+            'CUDA、AI 相关的工具包也在这里，做深度学习的一并搞定'
+          ],
+          cons: [
+            '驱动包体积大（通常五六百 MB），下载要等一会儿',
+            '太老的显卡会停止驱动更新，只能下到某个历史版本',
+            '第一次进页面会弹 Cookie 提示，要先点一下同意'
+          ],
+          best: '用 N 卡的人，尤其是刚装好机器需要打新驱动的',
+          tips: '不知道自己是什么卡？按 Win+R 输入 dxdiag，在「显示」标签页就能看到显卡型号。驱动只从官网下，别用各种「驱动大师」——那类软件经常顺手装一堆用不着的东西。'
+        }
+      },
+      {
+        name: 'AMD',
+        url: 'https://www.amd.com/zh-cn/support/download/drivers.html',
+        short: 'A 卡与锐龙芯片组驱动',
+        key: 'amd a卡 显卡 驱动 下载 更新 radeon 锐龙 ryzen 芯片组 自动检测',
+        region: 'global',
+        shotUpdated: '2026-10-07',
+        shots: [
+          { src: 'assets/shots/amd-drv.jpg', t: '驱动下载页' },
+          { src: 'assets/shots/amd-home.jpg', t: '官网首页' },
+          { src: 'assets/shots/amd-gpu.jpg', t: '显卡产品页' }
+        ],
+        icon: 'assets/icons/amd.com.png',
+        intro: {
+          tagline: 'A 卡（Radeon）和锐龙芯片组的驱动官网',
+          pros: [
+            '显卡驱动和主板芯片组驱动在同一个页面，装机时一次下全',
+            '提供自动检测工具，装上就能识别型号并提示该更新哪个',
+            'Windows 和 Linux 两条下载线都有，玩 Linux 的也能用',
+            '老卡的支持周期比较长，几年前买的型号一般还能找到驱动'
+          ],
+          cons: [
+            '国内访问不太稳定，有时候要刷新几次或者换个网络再试',
+            '驱动更新比较勤，每次的安装包都不小',
+            '老型号在页面上藏得比较深，得往下翻或者用搜索框找'
+          ],
+          best: '用 AMD 显卡，或者装了锐龙平台需要打芯片组驱动的人',
+          tips: 'AMD 驱动分「推荐版（Recommended）」和「可选版（Optional）」两种，求稳就选推荐版，可选版是给想尝鲜的人试新功能的。'
+        }
+      },
+      {
+        name: 'Intel',
+        alias: ['英特尔'],
+        url: 'https://www.intel.cn/content/www/cn/zh/download-center/home.html',
+        short: '核显与 Arc 独显驱动',
+        key: 'intel 英特尔 核显 集显 arc 显卡 驱动 下载 更新 无线网卡 芯片组',
+        region: 'global',
+        shotUpdated: '2026-10-07',
+        shots: [
+          { src: 'assets/shots/intel-drv.jpg', t: '驱动下载中心' },
+          { src: 'assets/shots/intel-home.jpg', t: '官网首页' },
+          { src: 'assets/shots/intel-gpu.jpg', t: 'Arc 显卡产品页' }
+        ],
+        icon: 'assets/icons/intel.com.png',
+        intro: {
+          tagline: 'Intel 核显和 Arc 独显的驱动中心',
+          pros: [
+            '核显、Arc 独显、无线网卡、芯片组驱动全在同一个下载中心里',
+            '有「自动更新工具」，装一次以后会主动提醒你该更新了',
+            '核显驱动在这里更新最省事，比翻笔记本品牌官网快',
+            '中文页面完整，按产品分类挑就行'
+          ],
+          cons: [
+            '产品线太杂，第一次进去容易在「选择您的产品」里挑花眼',
+            '一部分驱动要登录 Intel 账号才能下载',
+            '笔记本厂商定制的驱动版本可能和官网不一样，装之前最好确认'
+          ],
+          best: '用 Intel 核显的轻薄本用户，或者用 Arc 独显的人',
+          tips: '轻薄本要注意：有些品牌会锁驱动版本。如果官网的通用驱动装不上或者装完花屏，就回笔记本品牌的官网下定制版。'
+        }
+      }
+  ],
   /* ------------------------------------------------------------
    *  第二档 · 完整索引
    *  主页不展示，但会出现在「全部网站」页，并且带图标和一句话说明。
@@ -1071,80 +1054,80 @@ window.NAV_CONFIG = {
     /* --- 下面这批来自「API 提供商 / 本地对话 / 解压压缩 / 视频剪辑 / 图像处理」，
            它们只在「其他网页」页和搜索里出现，不进主页精选。
            主页精选要够常用、并且配了官网截图和介绍才行。 --- */
-    { name: '阿里云百炼', url: 'https://bailian.console.aliyun.com/', desc: '通义千问全系列，企业用得多', cat: 'API 提供商', region: 'cn', key: '阿里 百炼 通义千问 qwen api 密钥 大模型 接口' },
-    { name: '火山方舟', url: 'https://www.volcengine.com/product/ark', desc: '字节的豆包大模型 API', cat: 'API 提供商', region: 'cn', key: '火山 方舟 字节 豆包 doubao api 密钥 大模型' },
-    { name: '智谱 AI', alias: ['GLM'], url: 'https://open.bigmodel.cn/', desc: '清华系的 GLM 系列模型', cat: 'API 提供商', region: 'cn', key: '智谱 glm 清言 api 密钥 大模型 开放平台' },
-    { name: '月之暗面', url: 'https://platform.moonshot.cn/', desc: 'Kimi 背后的模型 API', cat: 'API 提供商', region: 'cn', key: '月之暗面 moonshot kimi api 密钥 长文本 开放平台' },
-    { name: '百度千帆', url: 'https://qianfan.cloud.baidu.com/', desc: '文心一言的开放平台', cat: 'API 提供商', region: 'cn', key: '百度 千帆 文心一言 ernie api 密钥 大模型' },
-    { name: '腾讯混元', alias: ['Hunyuan'], url: 'https://cloud.tencent.com/product/hunyuan', desc: '腾讯自研的混元大模型', cat: 'API 提供商', region: 'cn', key: '腾讯 混元 hunyuan api 密钥 大模型 接口' },
-    { name: 'OpenRouter', url: 'https://openrouter.ai/', desc: '一个密钥调遍各家主流模型', cat: 'API 提供商', region: 'global', key: 'openrouter 聚合 中转 api 多模型 密钥 比价' },
-    { name: 'OpenAI Platform', url: 'https://platform.openai.com/', desc: 'GPT 系列的官方控制台', cat: 'API 提供商', region: 'global', key: 'openai gpt api 密钥 key 接口 官方' },
-    { name: 'Anthropic Console', url: 'https://console.anthropic.com/', desc: 'Claude 系列的官方控制台', cat: 'API 提供商', region: 'global', key: 'anthropic claude api 密钥 key 接口 官方' },
-    { name: 'Google AI Studio', alias: ['AI Studio'], url: 'https://aistudio.google.com/', desc: 'Gemini 的试验台，有免费额度', cat: 'API 提供商', region: 'global', key: 'google gemini aistudio api 密钥 免费 额度' },
-    { name: 'Groq', url: 'https://groq.com/', desc: '出了名的快，跑开源模型', cat: 'API 提供商', region: 'global', key: 'groq 快 推理 api 开源模型 密钥' },
-    { name: 'Mistral', url: 'https://console.mistral.ai/', desc: '欧洲的开源模型厂商', cat: 'API 提供商', region: 'global', key: 'mistral 法国 欧洲 开源模型 api 密钥' },
+    { name: '阿里云百炼', url: 'https://bailian.console.aliyun.com/', desc: '调用通义千问系列的官方平台', cat: 'API 提供商', region: 'cn', key: '阿里 百炼 通义千问 qwen api 密钥 大模型 接口' },
+    { name: '火山方舟', url: 'https://www.volcengine.com/product/ark', desc: '调用豆包模型的官方平台', cat: 'API 提供商', region: 'cn', key: '火山 方舟 字节 豆包 doubao api 密钥 大模型' },
+    { name: '智谱 AI', alias: ['GLM'], url: 'https://open.bigmodel.cn/', desc: '清华大学孵化的开源模型', cat: 'API 提供商', region: 'cn', key: '智谱 glm 清言 api 密钥 大模型 开放平台' },
+    { name: '月之暗面', url: 'https://platform.moonshot.cn/', desc: 'Kimi 背后模型的官方接口', cat: 'API 提供商', region: 'cn', key: '月之暗面 moonshot kimi api 密钥 长文本 开放平台' },
+    { name: '百度千帆', url: 'https://qianfan.cloud.baidu.com/', desc: '调用文心一言的官方平台', cat: 'API 提供商', region: 'cn', key: '百度 千帆 文心一言 ernie api 密钥 大模型' },
+    { name: '腾讯混元', alias: ['Hunyuan'], url: 'https://cloud.tencent.com/product/hunyuan', desc: '腾讯自研大模型的官方接口', cat: 'API 提供商', region: 'cn', key: '腾讯 混元 hunyuan api 密钥 大模型 接口' },
+    { name: 'OpenRouter', url: 'https://openrouter.ai/', desc: '一个密钥调各家主流模型', cat: 'API 提供商', region: 'global', key: 'openrouter 聚合 中转 api 多模型 密钥 比价' },
+    { name: 'OpenAI Platform', url: 'https://platform.openai.com/', desc: 'GPT 系列的官方接口', cat: 'API 提供商', region: 'global', key: 'openai gpt api 密钥 key 接口 官方' },
+    { name: 'Anthropic Console', url: 'https://console.anthropic.com/', desc: 'Claude 系列的官方接口', cat: 'API 提供商', region: 'global', key: 'anthropic claude api 密钥 key 接口 官方' },
+    { name: 'Google AI Studio', alias: ['AI Studio'], url: 'https://aistudio.google.com/', desc: 'Gemini 官方试验台，有免费额度', cat: 'API 提供商', region: 'global', key: 'google gemini aistudio api 密钥 免费 额度' },
+    { name: 'Groq', url: 'https://groq.com/', desc: '推理速度极快', cat: 'API 提供商', region: 'global', key: 'groq 快 推理 api 开源模型 密钥' },
+    { name: 'Mistral', url: 'https://console.mistral.ai/', desc: '法国开源模型，可商用', cat: 'API 提供商', region: 'global', key: 'mistral 法国 欧洲 开源模型 api 密钥' },
 
-    { name: 'Cherry Studio', url: 'https://cherry-ai.com/', desc: '国产开源，功能给得很足', cat: '本地对话', region: 'cn', key: 'cherry studio 樱桃 客户端 国产 开源 多模型 知识库' },
-    { name: 'LobeChat', url: 'https://lobehub.com/zh', desc: '界面最讲究的一个', cat: '本地对话', region: 'cn', key: 'lobe lobehub 客户端 网页 好看 插件 开源' },
-    { name: 'NextChat', alias: ['ChatGPT-Next-Web'], url: 'https://nextchat.club/', desc: '轻量，一键就能部署', cat: '本地对话', region: 'cn', key: 'nextchat chatgpt-next-web 轻量 部署 客户端 开源' },
-    { name: 'Open WebUI', url: 'https://openwebui.com/', desc: '自托管的 ChatGPT 替代品', cat: '本地对话', region: 'global', key: 'open webui 自托管 ollama 界面 开源 部署' },
-    { name: 'Ollama', url: 'https://ollama.com/', desc: '一行命令跑本地模型', cat: '本地对话', region: 'global', key: 'ollama 本地 部署 跑模型 命令行 llama qwen 开源' },
-    { name: 'LM Studio', url: 'https://lmstudio.ai/', desc: '带界面的本地模型运行器', cat: '本地对话', region: 'global', key: 'lm studio 本地 图形界面 跑模型 gguf 开源' },
-    { name: 'AnythingLLM', url: 'https://anythingllm.com/', desc: '把自家文档喂给本地模型', cat: '本地对话', region: 'global', key: 'anythingllm 本地 知识库 文档 rag 离线 模型' },
+    { name: 'Cherry Studio', url: 'https://cherry-ai.com/', desc: '国产开源客户端，带知识库', cat: '本地对话', region: 'cn', key: 'cherry studio 樱桃 客户端 国产 开源 多模型 知识库' },
+    { name: 'LobeChat', url: 'https://lobehub.com/zh', desc: '界面精致的对话客户端', cat: '本地对话', region: 'cn', key: 'lobe lobehub 客户端 网页 好看 插件 开源' },
+    { name: 'NextChat', alias: ['ChatGPT-Next-Web'], url: 'https://nextchat.club/', desc: '轻量对话界面，可自己部署', cat: '本地对话', region: 'cn', key: 'nextchat chatgpt-next-web 轻量 部署 客户端 开源' },
+    { name: 'Open WebUI', url: 'https://openwebui.com/', desc: '本地模型配套的网页界面', cat: '本地对话', region: 'global', key: 'open webui 自托管 ollama 界面 开源 部署' },
+    { name: 'Ollama', url: 'https://ollama.com/', desc: '一行命令跑起本地模型', cat: '本地对话', region: 'global', key: 'ollama 本地 部署 跑模型 命令行 llama qwen 开源' },
+    { name: 'LM Studio', url: 'https://lmstudio.ai/', desc: '图形界面跑本地模型', cat: '本地对话', region: 'global', key: 'lm studio 本地 图形界面 跑模型 gguf 开源' },
+    { name: 'AnythingLLM', url: 'https://anythingllm.com/', desc: '把文档变成可问答的知识库', cat: '本地对话', region: 'global', key: 'anythingllm 本地 知识库 文档 rag 离线 模型' },
 
-    { name: 'NanaZip', url: 'https://github.com/M2Team/NanaZip', desc: '7-Zip 的 Windows 现代化版', cat: '解压压缩', region: 'global', key: 'nanazip 压缩 解压 7zip 现代 win11 国产 开源' },
-    { name: 'Bandizip', url: 'https://www.bandisoft.com/bandizip/', desc: '自动识别编码，不乱码', cat: '解压压缩', region: 'global', key: 'bandizip 压缩 解压 乱码 编码 韩国 好用' },
+    { name: 'NanaZip', url: 'https://github.com/M2Team/NanaZip', desc: '7-Zip 的 Windows 优化版', cat: '解压压缩', region: 'global', key: 'nanazip 压缩 解压 7zip 现代 win11 国产 开源' },
+    { name: 'Bandizip', url: 'https://www.bandisoft.com/bandizip/', desc: '解压中文名不乱码', cat: '解压压缩', region: 'global', key: 'bandizip 压缩 解压 乱码 编码 韩国 好用' },
 
-    { name: 'OBS Studio', alias: ['OBS'], url: 'https://obsproject.com/', desc: '录屏和直播推流，不做剪辑', cat: '视频剪辑', region: 'global', key: 'obs 录屏 直播 推流 开源 免费 studio' },
-    { name: 'HandBrake', url: 'https://handbrake.fr/', desc: '视频转码压缩专用', cat: '视频剪辑', region: 'global', key: 'handbrake 转码 压缩 格式转换 开源 视频' },
-    { name: 'FFmpeg', url: 'https://ffmpeg.org/', desc: '命令行里的视频万金油', cat: '视频剪辑', region: 'global', key: 'ffmpeg 转码 命令行 音视频 处理 神器' },
+    { name: 'OBS Studio', alias: ['OBS'], url: 'https://obsproject.com/', desc: '录屏和直播推流专用', cat: '视频剪辑', region: 'global', key: 'obs 录屏 直播 推流 开源 免费 studio' },
+    { name: 'HandBrake', url: 'https://handbrake.fr/', desc: '视频转码和压缩专用', cat: '视频剪辑', region: 'global', key: 'handbrake 转码 压缩 格式转换 开源 视频' },
+    { name: 'FFmpeg', url: 'https://ffmpeg.org/', desc: '命令行音视频处理工具', cat: '视频剪辑', region: 'global', key: 'ffmpeg 转码 命令行 音视频 处理 神器' },
 
-    { name: 'GIMP', url: 'https://www.gimp.org/', desc: '免费开源的 Photoshop', cat: '图像处理', region: 'global', key: 'gimp 修图 ps 替代 开源 免费 图像处理' },
-    { name: 'Krita', url: 'https://krita.org/', desc: '专为画画而生', cat: '图像处理', region: 'global', key: 'krita 绘画 插画 数位板 开源 免费 画图' },
-    { name: 'Paint.NET', url: 'https://www.getpaint.net/', desc: '轻量，比画图好用得多', cat: '图像处理', region: 'global', key: 'paint.net 修图 轻量 windows 免费 图像' },
-    { name: 'Affinity Photo', url: 'https://affinity.serif.com/zh-cn/photo/', desc: '买断制的修图软件', cat: '图像处理', region: 'global', key: 'affinity photo 买断 修图 ps 替代 便宜' },
-    { name: 'Photopea', url: 'https://www.photopea.com/', desc: '网页版 PS，打开就能用', cat: '图像处理', region: 'global', key: 'photopea 网页 ps 在线 修图 免费 免安装 psd' },
-    { name: 'Inkscape', url: 'https://inkscape.org/', desc: '开源的矢量图工具', cat: '图像处理', region: 'global', key: 'inkscape 矢量 svg 开源 免费 illustrator 替代' },
-    { name: 'Figma', url: 'https://www.figma.com/', desc: '做界面设计的都在用', cat: '图像处理', region: 'global', key: 'figma ui 设计 界面 协作 原型 网页' },
-    { name: 'Canva 可画', alias: ['可画'], url: 'https://www.canva.cn/', desc: '套模板就能出图', cat: '图像处理', region: 'cn', key: 'canva 可画 海报 模板 设计 在线 作图' },
-    { name: '稿定设计', alias: ['稿定'], url: 'https://www.gaoding.com/', desc: '国内的在线设计工具', cat: '图像处理', region: 'cn', key: '稿定 设计 海报 抠图 模板 在线 国产' },
-    { name: 'remove.bg', url: 'https://www.remove.bg/zh', desc: '一键抠图去背景', cat: '图像处理', region: 'global', key: '抠图 去背景 在线 免费 ai remove bg' },
+    { name: 'GIMP', url: 'https://www.gimp.org/', desc: '免费开源的修图软件', cat: '图像处理', region: 'global', key: 'gimp 修图 ps 替代 开源 免费 图像处理' },
+    { name: 'Krita', url: 'https://krita.org/', desc: '专为绘画设计', cat: '图像处理', region: 'global', key: 'krita 绘画 插画 数位板 开源 免费 画图' },
+    { name: 'Paint.NET', url: 'https://www.getpaint.net/', desc: '轻量修图工具', cat: '图像处理', region: 'global', key: 'paint.net 修图 轻量 windows 免费 图像' },
+    { name: 'Affinity Photo', url: 'https://affinity.serif.com/zh-cn/photo/', desc: '一次买断的修图软件', cat: '图像处理', region: 'global', key: 'affinity photo 买断 修图 ps 替代 便宜' },
+    { name: 'Photopea', url: 'https://www.photopea.com/', desc: '网页版修图工具，免安装', cat: '图像处理', region: 'global', key: 'photopea 网页 ps 在线 修图 免费 免安装 psd' },
+    { name: 'Inkscape', url: 'https://inkscape.org/', desc: '开源矢量图工具', cat: '图像处理', region: 'global', key: 'inkscape 矢量 svg 开源 免费 illustrator 替代' },
+    { name: 'Figma', url: 'https://www.figma.com/', desc: '界面和原型设计工具', cat: '图像处理', region: 'global', key: 'figma ui 设计 界面 协作 原型 网页' },
+    { name: 'Canva 可画', alias: ['可画'], url: 'https://www.canva.cn/', desc: '套模板做海报和封面', cat: '图像处理', region: 'cn', key: 'canva 可画 海报 模板 设计 在线 作图' },
+    { name: '稿定设计', alias: ['稿定'], url: 'https://www.gaoding.com/', desc: '国内在线设计工具', cat: '图像处理', region: 'cn', key: '稿定 设计 海报 抠图 模板 在线 国产' },
+    { name: 'remove.bg', url: 'https://www.remove.bg/zh', desc: '上传图片自动去背景', cat: '图像处理', region: 'global', key: '抠图 去背景 在线 免费 ai remove bg' },
 
-    { name: 'WeGame', url: 'https://www.wegame.com.cn', desc: '腾讯的游戏平台', cat: '游戏平台', region: 'cn', key: 'wegame 腾讯游戏 英雄联盟 下载客户端 游戏大厅 LOL' },
-    { name: 'GOG', url: 'https://www.gog.com', desc: '没有防盗版的游戏商城', cat: '游戏平台', region: 'global', key: 'gog 无drm 老游戏 经典游戏 波兰 单机' },
+    { name: 'WeGame', url: 'https://www.wegame.com.cn', desc: '腾讯自家的电脑游戏平台', cat: '游戏平台', region: 'cn', key: 'wegame 腾讯游戏 英雄联盟 下载客户端 游戏大厅 LOL' },
+    { name: 'GOG', url: 'https://www.gog.com', desc: '卖没有防盗版的游戏', cat: '游戏平台', region: 'global', key: 'gog 无drm 老游戏 经典游戏 波兰 单机' },
     { name: '杉果游戏', url: 'https://www.sonkwo.com', desc: '国内正版游戏商城', cat: '游戏平台', region: 'cn', key: '杉果 正版 折扣 国区 激活码' },
-    { name: 'Humble Bundle', url: 'https://www.humblebundle.com', desc: '打包义卖，几块钱一堆游戏', cat: '游戏平台', region: 'global', key: 'humble 慈善包 打包 义卖 月包' },
-    { name: '小黑盒', url: 'https://www.xiaoheihe.cn', desc: '游戏资讯与比价', cat: '游戏平台', region: 'cn', key: '小黑盒 比价 游戏资讯 社区 库存' },
-    { name: 'Fanatical', url: 'https://www.fanatical.com', desc: '折扣游戏兑换码商城', cat: '游戏平台', region: 'global', key: 'fanatical 折扣 key 兑换码 steam key' },
-    { name: 'Xbox 商店', url: 'https://www.xbox.com/zh-CN/', desc: 'PC Game Pass 订阅制', cat: '游戏平台', region: 'global', key: 'xbox 微软 主机 gamepass 会员 游戏下载 商店 xgp' },
-    { name: 'PlayStation Store', url: 'https://store.playstation.com/zh-hans-cn/', desc: '索尼主机游戏商城', cat: '游戏平台', region: 'global', key: 'ps ps5 索尼 主机 游戏 商店 playstation' },
-    { name: 'Nintendo eShop', url: 'https://www.nintendo.com/', desc: 'Switch 游戏商城', cat: '游戏平台', region: 'global', key: '任天堂 switch 塞尔达 马力欧 商店 主机 游戏' },
-    { name: '暴雪战网', url: 'https://www.blizzard.com/zh-cn/', desc: '魔兽世界、守望先锋', cat: '游戏平台', region: 'global', key: 'battle.net 暴雪 魔兽 守望先锋 炉石传说 暗黑破坏神 下载' },
-    { name: 'Ubisoft Connect', url: 'https://www.ubisoft.com/zh-cn/', desc: '育碧自家平台', cat: '游戏平台', region: 'global', key: '育碧 刺客信条 彩虹六号 孤岛惊魂 下载 uplay' },
-    { name: 'EA App', url: 'https://www.ea.com/zh-cn', desc: 'EA 自家平台', cat: '游戏平台', region: 'global', key: 'ea fifa 战地 极品飞车 模拟人生 下载 origin' },
+    { name: 'Humble Bundle', url: 'https://www.humblebundle.com', desc: '打包卖游戏，部分收入做公益', cat: '游戏平台', region: 'global', key: 'humble 慈善包 打包 义卖 月包' },
+    { name: '小黑盒', url: 'https://www.xiaoheihe.cn', desc: '查游戏价格历史和攻略', cat: '游戏平台', region: 'cn', key: '小黑盒 比价 游戏资讯 社区 库存' },
+    { name: 'Fanatical', url: 'https://www.fanatical.com', desc: '卖折扣游戏兑换码', cat: '游戏平台', region: 'global', key: 'fanatical 折扣 key 兑换码 steam key' },
+    { name: 'Xbox 商店', url: 'https://www.xbox.com/zh-CN/', desc: '按月订阅畅玩电脑游戏', cat: '游戏平台', region: 'global', key: 'xbox 微软 主机 gamepass 会员 游戏下载 商店 xgp' },
+    { name: 'PlayStation Store', url: 'https://store.playstation.com/zh-hans-cn/', desc: '索尼主机上的游戏商店', cat: '游戏平台', region: 'global', key: 'ps ps5 索尼 主机 游戏 商店 playstation' },
+    { name: 'Nintendo eShop', url: 'https://www.nintendo.com/', desc: '任天堂主机上的游戏商店', cat: '游戏平台', region: 'global', key: '任天堂 switch 塞尔达 马力欧 商店 主机 游戏' },
+    { name: '暴雪战网', url: 'https://www.blizzard.com/zh-cn/', desc: '暴雪游戏的客户端', cat: '游戏平台', region: 'global', key: 'battle.net 暴雪 魔兽 守望先锋 炉石传说 暗黑破坏神 下载' },
+    { name: 'Ubisoft Connect', url: 'https://www.ubisoft.com/zh-cn/', desc: '育碧游戏的客户端', cat: '游戏平台', region: 'global', key: '育碧 刺客信条 彩虹六号 孤岛惊魂 下载 uplay' },
+    { name: 'EA', alias: ['艺电'], url: 'https://www.ea.com/zh-cn', desc: 'EA 游戏的客户端', cat: '游戏平台', region: 'global', key: 'ea 艺电 fifa 战地 极品飞车 模拟人生 下载 origin' },
 
     /* 更多 Agent 工具：和主页那个「AI Agent」分类合并展示（cat 名字保持一致即可） */
-    { name: 'TRAE', url: 'https://www.trae.com.cn/', desc: '字节的 AI 编程 IDE', cat: 'AI Agent', region: 'cn', key: 'AI 编程 ide 智能体 agent 写代码 字节 trae 自动补全' },
-    { name: '通义灵码', url: 'https://lingma.aliyun.com/', desc: '阿里的编程助手', cat: 'AI Agent', region: 'cn', key: 'AI 编程 代码助手 agent 智能体 阿里 通义灵码 补全' },
-    { name: '文心快码', alias: ['Comate'], url: 'https://comate.baidu.com/', desc: '百度的编程助手', cat: 'AI Agent', region: 'cn', key: 'AI 编程 代码助手 agent 智能体 百度 文心快码 comate' },
-    { name: '扣子 Coze', alias: ['Coze'], url: 'https://coze.cn/', desc: '搭自己的 AI 智能体', cat: 'AI Agent', region: 'cn', key: 'AI agent 智能体 搭建 bot 工作流 字节 扣子 coze 自动化' },
-    { name: 'Qoder', url: 'https://qoder.com/', desc: '阿里的 AI 原生 IDE', cat: 'AI Agent', region: 'cn', key: 'AI 编程 ide agent 智能体 阿里 qoder 原生' },
-    { name: 'Cursor', url: 'https://cursor.com/', desc: '国外最火的 AI 编辑器', cat: 'AI Agent', region: 'global', key: 'AI 编程 编辑器 ide agent 智能体 cursor 补全' },
-    { name: 'Manus', url: 'https://manus.im/', desc: '能自己干活的通用智能体', cat: 'AI Agent', region: 'global', key: 'AI agent 智能体 通用 自动化 任务 manus 自主' },
-    { name: 'Claude Code', url: 'https://www.anthropic.com/claude-code', desc: 'Anthropic 的终端 Agent', cat: 'AI Agent', region: 'global', key: 'AI 编程 命令行 agent 智能体 claude code anthropic 终端 克劳德' },
-    { name: 'OpenClaw', url: 'https://openclaw.ai/', desc: '能直接操作电脑的开源 Agent', cat: 'AI Agent', region: 'global', key: 'AI agent 智能体 开源 自动化 本地 电脑控制 openclaw 龙虾' },
-    { name: 'GitHub Copilot', url: 'https://github.com/features/copilot', desc: 'GitHub 的编程助手', cat: 'AI Agent', region: 'global', key: 'AI 编程 代码补全 agent copilot github 智能体' },
-    { name: 'Devin', url: 'https://devin.ai/', desc: '能自己写完一个项目的 Agent', cat: 'AI Agent', region: 'global', key: 'AI 编程 agent 智能体 自主 devin 工程师 全自动' },
+    { name: 'TRAE', url: 'https://www.trae.com.cn/', desc: '字节跳动出品的 AI 编程工具', cat: 'AI Agent', region: 'cn', key: 'AI 编程 ide 智能体 agent 写代码 字节 trae 自动补全' },
+    { name: '通义灵码', url: 'https://lingma.aliyun.com/', desc: '阿里巴巴出品的编程插件', cat: 'AI Agent', region: 'cn', key: 'AI 编程 代码助手 agent 智能体 阿里 通义灵码 补全' },
+    { name: '文心快码', alias: ['Comate'], url: 'https://comate.baidu.com/', desc: '百度出品的编程插件', cat: 'AI Agent', region: 'cn', key: 'AI 编程 代码助手 agent 智能体 百度 文心快码 comate' },
+    { name: '扣子 Coze', alias: ['Coze'], url: 'https://coze.cn/', desc: '不写代码也能搭出对话机器人', cat: 'AI Agent', region: 'cn', key: 'AI agent 智能体 搭建 bot 工作流 字节 扣子 coze 自动化' },
+    { name: 'Qoder', url: 'https://qoder.com/', desc: '阿里巴巴出品的 AI 编辑器', cat: 'AI Agent', region: 'cn', key: 'AI 编程 ide agent 智能体 阿里 qoder 原生' },
+    { name: 'Cursor', url: 'https://cursor.com/', desc: '用得很广的 AI 编辑器', cat: 'AI Agent', region: 'global', key: 'AI 编程 编辑器 ide agent 智能体 cursor 补全' },
+    { name: 'Manus', url: 'https://manus.im/', desc: '给个目标，自己拆步骤干完', cat: 'AI Agent', region: 'global', key: 'AI agent 智能体 通用 自动化 任务 manus 自主' },
+    { name: 'Claude Code', url: 'https://www.anthropic.com/claude-code', desc: '终端里跑，能读整个项目', cat: 'AI Agent', region: 'global', key: 'AI 编程 命令行 agent 智能体 claude code anthropic 终端 克劳德' },
+    { name: 'OpenClaw', url: 'https://openclaw.ai/', desc: '开源的电脑操作智能体', cat: 'AI Agent', region: 'global', key: 'AI agent 智能体 开源 自动化 本地 电脑控制 openclaw 龙虾' },
+    { name: 'GitHub Copilot', url: 'https://github.com/features/copilot', desc: '老牌代码补全工具', cat: 'AI Agent', region: 'global', key: 'AI 编程 代码补全 agent copilot github 智能体' },
+    { name: 'Devin', url: 'https://devin.ai/', desc: '给个需求，自己写完并测试', cat: 'AI Agent', region: 'global', key: 'AI 编程 agent 智能体 自主 devin 工程师 全自动' },
     { name: 'Windsurf', url: 'https://windsurf.com/', desc: 'AI 原生的代码编辑器', cat: 'AI Agent', region: 'global', key: 'AI 编程 ide agent 智能体 编辑器 windsurf codeium' },
-    { name: 'Cline', url: 'https://cline.bot/', desc: '装在编辑器里的开源 Agent', cat: 'AI Agent', region: 'global', key: 'AI 编程 agent 智能体 开源 插件 cline vscode' },
-    { name: 'OpenHands', url: 'https://www.all-hands.dev/', desc: '开源的全能开发 Agent', cat: 'AI Agent', region: 'global', key: 'AI 编程 agent 智能体 开源 openhands 开发 自主' },
+    { name: 'Cline', url: 'https://cline.bot/', desc: '装在编辑器里的开源智能体', cat: 'AI Agent', region: 'global', key: 'AI 编程 agent 智能体 开源 插件 cline vscode' },
+    { name: 'OpenHands', url: 'https://www.all-hands.dev/', desc: '开源的开发智能体', cat: 'AI Agent', region: 'global', key: 'AI 编程 agent 智能体 开源 openhands 开发 自主' },
 
     /* 国外 AI 助手：官网主页地址，不是对话页 —— 和国内那几个一样，认准域名 */
     { name: 'ChatGPT', url: 'https://openai.com/', desc: 'OpenAI 的对话助手', cat: 'AI 对话', region: 'global', key: 'AI 对话 人工智能 openai 聊天 gpt chatgpt 写作' },
-    { name: 'Gemini', url: 'https://gemini.google.com/', desc: 'Google 的 AI 助手', cat: 'AI 对话', region: 'global', key: 'AI 对话 人工智能 google 谷歌 gemini 多模态' },
-    { name: 'Claude', url: 'https://claude.ai/', desc: 'Anthropic 的 AI 助手', cat: 'AI 对话', region: 'global', key: 'AI 对话 人工智能 anthropic 克劳德 claude 写作 长文' },
-    { name: 'Grok', url: 'https://grok.com/', desc: 'xAI 的 AI 助手', cat: 'AI 对话', region: 'global', key: 'AI 对话 人工智能 xai 马斯克 grok 实时' },
-    { name: 'Microsoft Copilot', url: 'https://copilot.microsoft.com/', desc: '微软的 AI 助手', cat: 'AI 对话', region: 'global', key: 'AI 对话 人工智能 微软 microsoft copilot bing 必应' },
+    { name: 'Gemini', url: 'https://gemini.google.com/', desc: '谷歌的对话助手', cat: 'AI 对话', region: 'global', key: 'AI 对话 人工智能 google 谷歌 gemini 多模态' },
+    { name: 'Claude', url: 'https://claude.ai/', desc: '长文和代码能力强', cat: 'AI 对话', region: 'global', key: 'AI 对话 人工智能 anthropic 克劳德 claude 写作 长文' },
+    { name: 'Grok', url: 'https://grok.com/', desc: 'xAI 出品，能读实时内容', cat: 'AI 对话', region: 'global', key: 'AI 对话 人工智能 xai 马斯克 grok 实时' },
+    { name: 'Microsoft Copilot', url: 'https://copilot.microsoft.com/', desc: '微软的对话助手', cat: 'AI 对话', region: 'global', key: 'AI 对话 人工智能 微软 microsoft copilot bing 必应' },
     { name: 'Perplexity', url: 'https://www.perplexity.ai/', desc: '会给出处的 AI 搜索', cat: 'AI 对话', region: 'global', key: 'AI 搜索 问答 人工智能 perplexity 引用 来源 查资料' }
   ],
 

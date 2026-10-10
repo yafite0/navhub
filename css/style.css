@@ -33,7 +33,7 @@
   --r-sm: 12px;
   --r-md: 16px;
   --r-lg: 22px;
-  --topbar-h: 66px;
+  --topbar-h: 78px;
 }
 
 [data-theme="dark"] {
@@ -122,9 +122,10 @@ button { cursor: pointer; border: none; background: none; }
     border-bottom-color: color-mix(in srgb, var(--border) 70%, transparent);
   }
 }
-.topbar-inner { display: flex; align-items: center; gap: 18px; width: min(1240px, 100% - 48px); margin-inline: auto; }
+/* 和主内容用同一个版心宽度，主站按钮才能和下面的内容左对齐 */
+.topbar-inner { display: flex; align-items: center; gap: 18px; width: min(1440px, 100% - 80px); margin-inline: auto; }
 
-.brand { display: flex; align-items: center; gap: 11px; }
+.brand { display: flex; align-items: center; gap: 11px; flex: none; }
 .brand-mark {
   width: 38px; height: 38px; border-radius: 12px;
   display: grid; place-items: center;
@@ -135,6 +136,15 @@ button { cursor: pointer; border: none; background: none; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
 .brand-text strong { font-size: 16.5px; letter-spacing: .4px; }
 .brand-text small { font-size: 11.5px; color: var(--text-3); letter-spacing: .6px; }
+
+/* 顶栏里固定显示的制作信息，三行小字 */
+.brand-credit { display: flex; flex-direction: column; margin-top: 3px; }
+.brand-credit i {
+  font-style: normal;
+  font-size: 9.5px; line-height: 1.45; letter-spacing: .2px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
 
 .top-actions { display: flex; align-items: center; gap: 8px; margin-left: 12px; }
 .top-btn {
@@ -190,6 +200,94 @@ main { padding-bottom: 40px; }
   padding: 52px 0 8px;
 }
 
+/* 问候语在左、随机推荐在右，搜索框横跨两列 */
+.hero-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 336px;
+  gap: 22px;
+  align-items: start;
+}
+.hero-greet { min-width: 0; }
+
+/* ---------- 随机推荐 ---------- */
+.hero-pick {
+  position: relative;
+  padding: 11px 13px 9px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
+  transition: border-color .18s;
+}
+.hero-pick:hover { border-color: var(--brand-soft); }
+
+.hp-head { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+.hp-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 1.1px;
+  color: var(--text-3); text-transform: uppercase;
+}
+.hp-nav { margin-left: auto; display: flex; gap: 5px; }
+.hp-btn {
+  width: 26px; height: 26px; border-radius: 8px;
+  display: grid; place-items: center;
+  color: var(--text-2); background: var(--surface-2);
+  border: 1px solid var(--border);
+  transition: color .18s, background .18s, border-color .18s;
+}
+.hp-btn:hover:not(:disabled) { color: var(--brand); background: var(--brand-tint); border-color: var(--brand-tint-2); }
+.hp-btn:disabled { opacity: .34; cursor: not-allowed; }
+
+/* 换推荐时淡入 + 轻轻上移，不要硬切。
+   每次 paint() 都会重建这张卡，所以动画会自动播一遍。 */
+.hp-card {
+  min-height: 104px;
+  display: flex; flex-direction: column; gap: 9px;
+  animation: hpIn .34s cubic-bezier(.2, .8, .3, 1);
+}
+@keyframes hpIn {
+  from { opacity: 0; transform: translateY(9px); }
+}
+.hp-top { display: flex; align-items: flex-start; gap: 11px; min-width: 0; }
+.hp-card .site-ico { width: 38px; height: 38px; border-radius: 12px; font-size: 16px; }
+.hp-info { flex: 1; min-width: 0; }
+.hp-info b {
+  display: block; font-size: 14px; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hp-info em {
+  display: block; margin-top: 1px; font-style: normal;
+  font-size: 12px; color: var(--text-3);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hp-url {
+  display: block; margin-top: 3px;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 10.5px; color: var(--text-3);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hp-acts { display: flex; gap: 7px; margin-top: auto; }
+.hp-act {
+  flex: 1 1 0; min-width: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 31px; border-radius: 9px;
+  font-size: 12.5px; font-weight: 600; color: var(--text-2);
+  background: var(--surface-2); border: 1px solid var(--border);
+  transition: color .18s, background .18s, border-color .18s, filter .18s;
+}
+.hp-act:hover { color: var(--brand); background: var(--brand-tint); border-color: var(--brand-tint-2); }
+.hp-act.is-primary { color: #fff; background: var(--brand-grad); border-color: transparent; }
+.hp-act.is-primary:hover { filter: brightness(1.08); }
+
+/* 换页倒计时。每帧都在改 transform，补一点点线性过渡，
+   换新卡片时从 0 弹回满格也不会显得突然。 */
+.hp-bar { height: 2px; margin-top: 9px; border-radius: 2px; background: var(--border); overflow: hidden; }
+.hp-bar span {
+  display: block; height: 100%; background: var(--brand);
+  transform-origin: left center; transform: scaleX(1);
+  transition: transform .18s linear;
+  will-change: transform;
+}
+
 .hero-hello {
   display: inline-flex; align-items: center; gap: 7px;
   font-size: 14.5px; font-weight: 600; color: var(--brand);
@@ -219,7 +317,8 @@ main { padding-bottom: 40px; }
 .clock { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); letter-spacing: .3px; }
 
 /* 搜索 */
-.search-wrap { position: relative; margin-top: 26px; max-width: 640px; }
+/* 不再限制宽度：让它一路铺到右边的小工具列 */
+.search-wrap { position: relative; margin-top: 26px; }
 .search {
   display: flex; align-items: center; gap: 11px;
   padding: 0 14px 0 17px;
@@ -513,11 +612,10 @@ main { padding-bottom: 40px; }
 /* ---------- 全部网站入口（搜索框正下方，最显眼的位置） ---------- */
 .nav-all { color: var(--brand) !important; font-weight: 600; }
 
-/* 和 .search-wrap 一样限制宽度，否则右侧的「全部网站」会超出搜索框的右边缘 */
+/* 跟着搜索框一起铺满 */
 .chips-row {
   display: flex; align-items: center; gap: 10px;
   flex-wrap: wrap;
-  max-width: 640px;
 }
 .chips-row .chips { flex: 1 1 auto; margin-top: 0; }
 
@@ -612,17 +710,70 @@ main { padding-bottom: 40px; }
 .group-desc { margin-top: 2px; font-size: 12.5px; color: var(--text-3); }
 .group-count { margin-left: auto; flex: none; font-size: 12.5px; color: var(--text-3); }
 
-/* 小类：不再单独成卡，是大类里面的一段，标题比大类小一号 */
-.category { margin-bottom: 22px; }
+/* 小类：背景比大类深一档，一眼能看出这是大类里面的一块。
+   默认收起，点标题才展开卡片。 */
+.category {
+  margin-bottom: 12px;
+  padding: 0;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  transition: border-color .18s;
+}
+.category:hover { border-color: var(--brand-soft); }
 .group .category:last-child { margin-bottom: 0; }
-.category-head { display: flex; align-items: center; gap: 12px; margin-bottom: 13px; }
+/* 大类下只有一个小类时，不用再套一层底色 */
+.category.is-solo {
+  background: none; border-color: transparent;
+  margin-bottom: 0; padding: 0;
+}
+
+/* 光靠底色在深色模式下不够明显，再加两点结构上的区分：
+   小类整体往里缩进一格，左侧压一条竖线，一眼就能看出是从属关系。 */
+.category:not(.is-solo) {
+  margin-left: 16px;
+  border-left: 3px solid var(--brand-tint-2);
+}
+.category:not(.is-solo):hover { border-left-color: var(--brand); }
+@media (max-width: 720px) {
+  .category:not(.is-solo) { margin-left: 6px; }
+}
+
+.category-head {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px 6px 6px;
+}
+.cat-head-btn {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center; gap: 12px;
+  padding: 7px 10px; border-radius: 10px;
+  text-align: left;
+  transition: background .18s;
+}
+.cat-head-btn:hover { background: var(--surface-3); }
+.cat-head-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
 .cat-icon {
-  flex: none; width: 34px; height: 34px; border-radius: 11px;
-  display: grid; place-items: center; font-size: 17px;
+  flex: none; width: 32px; height: 32px; border-radius: 10px;
+  display: grid; place-items: center; font-size: 16px;
   background: var(--brand-tint); border: 1px solid var(--brand-tint-2);
 }
-.category-head h4 { font-size: 15px; font-weight: 700; }
-.category-head .cat-desc { font-size: 12.5px; color: var(--text-3); }
+.cat-head-btn h4 { font-size: 14.5px; font-weight: 700; }
+.cat-head-btn .cat-desc { font-size: 12px; color: var(--text-3); }
+
+.cat-toggle {
+  flex: none; display: grid; place-items: center;
+  width: 26px; height: 26px; border-radius: 50%;
+  color: var(--text-3); background: var(--surface);
+  border: 1px solid var(--border);
+  transition: transform .22s, color .18s, background .18s;
+}
+.cat-head-btn:hover .cat-toggle { color: var(--brand); background: var(--brand-tint); }
+
+.cat-body { padding: 2px 14px 14px; }
+.category.is-collapsed .cat-body { display: none; }
+.category.is-collapsed .cat-toggle { transform: rotate(-90deg); }
+.category.is-solo .cat-body { padding: 0; }
 .cat-count {
   margin-left: auto; font-size: 12px; color: var(--brand);
   background: var(--brand-tint); border: 1px solid var(--brand-tint-2);
@@ -1204,6 +1355,15 @@ main { padding-bottom: 40px; }
 }
 .footer-credit { color: var(--brand); font-weight: 600; }
 
+/* 页脚右下的制作信息，和顶栏那三行一致 */
+.footer-meta { display: flex; flex-direction: column; gap: 1px; text-align: right; }
+.footer-meta i {
+  font-style: normal;
+  font-size: 11.5px; line-height: 1.55; letter-spacing: .2px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
 /* ---------- 提示 ---------- */
 .toast {
   position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%) translateY(12px);
@@ -1548,6 +1708,8 @@ body.modal-open { overflow: hidden; }
 /* ---------- 响应式 ---------- */
 @media (max-width: 1024px) {
   .hero { grid-template-columns: 1fr; gap: 26px; padding-top: 40px; }
+  /* 窄下来之后问候语和随机推荐改上下排 */
+  .hero-top { grid-template-columns: 1fr; gap: 16px; }
   .weather { max-width: 420px; }
   .tool-grid { grid-template-columns: 1fr; }
 }
@@ -1556,6 +1718,9 @@ body.modal-open { overflow: hidden; }
   .wrap { width: calc(100% - 32px); }
   .topbar-inner { width: calc(100% - 32px); }
   .topnav { display: none; }
+  /* 顶栏那三行制作信息在小屏上太占地方，收起来 */
+  .brand-credit { display: none; }
+  :root { --topbar-h: 66px; }
   .hero-title { font-size: 27px; }
   .pick-grid, .featured-grid { grid-template-columns: 1fr; }
   .weather { max-width: none; }

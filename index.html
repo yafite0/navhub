@@ -7,7 +7,7 @@
 <meta name="description" content="常用网站导航页：常用直达、分类浏览、快速搜索，还有天气、便签待办和单位换算小工具。" />
 <meta name="theme-color" content="#4D6BFE" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-<link rel="stylesheet" href="css/style.css?v=20261007r" />
+<link rel="stylesheet" href="css/style.css?v=20261010a" />
 </head>
 <body>
 <div class="bg-decor" aria-hidden="true">
@@ -21,7 +21,11 @@
       <span class="brand-mark">启</span>
       <span class="brand-text">
         <strong id="brandName">启航</strong>
-        <small>常用网站导航</small>
+        <small class="brand-credit">
+          <i>界面布局：凌霄云弈</i>
+          <i>agent工具：Code Buddy</i>
+          <i>代码编写：Deep Seek</i>
+        </small>
       </span>
     </a>
 
@@ -84,13 +88,38 @@
 
   <section class="hero">
     <div class="hero-main">
-      <p class="hero-hello"><span id="greetText">你好</span><span class="wave">👋</span></p>
-      <h1 class="hero-title">今天想做点什么？</h1>
-      <p class="hero-meta">
-        <span id="dateText">加载中…</span>
-        <span class="dot"></span>
-        <span id="clockText" class="clock">--:--:--</span>
-      </p>
+      <div class="hero-top">
+        <div class="hero-greet">
+          <p class="hero-hello"><span id="greetText">你好</span><span class="wave">👋</span></p>
+          <h1 class="hero-title">今天想做点什么？</h1>
+          <p class="hero-meta">
+            <span id="dateText">加载中…</span>
+            <span class="dot"></span>
+            <span id="clockText" class="clock">--:--:--</span>
+          </p>
+        </div>
+
+        <!-- 随机推荐：只从精选分类里挑，3 秒换一个 -->
+        <div class="hero-pick" id="heroPick">
+          <div class="hp-head">
+            <span class="hp-title">随机推荐</span>
+            <div class="hp-nav">
+              <button class="hp-btn" id="hpPrev" type="button" aria-label="上一个" title="看上一个（最多回看 5 个）">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14.5 6 8.5 12l6 6"/>
+                </svg>
+              </button>
+              <button class="hp-btn" id="hpNext" type="button" aria-label="下一个" title="立即换下一个">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9.5 6l6 6-6 6"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="hp-body" id="hpBody"></div>
+          <div class="hp-bar"><span id="hpBar"></span></div>
+        </div>
+      </div>
 
       <div class="search-wrap">
         <form class="search" id="searchForm" autocomplete="off" role="search">
@@ -139,6 +168,15 @@
             </svg>
           </span>
           <span class="tool-btn-name">字数统计 / Token 预估</span>
+        </a>
+
+        <a class="tool-btn" href="tools.html?tool=specs">
+          <span class="tool-btn-ico">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3.5" y="5" width="17" height="11" rx="2"/><path d="M8 20h8M12 16v4"/>
+            </svg>
+          </span>
+          <span class="tool-btn-name">驱动工具</span>
         </a>
 
         <a class="tool-btn" href="qr.html">
@@ -263,7 +301,11 @@
   <div class="wrap footer-inner">
     <span id="footerText">启航 · 常用网站导航</span>
     <span class="footer-tip">所有网站均指向官方地址，图标与内容仅作跳转用途</span>
-    <span class="footer-credit" id="footerCredit">本站由 DeepSeek 编写</span>
+    <span class="footer-meta">
+      <i>界面布局：凌霄云弈</i>
+      <i>agent工具：Code Buddy</i>
+      <i>代码编写：Deep Seek</i>
+    </span>
   </div>
 </footer>
 
@@ -363,8 +405,8 @@
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/data.js?v=20261007r"></script>
-<script src="js/app.js?v=20261007r"></script>
-<script src="js/widgets.js?v=20261007r"></script>
+<script src="js/data.js?v=20261010a"></script>
+<script src="js/app.js?v=20261010a"></script>
+<script src="js/widgets.js?v=20261010a"></script>
 </body>
 </html>

@@ -514,34 +514,17 @@
   }
 
   /* 单个小类：标题 + 数量 + 「更多」+ 卡片网格。
-     solo 表示它所在的大类只有它自己，这时标题和数量都省掉 ——
-     免得「显卡与驱动」这种大类下面再重复一遍同样的名字。 */
+     - 默认收起：点标题才展开卡片，免得一屏塞满
+     - solo 表示它是所在大类下的唯一分类（如「显卡与驱动」），
+       这种不折、也省掉标题，免得和上面的大类标题重复 */
   function buildCategory(cat, solo) {
     var sec = el('section', 'category');
     sec.id = 'cat-' + (cat.id || cat.name);
 
-    if (!solo) {
-      var head = el('div', 'category-head');
-      head.appendChild(el('span', 'cat-icon', cat.icon || '📁'));
+    if (solo) sec.classList.add('is-solo');
+    else sec.classList.add('is-collapsed');
 
-      var titleBox = el('div');
-      titleBox.appendChild(el('h4', null, cat.name));
-      if (cat.desc) titleBox.appendChild(el('p', 'cat-desc', cat.desc));
-      head.appendChild(titleBox);
-
-      head.appendChild(el('span', 'cat-count', (cat.sites || []).length + ' 个'));
-
-      /* 主页每个小类只挑了几个最值得收藏的，这里给一个出口，
-         免得访客以为「就这些了」。点进去是「其他网页」页并直接筛到该分类。 */
-      var more = el('a', 'cat-more');
-      more.href = 'sites.html?cat=' + encodeURIComponent(cat.id || cat.name);
-      more.title = '主页只挑了其中最值得收藏的几个，点这里看「' + cat.name + '」的完整列表';
-      more.appendChild(document.createTextNode('更多'));
-      more.appendChild(el('span', 'cat-more-arrow', '→'));
-      head.appendChild(more);
-
-      sec.appendChild(head);
-    }
+    var body = el('div', 'cat-body');
 
     /* 分类自带的额外入口（比如「显卡与驱动」里先做一次配置检测） */
     if (cat.tool && cat.tool.href) {
@@ -559,13 +542,54 @@
       bar.appendChild(barTxt);
 
       bar.appendChild(el('span', 'cat-tool-go', '去检测 →'));
-      sec.appendChild(bar);
+      body.appendChild(bar);
     }
 
     var grid = el('div', 'pick-grid');
     (cat.sites || []).forEach(function (s) { grid.appendChild(buildPickCard(s)); });
-    sec.appendChild(grid);
+    body.appendChild(grid);
 
+    if (!solo) {
+      /* 标题行 = 一个展开/收起的按钮 + 一个独立的「更多」链接。
+         两者不能嵌套（按钮里放不了链接），所以并排放在外面。 */
+      var head = el('div', 'category-head');
+
+      var headBtn = el('button', 'cat-head-btn');
+      headBtn.type = 'button';
+      headBtn.setAttribute('aria-expanded', 'false');
+      headBtn.appendChild(el('span', 'cat-icon', cat.icon || '📁'));
+
+      var titleBox = el('div');
+      titleBox.appendChild(el('h4', null, cat.name));
+      if (cat.desc) titleBox.appendChild(el('p', 'cat-desc', cat.desc));
+      headBtn.appendChild(titleBox);
+
+      headBtn.appendChild(el('span', 'cat-count', (cat.sites || []).length + ' 个'));
+
+      var toggle = el('span', 'cat-toggle');
+      toggle.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9.5 12 15.5l6-6"/></svg>';
+      headBtn.appendChild(toggle);
+
+      headBtn.addEventListener('click', function () {
+        var open = sec.classList.toggle('is-collapsed') === false;
+        headBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+
+      head.appendChild(headBtn);
+
+      /* 主页每个小类只挑了几个最值得收藏的，这里给一个出口，
+         免得访客以为「就这些了」。点进去是「其他网页」页并直接筛到该分类。 */
+      var more = el('a', 'cat-more');
+      more.href = 'sites.html?cat=' + encodeURIComponent(cat.id || cat.name);
+      more.title = '主页只挑了其中最值得收藏的几个，点这里看「' + cat.name + '」的完整列表';
+      more.appendChild(document.createTextNode('更多'));
+      more.appendChild(el('span', 'cat-more-arrow', '→'));
+      head.appendChild(more);
+
+      sec.appendChild(head);
+    }
+
+    sec.appendChild(body);
     return sec;
   }
 
@@ -602,7 +626,6 @@
       gHead.addEventListener('click', function () {
         var open = wrap.classList.toggle('is-collapsed') === false;
         gHead.setAttribute('aria-expanded', open ? 'true' : 'false');
-        try { localStorage.setItem('navhub.grp.' + grp.id, open ? '1' : '0'); } catch (e) { }
       });
 
       wrap.appendChild(gHead);
@@ -611,13 +634,8 @@
       grp.cats.forEach(function (cat) { body.appendChild(buildCategory(cat, grp.cats.length === 1)); });
       wrap.appendChild(body);
 
-      /* 上次手动展开过的大类，这次进来就保持展开 */
-      var keep = null;
-      try { keep = localStorage.getItem('navhub.grp.' + grp.id); } catch (e) { }
-      if (keep === '1') {
-        wrap.classList.remove('is-collapsed');
-        gHead.setAttribute('aria-expanded', 'true');
-      }
+      /* 不记展开状态：每次进页面都是全部收起来的，页面干净。
+         想改回「记住上次展开的那个」，用 localStorage 存 grp.id 即可。 */
 
       box.appendChild(wrap);
     });
@@ -659,8 +677,8 @@
   function renderBrand() {
     var nameEl = document.getElementById('brandName');
     if (nameEl && CFG.siteName) nameEl.textContent = CFG.siteName;
-    var subEl = document.querySelector('.brand-text small');
-    if (subEl && CFG.subtitle) subEl.textContent = CFG.subtitle;
+    /* 顶栏标题下面那块是固定的制作信息（写死在 HTML 里），
+       不要再用 CFG.subtitle 覆盖它 —— 一覆盖三行说明就没了。 */
     var foot = document.getElementById('footerText');
     if (foot && CFG.tip) foot.textContent = CFG.tip;
     if (CFG.siteName) document.title = CFG.siteName + ' · ' + (CFG.subtitle || '网站导航');
@@ -929,6 +947,165 @@
     num.textContent = pick + (CFG.index || []).length;
   }
 
+  /* ---------- 问候语右侧的随机推荐 ----------
+     只从精选分类里挑；每 3 秒换一个；
+     鼠标移上去暂停且保留剩余时间，移开接着走剩下的；
+     左箭头回看走过的（最多留 5 个），右箭头立即换下一个并重置计时。 */
+  function initHeroPick() {
+    var box = document.getElementById('hpBody');
+    if (!box) return;
+
+    /* 候选池 = 主页精选的全部站点 */
+    var pool = [];
+    (CFG.categories || []).forEach(function (cat) {
+      (cat.sites || []).forEach(function (s) { pool.push(s); });
+    });
+    if (!pool.length) return;
+
+    var INTERVAL = 5000;
+    var picks = [];          // 走过的下标，最后一个就是当前显示的那个
+    var remain = INTERVAL;   // 还剩多少毫秒换下一个
+    var rafId = null;
+    var lastTs = 0;
+
+    var wrap = document.getElementById('heroPick');
+    var prevBtn = document.getElementById('hpPrev');
+    var nextBtn = document.getElementById('hpNext');
+    var barEl = document.getElementById('hpBar');
+
+    function paint() {
+      var s = pool[picks[picks.length - 1]];
+      if (!s) return;
+
+      box.textContent = '';
+
+      var card = el('div', 'hp-card');
+      var top = el('div', 'hp-top');
+
+      var ico = el('span', 'site-ico');
+      top.appendChild(ico);
+      if (window.paintIcon) window.paintIcon(ico, s);
+      else ico.textContent = (s.name.charAt(0) || '?').toUpperCase();
+
+      var info = el('div', 'hp-info');
+      var nm = el('b');
+      nm.appendChild(document.createTextNode(s.name));
+      if (s.alias && s.alias.length) {
+        nm.appendChild(el('span', 'name-alias', '（' + s.alias.slice(0, 2).join('、') + '）'));
+      }
+      info.appendChild(nm);
+      var sub = s.short || s.desc || '';
+      if (sub) info.appendChild(el('em', null, sub));
+      info.appendChild(el('small', 'hp-url', domainOf(s.url)));
+      top.appendChild(info);
+      card.appendChild(top);
+
+      var acts = el('div', 'hp-acts');
+      if (s.intro) {
+        var ib = el('button', 'hp-act');
+        ib.type = 'button';
+        ib.textContent = '介绍';
+        ib.addEventListener('click', function () {
+          /* 看介绍的时候必须停住 —— 否则用户读完回来，卡片已经换成别的了 */
+          halt();
+          openIntro(s);
+        });
+        acts.appendChild(ib);
+      }
+      var go = el('a', 'hp-act is-primary');
+      go.href = s.url;
+      go.target = '_blank';
+      go.rel = 'noopener noreferrer';
+      go.textContent = '直达';
+      acts.appendChild(go);
+      card.appendChild(acts);
+
+      box.appendChild(card);
+      if (prevBtn) prevBtn.disabled = picks.length < 2;
+    }
+
+    /* 随机挑一个和当前不一样的，并记进历史 */
+    function roll(reset) {
+      var cur = picks.length ? picks[picks.length - 1] : -1;
+      var i = cur;
+      if (pool.length > 1) {
+        while (i === cur) i = Math.floor(Math.random() * pool.length);
+      } else {
+        i = 0;
+      }
+      picks.push(i);
+      if (picks.length > 5) picks.shift();
+      if (reset !== false) remain = INTERVAL;
+      paint();
+    }
+
+    /* 回看上一个 */
+    function back() {
+      if (picks.length < 2) return;
+      picks.pop();
+      remain = INTERVAL;
+      if (barEl) barEl.style.transform = 'scaleX(1)';
+      paint();
+    }
+
+    /* 用逐帧更新而不是 setInterval：进度条跟着屏幕刷新率走，不会有卡顿感 */
+    function tickFn() {
+      rafId = window.requestAnimationFrame(tickFn);
+
+      var now = Date.now();
+      /* 切走标签页、或者掉帧的时候，别一口气把剩余时间全扣光 */
+      var dt = Math.min(now - lastTs, 100);
+      lastTs = now;
+      remain -= dt;
+
+      if (barEl) barEl.style.transform = 'scaleX(' + Math.max(0, remain / INTERVAL) + ')';
+      if (remain <= 0) {
+        remain = INTERVAL;
+        roll();
+      }
+    }
+
+    /* 暂停 = 停掉逐帧更新，remain 保留着，恢复时接着走剩下的 */
+    function halt() {
+      if (rafId) { window.cancelAnimationFrame(rafId); rafId = null; }
+    }
+    function run() {
+      if (rafId) return;
+      lastTs = Date.now();
+      rafId = window.requestAnimationFrame(tickFn);
+    }
+
+    if (wrap) {
+      wrap.addEventListener('mouseenter', halt);
+      wrap.addEventListener('mouseleave', run);
+      wrap.addEventListener('focusin', halt);
+      wrap.addEventListener('focusout', run);
+      /* 触屏：点一下暂停，过一会儿自己恢复 */
+      wrap.addEventListener('touchstart', halt, { passive: true });
+      wrap.addEventListener('touchend', function () {
+        window.setTimeout(run, 2600);
+      }, { passive: true });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function () { remain = INTERVAL; roll(); });
+    }
+    if (prevBtn) prevBtn.addEventListener('click', back);
+
+    /* 介绍弹窗开着的时候也要停 —— 不管它是从哪打开的。
+       关掉之后接着走，而且显示的仍然是原来那一条。 */
+    var modal = document.getElementById('introModal');
+    if (modal && window.MutationObserver) {
+      new MutationObserver(function () {
+        if (modal.hidden) run();
+        else halt();
+      }).observe(modal, { attributes: true, attributeFilter: ['hidden'] });
+    }
+
+    roll(false);
+    run();
+  }
+
   /* ---------- 启动 ---------- */
   function boot() {
     initTheme();
@@ -939,6 +1116,7 @@
     renderChips();
     paintAllEntry();
     initSearch();
+    initHeroPick();
     initModal();
     initAbout();
   }

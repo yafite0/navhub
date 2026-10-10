@@ -7,8 +7,8 @@
 <meta name="description" content="小工具：单位换算与汇率、字数统计与 Token 预估。全部在你自己的浏览器里运行，数据不会上传。" />
 <meta name="theme-color" content="#4D6BFE" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-<link rel="stylesheet" href="css/style.css?v=20261007r" />
-<link rel="stylesheet" href="css/tools.css?v=20261007r" />
+<link rel="stylesheet" href="css/style.css?v=20261010a" />
+<link rel="stylesheet" href="css/tools.css?v=20261010a" />
 </head>
 <body>
 <div class="bg-decor" aria-hidden="true">
@@ -238,18 +238,28 @@
             </div>
           </div>
 
-          <aside class="spec-help">
-            <b>为什么看不到 CPU 型号和硬盘容量？</b>
-            <p>
-              浏览器出于防追踪的考虑，<b>故意不把这些信息开放给网页</b> —— 任何网站都读不到你的 CPU 具体型号、
-              硬盘多大、主板是什么。左边这些已经是网页能拿到的全部了，而且<b>只在你本机读取，不会上传</b>。
-            </p>
-            <p>想看完整配置，用系统自带的工具就够，不用装任何软件：</p>
-            <ul class="spec-os">
-              <li><b>Windows</b>：按 <code>Win + R</code>，输 <code>dxdiag</code> 看显卡和 CPU，输 <code>msinfo32</code> 看全部</li>
-              <li><b>macOS</b>：左上角苹果标 →「关于本机」→ 更多信息 →「系统报告」</li>
-              <li><b>Linux</b>：终端里 <code>lscpu</code>（CPU）、<code>lspci | grep -i vga</code>（显卡）、<code>free -h</code>（内存）</li>
-            </ul>
+          <aside class="spec-side">
+            <div class="gpu-box">
+              <div class="gpu-head">
+                <h4>显卡官网</h4>
+                <span>认准型号再下</span>
+              </div>
+              <div class="gpu-links" id="gpuLinks"></div>
+            </div>
+
+            <div class="spec-help">
+              <b>为什么看不到 CPU 型号和硬盘容量？</b>
+              <p>
+                浏览器出于防追踪的考虑，<b>故意不把这些信息开放给网页</b> —— 任何网站都读不到你的 CPU 具体型号、
+                硬盘多大、主板是什么。左边这些已经是网页能拿到的全部了，而且<b>只在你本机读取，不会上传</b>。
+              </p>
+              <p>想看完整配置，用系统自带的工具就够，不用装任何软件：</p>
+              <ul class="spec-os">
+                <li><b>Windows</b>：按 <code>Win + R</code>，输 <code>dxdiag</code> 看显卡和 CPU，输 <code>msinfo32</code> 看全部</li>
+                <li><b>macOS</b>：左上角苹果标 →「关于本机」→ 更多信息 →「系统报告」</li>
+                <li><b>Linux</b>：终端里 <code>lscpu</code>（CPU）、<code>lspci | grep -i vga</code>（显卡）、<code>free -h</code>（内存）</li>
+              </ul>
+            </div>
           </aside>
         </div>
       </div>
@@ -266,8 +276,9 @@
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/widgets.js?v=20261007r"></script>
-<script src="js/tools.js?v=20261007r"></script>
-<script src="js/specs.js?v=20261007r"></script>
+<script src="js/data.js?v=20261010a"></script>
+<script src="js/widgets.js?v=20261010a"></script>
+<script src="js/tools.js?v=20261010a"></script>
+<script src="js/specs.js?v=20261010a"></script>
 </body>
 </html>

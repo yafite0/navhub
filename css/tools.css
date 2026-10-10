@@ -22,18 +22,13 @@
 .tw-card { padding: 22px 24px 24px; }
 .tw-card-narrow { max-width: 760px; }
 
-/* ---------- 查看我的电脑配置 ---------- */
-/* 检测结果在左边、说明块在右边：一屏之内能看全，不用往下滚 */
-.tw-spec-card { max-width: 1060px; }
-
-/* 页面顶部那块大标题和卡片里的标题是重复的，进这个工具时收起，
-   把省下来的竖向空间留给检测结果本身 */
-body:has(.tw-panel[data-tool-panel="specs"].is-active) .tw-head { display: none; }
-body:has(.tw-panel[data-tool-panel="specs"].is-active) .tw-main { padding-top: 22px; }
+/* ---------- 驱动工具（查看我的电脑配置） ---------- */
+/* 撑得宽一些并居中：左边放检测结果，右边放显卡官网和说明 */
+.tw-spec-card { max-width: 1240px; margin-inline: auto; }
 .spec-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 330px;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
   align-items: start;
 }
 .spec-main { min-width: 0; }
@@ -121,3 +116,42 @@ body:has(.tw-panel[data-tool-panel="specs"].is-active) .tw-main { padding-top: 2
   .spec-row { flex-direction: column; gap: 3px; }
   .spec-key { width: auto; }
 }
+
+/* ---------- 驱动工具：右侧「显卡官网」列 ---------- */
+.spec-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+.gpu-box {
+  padding: 13px 14px 14px;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.gpu-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+.gpu-head h4 { font-size: 13.5px; font-weight: 700; color: var(--text); }
+.gpu-head span { font-size: 11.5px; color: var(--text-3); }
+.gpu-links { display: flex; flex-direction: column; gap: 7px; }
+
+.gpu-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 11px; border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  transition: border-color .18s, background .18s, transform .18s;
+}
+.gpu-item:hover { border-color: var(--brand); background: var(--brand-tint); transform: translateX(2px); }
+/* 检测出来的那家高亮 */
+.gpu-item.is-hit { border-color: var(--brand); background: var(--brand-tint); }
+.gpu-item .site-ico { width: 30px; height: 30px; border-radius: 9px; font-size: 13px; }
+.gpu-item-txt { flex: 1; min-width: 0; }
+.gpu-item-txt b {
+  display: block; font-size: 13px; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.gpu-item-txt em {
+  display: block; margin-top: 1px; font-style: normal;
+  font-size: 11.5px; color: var(--text-3);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.gpu-item-go { flex: none; color: var(--text-3); transition: color .18s; }
+.gpu-item:hover .gpu-item-go { color: var(--brand); }
+.gpu-empty { font-size: 12px; color: var(--text-3); }
