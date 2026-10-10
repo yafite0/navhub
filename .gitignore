@@ -11,3 +11,7 @@ desktop.ini
 # 本地验证时产生的临时文件
 tmp-*.html
 tmp-*.js
+
+# 内部用的工作文档，不公开
+*.txt
+

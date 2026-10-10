@@ -39,7 +39,7 @@ window.NAV_CONFIG = {
   tip: '启航 · 精选网站导航',
   defaultCity: '北京',
   /* 网页最后更新时间（静态、手动维护）：格式 YYYY-MM-DD HH:MM，精确到分钟 */
-  lastUpdated: '2026-10-07 17:30',
+  lastUpdated: '2026-10-10 16:00',
   notice: '内容在持续补充中 —— 每个分类只放真正值得收藏的官方站点',
 
   /* 顶栏「关于本站」弹窗里的文案，想改介绍就改这里 */
@@ -615,11 +615,11 @@ window.NAV_CONFIG = {
       ]
     },
     {
-      id: 'ai-api',
+      id: 'api-hub',
       group: 'ai',
-      name: 'API 提供商',
-      icon: '🔌',
-      desc: '想自己写程序调模型，就来这儿拿密钥 —— 聚合平台一个密钥能调好几家',
+      name: 'API 聚合平台',
+      icon: '🔀',
+      desc: '一个密钥就能调好几家的模型，用哪家不用来回注册',
       sites: [
         {
           name: '硅基流动',
@@ -650,6 +650,15 @@ window.NAV_CONFIG = {
             tips: '先在模型广场挑一个免费的试试，跑通了再充钱换大模型。接口地址和密钥在控制台里生成。'
           }
         },
+      ]
+    },
+    {
+      id: 'api-official',
+      group: 'ai',
+      name: 'API 官方平台',
+      icon: '🔌',
+      desc: '模型厂商自家的接口，只能用它的模型，但价格和稳定性最直接',
+      sites: [
         {
           name: 'DeepSeek 开放平台',
           url: 'https://platform.deepseek.com/',
@@ -1054,18 +1063,18 @@ window.NAV_CONFIG = {
     /* --- 下面这批来自「API 提供商 / 本地对话 / 解压压缩 / 视频剪辑 / 图像处理」，
            它们只在「其他网页」页和搜索里出现，不进主页精选。
            主页精选要够常用、并且配了官网截图和介绍才行。 --- */
-    { name: '阿里云百炼', url: 'https://bailian.console.aliyun.com/', desc: '调用通义千问系列的官方平台', cat: 'API 提供商', region: 'cn', key: '阿里 百炼 通义千问 qwen api 密钥 大模型 接口' },
-    { name: '火山方舟', url: 'https://www.volcengine.com/product/ark', desc: '调用豆包模型的官方平台', cat: 'API 提供商', region: 'cn', key: '火山 方舟 字节 豆包 doubao api 密钥 大模型' },
-    { name: '智谱 AI', alias: ['GLM'], url: 'https://open.bigmodel.cn/', desc: '清华大学孵化的开源模型', cat: 'API 提供商', region: 'cn', key: '智谱 glm 清言 api 密钥 大模型 开放平台' },
-    { name: '月之暗面', url: 'https://platform.moonshot.cn/', desc: 'Kimi 背后模型的官方接口', cat: 'API 提供商', region: 'cn', key: '月之暗面 moonshot kimi api 密钥 长文本 开放平台' },
-    { name: '百度千帆', url: 'https://qianfan.cloud.baidu.com/', desc: '调用文心一言的官方平台', cat: 'API 提供商', region: 'cn', key: '百度 千帆 文心一言 ernie api 密钥 大模型' },
-    { name: '腾讯混元', alias: ['Hunyuan'], url: 'https://cloud.tencent.com/product/hunyuan', desc: '腾讯自研大模型的官方接口', cat: 'API 提供商', region: 'cn', key: '腾讯 混元 hunyuan api 密钥 大模型 接口' },
-    { name: 'OpenRouter', url: 'https://openrouter.ai/', desc: '一个密钥调各家主流模型', cat: 'API 提供商', region: 'global', key: 'openrouter 聚合 中转 api 多模型 密钥 比价' },
-    { name: 'OpenAI Platform', url: 'https://platform.openai.com/', desc: 'GPT 系列的官方接口', cat: 'API 提供商', region: 'global', key: 'openai gpt api 密钥 key 接口 官方' },
-    { name: 'Anthropic Console', url: 'https://console.anthropic.com/', desc: 'Claude 系列的官方接口', cat: 'API 提供商', region: 'global', key: 'anthropic claude api 密钥 key 接口 官方' },
-    { name: 'Google AI Studio', alias: ['AI Studio'], url: 'https://aistudio.google.com/', desc: 'Gemini 官方试验台，有免费额度', cat: 'API 提供商', region: 'global', key: 'google gemini aistudio api 密钥 免费 额度' },
-    { name: 'Groq', url: 'https://groq.com/', desc: '推理速度极快', cat: 'API 提供商', region: 'global', key: 'groq 快 推理 api 开源模型 密钥' },
-    { name: 'Mistral', url: 'https://console.mistral.ai/', desc: '法国开源模型，可商用', cat: 'API 提供商', region: 'global', key: 'mistral 法国 欧洲 开源模型 api 密钥' },
+    { name: '阿里云百炼', url: 'https://bailian.console.aliyun.com/', desc: '调用通义千问系列的官方平台', cat: 'API 官方平台', region: 'cn', key: '阿里 百炼 通义千问 qwen api 密钥 大模型 接口' },
+    { name: '火山方舟', url: 'https://www.volcengine.com/product/ark', desc: '调用豆包模型的官方平台', cat: 'API 官方平台', region: 'cn', key: '火山 方舟 字节 豆包 doubao api 密钥 大模型' },
+    { name: '智谱 AI', alias: ['GLM'], url: 'https://open.bigmodel.cn/', desc: '清华大学孵化的开源模型', cat: 'API 官方平台', region: 'cn', key: '智谱 glm 清言 api 密钥 大模型 开放平台' },
+    { name: '月之暗面', url: 'https://platform.moonshot.cn/', desc: 'Kimi 背后模型的官方接口', cat: 'API 官方平台', region: 'cn', key: '月之暗面 moonshot kimi api 密钥 长文本 开放平台' },
+    { name: '百度千帆', url: 'https://qianfan.cloud.baidu.com/', desc: '调用文心一言的官方平台', cat: 'API 官方平台', region: 'cn', key: '百度 千帆 文心一言 ernie api 密钥 大模型' },
+    { name: '腾讯混元', alias: ['Hunyuan'], url: 'https://cloud.tencent.com/product/hunyuan', desc: '腾讯自研大模型的官方接口', cat: 'API 官方平台', region: 'cn', key: '腾讯 混元 hunyuan api 密钥 大模型 接口' },
+    { name: 'OpenRouter', url: 'https://openrouter.ai/', desc: '一个密钥调各家主流模型', cat: 'API 聚合平台', region: 'global', key: 'openrouter 聚合 中转 api 多模型 密钥 比价' },
+    { name: 'OpenAI Platform', url: 'https://platform.openai.com/', desc: 'GPT 系列的官方接口', cat: 'API 官方平台', region: 'global', key: 'openai gpt api 密钥 key 接口 官方' },
+    { name: 'Anthropic Console', url: 'https://console.anthropic.com/', desc: 'Claude 系列的官方接口', cat: 'API 官方平台', region: 'global', key: 'anthropic claude api 密钥 key 接口 官方' },
+    { name: 'Google AI Studio', alias: ['AI Studio'], url: 'https://aistudio.google.com/', desc: 'Gemini 官方试验台，有免费额度', cat: 'API 官方平台', region: 'global', key: 'google gemini aistudio api 密钥 免费 额度' },
+    { name: 'Groq', url: 'https://groq.com/', desc: '推理速度极快', cat: 'API 官方平台', region: 'global', key: 'groq 快 推理 api 开源模型 密钥' },
+    { name: 'Mistral', url: 'https://console.mistral.ai/', desc: '法国开源模型，可商用', cat: 'API 官方平台', region: 'global', key: 'mistral 法国 欧洲 开源模型 api 密钥' },
 
     { name: 'Cherry Studio', url: 'https://cherry-ai.com/', desc: '国产开源客户端，带知识库', cat: '本地对话', region: 'cn', key: 'cherry studio 樱桃 客户端 国产 开源 多模型 知识库' },
     { name: 'LobeChat', url: 'https://lobehub.com/zh', desc: '界面精致的对话客户端', cat: '本地对话', region: 'cn', key: 'lobe lobehub 客户端 网页 好看 插件 开源' },

@@ -6,8 +6,8 @@
 <meta name="description" content="启航 · 全部网站，按用途分类列出收录的所有官方站点，支持实时筛选。" />
 <title>其他网页 · 启航</title>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-<link rel="stylesheet" href="css/style.css?v=20261010a" />
-<link rel="stylesheet" href="css/sites.css?v=20261010a" />
+<link rel="stylesheet" href="css/style.css?v=20261010b" />
+<link rel="stylesheet" href="css/sites.css?v=20261010b" />
 </head>
 <body>
 
@@ -71,12 +71,16 @@
       <input id="asFilter" type="text" autocomplete="off" placeholder="输入名字筛选，比如「音乐」「网盘」「Steam」" aria-label="筛选网站" />
       <button class="as-clear" id="asClear" type="button" hidden aria-label="清空">×</button>
     </div>
-    <div class="as-chips" id="asChips"></div>
   </div>
 
-  <div id="asGroups"></div>
+  <div class="as-layout">
+    <aside class="as-side" id="asSide"></aside>
 
-  <p class="as-empty" id="asEmpty" hidden>没有找到匹配的网站，换个词试试</p>
+    <div class="as-main">
+      <div id="asGroups"></div>
+      <p class="as-empty" id="asEmpty" hidden>没有找到匹配的网站，换个词试试</p>
+    </div>
+  </div>
 
 </main>
 
@@ -89,8 +93,8 @@
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/data.js?v=20261010a"></script>
-<script src="js/app.js?v=20261010a"></script>
-<script src="js/sites.js?v=20261010a"></script>
+<script src="js/data.js?v=20261010b"></script>
+<script src="js/app.js?v=20261010b"></script>
+<script src="js/sites.js?v=20261010b"></script>
 </body>
 </html>

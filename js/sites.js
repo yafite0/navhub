@@ -202,7 +202,7 @@
     return wrap;
   }
 
-  function render(keyword, onlyGroup) {
+  function render(keyword, onlyGroup, onlyCat) {
     var key = String(keyword || '').trim().toLowerCase();
     var box = $('asGroups');
     if (!box) return;
@@ -225,6 +225,7 @@
       var grpNum = 0;
 
       grp.cats.forEach(function (cat) {
+        if (onlyCat && cat.id !== onlyCat) return;
         var cn = cat.cn.filter(function (s) { return hit(s, cat.title); });
         var gl = cat.global.filter(function (s) { return hit(s, cat.title); });
         if (!cn.length && !gl.length) return;
@@ -297,38 +298,86 @@
     if ($('asEmpty')) $('asEmpty').hidden = shown > 0;
   }
 
-  /* ---------- 分类快捷筛选 ---------- */
-  function initChips() {
-    var box = $('asChips');
+  /* ---------- 左侧分类导航 ----------
+     大类下面挂小类，点大类看整块，点小类只看那一小块。
+     侧栏跟着页面滚动一直停在左上角。 */
+  function initSide() {
+    var box = $('asSide');
     if (!box) return;
+    box.textContent = '';
 
-    function setActive(node) {
-      Array.prototype.forEach.call(box.children, function (n) { n.classList.remove('is-active'); });
-      node.classList.add('is-active');
+    var panel = el('div', 'as-side-box');
+    panel.appendChild(el('p', 'as-side-title', '按分类浏览'));
+
+    function clearActive() {
+      Array.prototype.forEach.call(panel.querySelectorAll('.is-active'), function (n) {
+        n.classList.remove('is-active');
+      });
     }
 
-    /* 点分类标签 = 精确看这一个分类，不再拿分类名当关键词去模糊匹配 */
-    function pick(node, groupId) {
-      setActive(node);
+    function pick(node, groupId, catId) {
+      clearActive();
+      node.classList.add('is-active');
+
+      /* 点小类时，把所在的大类也标上，用户能看出自己在哪一层 */
+      if (catId && groupId) {
+        var owner = panel.querySelector('.as-side-btn[data-grp="' + groupId + '"]');
+        if (owner) owner.classList.add('is-sub');
+      }
+
       var input = $('asFilter');
       if (input) input.value = '';
       if ($('asClear')) $('asClear').hidden = true;
-      render('', groupId);
+
+      render('', groupId, catId);
     }
 
-    var all = el('button', 'as-chip is-active', '全部');
+    var all = el('button', 'as-side-all is-active');
     all.type = 'button';
-    all.addEventListener('click', function () { pick(all, ''); });
-    box.appendChild(all);
+    all.appendChild(el('span', null, '全部网站'));
+    var total = TREE.reduce(function (n, g) {
+      return n + g.cats.reduce(function (m, c) { return m + c.sites.length; }, 0);
+    }, 0);
+    all.appendChild(el('em', 'as-side-num', String(total)));
+    all.addEventListener('click', function () { pick(all, '', ''); });
+    panel.appendChild(all);
 
-    /* 快捷词按大类排，点一下看整个大类 —— 免得「游戏商城 / 游戏引擎 / 游戏平台」
-       三个挤在一起，看着像三个不相干的东西。 */
     TREE.forEach(function (grp) {
-      var b = el('button', 'as-chip', (grp.icon ? grp.icon + ' ' : '') + grp.name);
-      b.type = 'button';
-      b.addEventListener('click', function () { pick(b, grp.id); });
-      box.appendChild(b);
+      var item = el('div', 'as-side-item');
+
+      var btn = el('button', 'as-side-btn');
+      btn.type = 'button';
+      btn.setAttribute('data-grp', grp.id);
+      btn.appendChild(el('span', 'as-side-ico', grp.icon || '📁'));
+      btn.appendChild(el('span', 'as-side-name', grp.name));
+
+      var num = grp.cats.reduce(function (n, c) { return n + c.sites.length; }, 0);
+      btn.appendChild(el('em', 'as-side-num', String(num)));
+
+      var arrow = el('span', 'as-side-arrow');
+      arrow.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6"/></svg>';
+      btn.appendChild(arrow);
+
+      btn.addEventListener('click', function () { pick(btn, grp.id, ''); });
+      item.appendChild(btn);
+
+      var sub = el('div', 'as-side-sub');
+      grp.cats.forEach(function (cat) {
+        var cb = el('button', 'as-side-cat');
+        cb.type = 'button';
+        var label = el('span');
+        label.textContent = (cat.emoji ? cat.emoji + ' ' : '') + cat.title;
+        cb.appendChild(label);
+        cb.appendChild(el('em', 'as-side-num', String(cat.sites.length)));
+        cb.addEventListener('click', function () { pick(cb, grp.id, cat.id); });
+        sub.appendChild(cb);
+      });
+      item.appendChild(sub);
+
+      panel.appendChild(item);
     });
+
+    box.appendChild(panel);
   }
 
   /* ---------- 启动 ---------- */
@@ -342,7 +391,7 @@
         '如果你不想自己搜，直接在下面的输入框里打关键词也能找到，比如「网盘」「听歌」「买票」。';
     }
 
-    initChips();
+    initSide();
     render('');
 
     /* 从主页分类的「更多」按钮跳过来时会带 ?cat=xxx，
@@ -351,38 +400,18 @@
     try { want = new URLSearchParams(location.search).get('cat') || ''; } catch (e) { }
 
     if (want) {
-      var chips = $('asChips');
-      var idx = -1;
-      TREE.forEach(function (g, i) { if (g.id === want) idx = i; });
-
-      /* 主页的「更多」传的是小类 id（如 game-store），
-         chips 上只有大类，这时就退回到它所属的大类。 */
-      if (idx < 0) {
+      /* 侧栏里找对应的大类按钮，直接点它 —— 高亮和筛选都走同一套逻辑。
+         主页的「更多」按钮传的是小类 id（如 game-store），
+         这种情况退回到它所属的大类。 */
+      var btn = document.querySelector('.as-side-btn[data-grp="' + want + '"]');
+      if (!btn) {
         var owner = '';
         for (var i = 0; i < GROUPS.length; i++) {
           if (GROUPS[i].id === want) { owner = GROUPS[i].group; break; }
         }
-        if (owner) {
-          want = owner;
-          TREE.forEach(function (g, j) { if (g.id === want) idx = j; });
-        }
+        if (owner) btn = document.querySelector('.as-side-btn[data-grp="' + owner + '"]');
       }
-
-      /* chips 的第 0 个是「全部」，所以大类在 chips 里要往后挪一位 */
-      var target = (chips && idx >= 0) ? chips.children[idx + 1] : null;
-      if (target) {
-        Array.prototype.forEach.call(chips.children, function (n) { n.classList.remove('is-active'); });
-        target.classList.add('is-active');
-        render('', want);
-
-        var sec = document.getElementById('g-' + want);
-        if (sec) {
-          window.setTimeout(function () {
-            try { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-            catch (e) { sec.scrollIntoView(); }
-          }, 140);
-        }
-      }
+      if (btn) btn.click();
     }
 
     var input = $('asFilter');

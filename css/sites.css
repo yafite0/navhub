@@ -276,3 +276,70 @@
 .as-cat-tool-txt b { display: block; font-size: 13.5px; font-weight: 700; color: var(--text); }
 .as-cat-tool-txt small { display: block; margin-top: 1px; font-size: 12px; color: var(--text-2); }
 .as-cat-tool-go { flex: none; font-size: 12.5px; font-weight: 600; color: var(--brand); }
+
+/* ---------- 左侧分类导航 ---------- */
+.as-layout {
+  display: grid;
+  grid-template-columns: 224px minmax(0, 1fr);
+  gap: 26px;
+  align-items: start;
+}
+
+.as-side {
+  position: sticky;
+  top: 92px;
+  max-height: calc(100vh - 116px);
+  overflow-y: auto;
+}
+.as-side-box {
+  padding: 14px 12px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.as-side-title {
+  margin: 0 0 10px; padding-left: 10px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .8px;
+  color: var(--text-3); text-transform: uppercase;
+}
+
+.as-side-all,
+.as-side-btn,
+.as-side-cat {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; text-align: left;
+  padding: 8px 10px; border-radius: 9px;
+  font-size: 13px; color: var(--text-2);
+  transition: background .16s, color .16s;
+}
+.as-side-all { font-weight: 600; margin-bottom: 8px; }
+.as-side-all:hover, .as-side-btn:hover, .as-side-cat:hover { background: var(--surface-2); color: var(--text); }
+.as-side-all.is-active,
+.as-side-btn.is-active { background: var(--brand-tint); color: var(--brand); font-weight: 700; }
+.as-side-btn.is-sub { color: var(--brand); font-weight: 700; }
+.as-side-cat.is-active { background: var(--brand-tint); color: var(--brand); font-weight: 600; }
+
+.as-side-ico { flex: none; font-size: 14px; }
+.as-side-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.as-side-num { flex: none; font-style: normal; font-size: 11px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.as-side-arrow { flex: none; display: grid; place-items: center; color: var(--text-3); transition: transform .2s; }
+.as-side-btn.is-active .as-side-arrow,
+.as-side-btn.is-sub .as-side-arrow { transform: rotate(90deg); color: var(--brand); }
+
+/* 小类只在所属大类被选中（或被展开）时出现 */
+.as-side-sub {
+  display: none;
+  margin: 2px 0 6px 16px;
+  padding-left: 8px;
+  border-left: 2px solid var(--border);
+}
+.as-side-btn.is-active + .as-side-sub,
+.as-side-btn.is-sub + .as-side-sub { display: block; }
+.as-side-cat { font-size: 12.5px; padding: 6px 8px; }
+
+@media (max-width: 900px) {
+  .as-layout { grid-template-columns: 1fr; gap: 18px; }
+  .as-side { position: static; max-height: none; }
+  .as-side-sub { display: block; }
+}
+.as-main { min-width: 0; }
