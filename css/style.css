@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    启航 · 常用网站导航  —  样式表
    主色调：DeepSeek 蓝 #4D6BFE
    ============================================================ */
@@ -34,6 +34,9 @@
   --r-md: 16px;
   --r-lg: 22px;
   --topbar-h: 78px;
+
+  /* 版心左右的留白。所有页面、顶栏、页脚都按这个数来 */
+  --gutter: 50px;
 }
 
 [data-theme="dark"] {
@@ -89,8 +92,15 @@ a { color: inherit; text-decoration: none; }
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; border: none; background: none; }
 
-/* 版心：比之前宽一些，但两侧始终留出空白，不贴边 */
-.wrap { width: min(1440px, 100% - 80px); margin-inline: auto; }
+/* ============================================================
+   版心 —— 全站就这一条
+   ------------------------------------------------------------
+   左右各留 --gutter，中间全部吃掉。原来是 min(1440px, 100% - 80px)，
+   在 1920 这类屏幕上上限一到，两侧要空掉 240px 一整条 —— 白得浪费。
+   顶栏、页脚、每一页的 <main> 都走这条，改这里就是全站一起改。
+   窄屏上把 --gutter 调小（见下面 max-width: 720px），版心跟着一起收。
+   ============================================================ */
+.wrap { width: calc(100% - var(--gutter) * 2); margin-inline: auto; }
 
 :focus-visible {
   outline: 2px solid var(--brand);
@@ -123,7 +133,7 @@ button { cursor: pointer; border: none; background: none; }
   }
 }
 /* 和主内容用同一个版心宽度，主站按钮才能和下面的内容左对齐 */
-.topbar-inner { display: flex; align-items: center; gap: 18px; width: min(1440px, 100% - 80px); margin-inline: auto; }
+.topbar-inner { display: flex; align-items: center; gap: 18px; width: calc(100% - var(--gutter) * 2); margin-inline: auto; }
 
 .brand { display: flex; align-items: center; gap: 11px; flex: none; }
 .brand-mark {
@@ -356,6 +366,33 @@ main { padding-bottom: 40px; }
 }
 .search-clear:hover { color: var(--brand); background: var(--brand-tint); }
 
+/* 「搜索」按钮 —— 手机上的虚拟键盘不一定有「前往」，得有个能点的 */
+.search-go {
+  flex: none; height: 38px; padding: 0 18px;
+  border: none; border-radius: 999px;
+  font-size: 14px; font-weight: 600; color: #fff;
+  background: var(--brand-grad);
+  box-shadow: var(--shadow-brand);
+  cursor: pointer;
+  transition: filter .18s, transform .18s;
+}
+.search-go:hover { filter: brightness(1.07); }
+.search-go:active { transform: scale(.96); }
+
+
+/* 框里什么都没有时，按钮变灰、点不动 ——
+   一个亮着的蓝色「搜索」按下去什么也不会发生，比灰着更让人困惑。
+   状态由 js/app.js 的 syncGo() 切 .disabled。 */
+.search-go:disabled,
+.search-go:disabled:hover {
+  background: #E9EDF6;
+  color: #A6AFC4;
+  box-shadow: none;
+  cursor: not-allowed;
+  filter: none;
+  transform: none;
+}
+
 .search-panel {
   position: absolute; top: calc(100% + 10px); left: 0; right: 0;
   z-index: 50;
@@ -393,6 +430,36 @@ main { padding-bottom: 40px; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .search-empty { padding: 18px 12px; text-align: center; color: var(--text-3); font-size: 14px; }
+
+/* 站内一条都没搜到时的说明行 */
+.search-none {
+  padding: 11px 13px 7px;
+  font-size: 13px; line-height: 1.65; color: var(--text-2);
+  word-break: break-word;
+}
+
+/* 兜底的搜索引擎入口：和站内结果区分开，一看就知道是「出去了」 */
+.search-item.search-engine { gap: 12px; }
+.search-item.search-engine .se-ico {
+  flex: none; width: 34px; height: 34px; border-radius: 10px;
+  display: grid; place-items: center;
+  color: var(--brand); background: var(--brand-tint);
+  border: 1px dashed var(--brand-tint-2);
+}
+.search-item.search-engine .si-name { font-weight: 600; }
+.search-item.search-engine.is-first { background: var(--brand-tint); }
+.search-item.search-engine.is-first .si-name { color: var(--brand); }
+
+/* 手机上：没有「/」这个键，快捷键提示没意义；输入框字号必须 ≥16px，
+   否则 iOS Safari 一聚焦就会把整个页面放大，看着像「手机端坏了」 */
+@media (max-width: 720px) {
+  .search-kbd { display: none; }
+  .search { height: 52px; gap: 8px; padding: 0 10px 0 14px; }
+  .search input { font-size: 16px; }
+  .search-go { height: 36px; padding: 0 15px; font-size: 13.5px; }
+  .search-clear { width: 22px; height: 22px; font-size: 16px; }
+  .search-panel { max-height: 60vh; }
+}
 
 /* 快捷词 */
 .chips { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 18px; }
@@ -1715,8 +1782,9 @@ body.modal-open { overflow: hidden; }
 }
 
 @media (max-width: 720px) {
-  .wrap { width: calc(100% - 32px); }
-  .topbar-inner { width: calc(100% - 32px); }
+  /* 手机上没有 50px 可以浪费，版心留白收窄到 16px ——
+     改一个变量，.wrap / .topbar-inner / 页脚一起跟着收 */
+  :root { --gutter: 16px; }
   .topnav { display: none; }
   /* 顶栏那三行制作信息在小屏上太占地方，收起来 */
   .brand-credit { display: none; }
@@ -1757,4 +1825,367 @@ body.modal-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
   html { scroll-behavior: auto; }
+}
+
+/* ============================================================
+   首屏 —— 搜索 / 预设 / 工具（参考稿定的 C1）
+   ------------------------------------------------------------
+   ① 搜索横跨整条，内部分三层：问候+天气 / 搜索框 / 常去
+   ② 预设 ③ 工具 并排在下面
+   两块加起来吃掉视口剩下的高度（一屏看完，不用滚），
+   底下的「精选分类」照旧在下面。
+
+   原来那套首屏样式（.hero / .weather / .hero-tools / .chips-row）
+   暂时留在上面没删 —— 布局还在调，等定稿再一起清。
+   ============================================================ */
+/* 主页整页一屏：这一块吃掉「视口高度 - 顶栏」，
+   自己不留底部内边距（main 上那条 padding-bottom: 40px 也要盖掉），
+   不然会多出 40px 让人白滚一下。 */
+#top { padding-bottom: 0; }
+.home-top {
+  min-height: calc(100vh - var(--topbar-h));
+  display: flex; flex-direction: column;
+  gap: 18px;
+  padding: 20px 0 20px;
+}
+
+/* ---------- ① 搜索块 ---------- */
+.hero-block {
+  /* 搜索块占大头：下面两块是入口，这块是主战场，而且搜索面板要有地方展开 */
+  flex: 1.5; min-height: 420px;
+  padding: 24px 34px 18px;
+  border-radius: 22px;
+  display: flex; flex-direction: column;
+  color: #fff;
+  background: linear-gradient(135deg, #3D5AFE 0%, #6C8CFF 62%, #8FA8FF 100%);
+  box-shadow: 0 20px 48px -24px rgba(61, 90, 254, .62);
+}
+
+/* 第一层：问候 ┊ 搜索 ┊ 天气，三者顶部齐平。
+   中间那组吃满剩余宽度，所以搜索框会跟着块宽伸缩，不再是一根定宽的木棍。
+
+   偏爱 flex 而不是 grid「1fr / 定宽 / 1fr」：后者在窗口不够宽时会把两翼
+   压破（问候折成四行、天气挤成一团）。这里两翼 flex: none 保原样，
+   只让中间那组缩 —— 缩到底也就是搜索框窄一点，不会有更难看的后果。
+
+   两翼宽度差会让「搜索」偏离中轴线（问候比天气窄一截），
+   .hb-hi 的 min-width 由 js/app.js 的 syncHeroWings() 补到和天气一样宽，
+   前提是补完还剩得下中间那组。窄屏（≤980px）走文末的媒体查询。 */
+.hb-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+.hb-hi { flex: none; min-width: 0; }
+.hb-center { flex: 1; min-width: 0; }
+.hb-hi { min-width: 0; }
+.hb-hello {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 13px;
+  background: rgba(255, 255, 255, .2);
+}
+.hb-hello .wave { font-size: 14px; }
+.hb-h1 { margin: 10px 0 0; font-size: 28px; font-weight: 800; letter-spacing: -.4px; }
+/* 日期一行，时间另起一行再往下挪一点 —— 时间放大到 34px 并且用纯白，
+   进页面第一眼要找的就是它，混在日期那行小字里根本看不见。 */
+.hb-date { margin: 10px 0 0; font-size: 13.5px; color: rgba(255, 255, 255, .8); }
+.hb-clock { margin: 5px 0 0; }
+.hb-clock .clock {
+  font-size: 34px; font-weight: 800; line-height: 1.15;
+  color: #fff; letter-spacing: 1.5px;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 6px 20px rgba(11, 24, 74, .3);
+}
+
+/* 天气：贴在这一行的右端 */
+.wx {
+  flex: none;
+  display: flex; align-items: center; gap: 15px;
+  padding: 12px 18px; border-radius: 16px;
+  background: rgba(255, 255, 255, .15);
+  border: 1px solid rgba(255, 255, 255, .24);
+}
+.wx-icon { flex: none; font-size: 26px; line-height: 1; }
+.wx-now { min-width: 0; }
+.wx-now b {
+  display: flex; align-items: flex-start;
+  font-size: 25px; font-weight: 800; letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+}
+.wx-now b small { margin-top: 4px; font-size: 12px; font-weight: 600; color: rgba(255, 255, 255, .7); }
+.wx-now em { display: block; margin-top: 1px; font-style: normal; font-size: 12px; color: rgba(255, 255, 255, .72); }
+.wx-meta { display: flex; flex-direction: column; gap: 1px; font-size: 12px; color: rgba(255, 255, 255, .8); }
+.wx-meta b { font-weight: 700; }
+.hero-block .city-btn { color: #fff; background: rgba(255, 255, 255, .2); border-color: rgba(255, 255, 255, .28); }
+.hero-block .city-btn:hover { color: #fff; background: rgba(255, 255, 255, .3); border-color: rgba(255, 255, 255, .45); }
+
+/* 中间那组：标题 + 标语，紧贴搜索框。
+   标语的 margin-bottom 就是那句「保留 10px 左右的下边距」。
+   margin-top 是 0 —— 这一组的顶要和左右两边的问候、天气齐平。 */
+.hb-title {
+  margin: 0; text-align: center;
+  font-size: 44px; font-weight: 800;
+  letter-spacing: 8px; text-indent: 8px;
+}
+.hb-sub { margin: 4px 0 10px; text-align: center; font-size: 14.5px; color: rgba(255, 255, 255, .86); }
+/* 搜索框在中间那组里居中，宽度跟着这组的宽度走 */
+.hero-block .search-wrap { margin: 0 auto; width: min(760px, 100%); }
+.hero-block .search {
+  background: #fff; border-color: transparent;
+  box-shadow: 0 14px 34px -16px rgba(11, 24, 74, .6);
+}
+/* 搜索框和下面的胶囊都是固定白底，所以里面的颜色也写死不跟着主题变 ——
+   深色主题下 --text 是浅色，套上去就变成白字白底，什么都看不见。 */
+.hero-block .search input { color: #1A1F36; }
+.hero-block .search input::placeholder { color: #98A0B3; }
+.hero-block .search-icon { color: #98A0B3; }
+.hero-block .search-kbd { color: #98A0B3; background: #F1F3F9; border-color: #E4E9F4; }
+.hero-block .search-clear { color: #98A0B3; }
+/* .hb-note（「不插广告 · 不做竞价排名 · 搜完就走」）已经去掉了 ——
+   上面那条标语和搜索框本身就在说同一件事，再来一句是重复；
+   省下的这行高度正好留给「收藏网址」。 */
+
+/* 搜索面板挂在蓝底块里面，会把块上的白色继承下去 ——
+   结果就是白底面板上写着白字，条目名整个看不见。这里掰回正文色。 */
+.hero-block .search-panel { color: var(--text); }
+
+/* 第三层：猜你需要（原来的「常用直达」改成横滑条）。
+   紧跟搜索区往下排，不推到块底部 —— 块底下那块空档留给「收藏网址」。 */
+.apps { margin-top: 22px; display: flex; align-items: center; gap: 12px; }
+.apps[hidden] { display: none; }
+/* 「猜你需要：」「收藏网址：」—— 这两行是整块区域的分类标题，
+   字号往上提了一档、加了字重，不然缩在那一排白胶囊旁边像句小字注释。 */
+.apps-label { flex: none; font-size: 15px; font-weight: 600; letter-spacing: .5px; color: rgba(255, 255, 255, .82); }
+.apps-track {
+  flex: 1; min-width: 0;
+  display: flex; gap: 9px;
+  overflow-x: auto; scrollbar-width: none;
+  padding: 2px 0 4px;
+  /* 右边渐隐，暗示还能往右滑 */
+  -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, #000 88%, transparent);
+}
+.apps-track::-webkit-scrollbar { display: none; }
+.app {
+  flex: none; display: flex; align-items: center; gap: 8px;
+  padding: 7px 15px 7px 8px; border-radius: 999px;
+  font-size: 13.5px; font-weight: 500;
+  color: #1A1F36;                 /* 固定白底，文字颜色就不能跟主题走 */
+  background: #fff;
+  transition: transform .18s, box-shadow .18s;
+}
+.app:hover { transform: translateY(-2px); box-shadow: 0 10px 22px -12px rgba(11, 24, 74, .55); }
+.app .site-ico { flex: none; width: 24px; height: 24px; border-radius: 50%; font-size: 11px; }
+.apps-more { flex: none; font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, .8); }
+.apps-more:hover { color: #fff; }
+
+/* 「收藏网址」那行 —— 轨道现在是空的，给个最小高度让它和上一行等高，
+   不然只有孤零零一个标签，看着像没加载出来。往 #favGrid 里塞东西就自然撑开。 */
+.apps-fav { margin-top: 12px; }
+.apps-fav .apps-track { min-height: 36px; }
+
+/* ---------- ② 预设 | ③ 工具 ---------- */
+.pw-row {
+  flex: 1; min-height: 210px;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.pw { min-width: 0; padding: 22px 26px; border-radius: 22px; display: flex; flex-direction: column; }
+.pw-preset { background: #E7ECFF; color: #2C3A7E; }
+.pw-tool { background: #DBF2EB; color: #12514A; }
+.pw-head { display: flex; align-items: baseline; gap: 12px; }
+.pw-head h2 { margin: 0; font-size: 27px; font-weight: 800; letter-spacing: -.4px; }
+.pw-go { margin-left: auto; font-size: 13px; font-weight: 600; opacity: .72; }
+.pw-go:hover { opacity: 1; }
+.pw-sub { margin: 8px 0 0; font-size: 14px; opacity: .82; }
+/* 标签推到底部，两块高度不一样时也对得齐 */
+.pw-chips { margin-top: auto; padding-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+.pw-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 14px 7px 8px; border-radius: 999px;
+  font-size: 13px; font-weight: 500;
+  background: rgba(255, 255, 255, .78);
+  border: 1px solid rgba(255, 255, 255, .95);
+  transition: background .18s, transform .18s;
+}
+.pw-chip:hover { background: #fff; transform: translateY(-1px); }
+.pw-chip-ico {
+  flex: none; width: 24px; height: 24px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(255, 255, 255, .9);
+}
+
+/* ---------- 深色主题 ---------- */
+/* 搜索块那套蓝渐变是按浅色底调的，直接放到深色底上会亮得晃眼 ——
+   压暗、降饱和，白字照样看得清，但不再是一整块发光板。 */
+[data-theme="dark"] .hero-block {
+  background: linear-gradient(135deg, #1B2568 0%, #2A3E9E 62%, #3A52BE 100%);
+  box-shadow: 0 20px 48px -26px rgba(0, 0, 0, .85);
+}
+[data-theme="dark"] .wx { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .16); }
+[data-theme="dark"] .hb-hello { background: rgba(255, 255, 255, .14); }
+
+[data-theme="dark"] .pw-preset { background: #222A4C; color: #AEBEFF; }
+[data-theme="dark"] .pw-tool { background: #123029; color: #7FE0C4; }
+[data-theme="dark"] .pw-chip { background: rgba(255, 255, 255, .09); border-color: rgba(255, 255, 255, .15); }
+[data-theme="dark"] .pw-chip:hover { background: rgba(255, 255, 255, .16); }
+[data-theme="dark"] .pw-chip-ico { background: rgba(255, 255, 255, .12); }
+
+/* ---------- 竖屏 / 窄屏：不撑满视口了，改成竖着排整页滚 ----------
+   宽屏那一行的三栏在这里塞不下，退回成两行：
+       左上角 问候        ┊        右上角 天气（缩成方块）
+       下面   搜索那组（标题 + 标语 + 框）整组居中 */
+@media (max-width: 980px) {
+  .home-top { min-height: 0; }
+  .hero-block { flex: none; padding: 22px 20px; }
+
+  .hb-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "greet  wx"
+      "center center";
+    gap: 14px 16px;
+    align-items: start;
+  }
+  .hb-hi { grid-area: greet; }
+  .wx { grid-area: wx; }
+  .hb-center { grid-area: center; }
+
+  .hb-title { margin-top: 16px; font-size: 34px; letter-spacing: 5px; text-indent: 5px; }
+  .hb-h1 { font-size: 23px; }
+
+  /* 天气缩成一块方的，只留图标 + 温度 + 城市 —— 竖屏没地方摆那一长条 */
+  .wx {
+    flex-direction: column; align-items: center; gap: 3px;
+    padding: 11px 13px; border-radius: 15px; text-align: center;
+  }
+  .wx-icon { font-size: 22px; }
+  .wx-now b { justify-content: center; font-size: 21px; }
+  .wx-now em, .wx-meta { display: none; }
+
+  .apps { flex-wrap: wrap; }
+  .pw-row { grid-template-columns: 1fr; }
+  .pw { min-height: 0; padding: 20px 22px; }
+  .pw-chips { margin-top: 16px; }
+}
+
+@media (max-width: 560px) {
+  .hero-block { padding: 20px 16px; }
+  .hb-title { font-size: 28px; letter-spacing: 4px; text-indent: 4px; }
+  .hb-sub { font-size: 13.5px; }
+  .hb-clock .clock { font-size: 27px; }
+  .hb-h1 { font-size: 21px; }
+  .wx { padding: 9px 11px; }
+  .wx-icon { font-size: 20px; }
+  .wx-now b { font-size: 19px; }
+  .pw-head h2 { font-size: 23px; }
+}
+
+/* ============================================================
+   设置弹窗 —— 导航栏右上角那个齿轮打开的
+   ============================================================ */
+.set-modal { width: min(520px, 100%); padding: 22px 24px 24px; }
+.set-head { display: flex; align-items: center; gap: 14px; }
+.set-head h3 { font-size: 20px; font-weight: 700; letter-spacing: -.2px; }
+.set-x {
+  margin-left: auto; flex: none;
+  width: 32px; height: 32px; border-radius: 10px;
+  display: grid; place-items: center;
+  font-size: 20px; line-height: 1; color: var(--text-3);
+  background: var(--surface-2); border: 1px solid var(--border);
+  transition: color .18s, background .18s, border-color .18s;
+}
+.set-x:hover { color: var(--brand); background: var(--brand-tint); border-color: var(--brand-soft); }
+
+.set-body { margin-top: 12px; }
+.set-group { padding: 16px 0; border-top: 1px solid var(--border); }
+.set-group:first-child { border-top: 0; padding-top: 6px; }
+.set-group h4 { font-size: 14px; font-weight: 700; }
+.set-desc { margin: 6px 0 0; font-size: 12.5px; line-height: 1.7; color: var(--text-3); }
+
+/* 外观：浅色 / 深色 二选一 */
+.set-seg { margin-top: 11px; display: flex; gap: 8px; }
+.set-seg button {
+  flex: 1; padding: 9px 14px; border-radius: var(--r-sm);
+  font-size: 13.5px; font-weight: 600; color: var(--text-2);
+  background: var(--surface-2); border: 1.5px solid var(--border);
+  transition: color .18s, background .18s, border-color .18s, box-shadow .18s;
+}
+.set-seg button:hover { color: var(--brand); border-color: var(--brand-soft); }
+.set-seg button.is-on {
+  color: var(--brand); background: var(--brand-tint);
+  border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-tint-2);
+}
+
+.set-btn {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  margin-top: 11px; padding: 11px 15px; border-radius: var(--r-sm);
+  font-size: 13.5px; font-weight: 600; color: var(--text);
+  text-align: left;
+  background: var(--surface-2); border: 1px solid var(--border);
+  transition: color .18s, background .18s, border-color .18s;
+}
+.set-btn:hover { color: var(--brand); border-color: var(--brand-soft); background: var(--brand-tint); }
+.set-btn em { margin-left: auto; font-style: normal; font-size: 12.5px; color: var(--text-3); }
+.set-btn.is-danger:hover { color: #E5484D; border-color: rgba(229, 72, 77, .38); background: rgba(229, 72, 77, .08); }
+
+@media (max-width: 560px) {
+  .set-modal { padding: 18px 18px 20px; }
+  .set-seg { flex-direction: column; }
+}
+
+/* ---------- 窗口不够高时再压一档 ----------
+   一屏装得下是设计目标，但屏幕矮的时候光靠 flex 收不进去 ——
+   搜索块里的内容有最小高度。这里把字号、间距、内边距一起收一收，
+   在 768p 这类笔记本上也能不滚动。 */
+@media (max-height: 820px) {
+  .home-top { gap: 14px; padding: 14px 0; }
+  .hero-block { min-height: 300px; padding: 16px 28px 14px; }
+  .hb-h1 { margin-top: 6px; font-size: 22px; }
+  .hb-date { margin-top: 6px; }
+  .hb-clock .clock { font-size: 26px; }
+  /* 标题的 margin-top 保持 0：它要和左右两边的问候、天气齐平 */
+  .hb-title { font-size: 34px; letter-spacing: 5px; text-indent: 5px; }
+  /* 标语到搜索框那 10px 间距也不跟着压 —— 那是刻意的呼吸位 */
+  .hb-sub { font-size: 13.5px; }
+  .apps { margin-top: 14px; }
+  .apps-fav { margin-top: 9px; }
+  .wx { padding: 9px 14px; gap: 12px; }
+  .wx-now b { font-size: 21px; }
+  .wx-icon { font-size: 22px; }
+  .pw-row { min-height: 168px; }
+  .pw { padding: 16px 22px; }
+  .pw-head h2 { font-size: 22px; }
+  .pw-sub { margin-top: 5px; font-size: 13px; }
+  .pw-chips { padding-top: 10px; }
+  .pw-chip { padding: 6px 12px 6px 7px; font-size: 12.5px; }
+}
+
+/* 手机/窄屏：三块竖着排，这时候本来就该整页滚 */
+@media (max-width: 980px) {
+  .home-top { min-height: 0; gap: 16px; padding: 16px 0 24px; }
+}
+
+/* 更矮的窗口（768p 笔记本等）再压一档，目标一样是一屏放下 */
+@media (max-height: 700px) {
+  .home-top { gap: 12px; padding: 12px 0; }
+  .hero-block { min-height: 226px; padding: 14px 26px 12px; }
+  .hb-h1 { font-size: 20px; margin-top: 5px; }
+  .hb-date { margin-top: 5px; font-size: 12.5px; }
+  .hb-clock .clock { font-size: 23px; }
+  .hb-title { font-size: 30px; letter-spacing: 4px; text-indent: 4px; }
+  .hb-sub { font-size: 12.5px; }
+  .apps { margin-top: 12px; }
+  .apps-fav { margin-top: 7px; }
+  .apps-fav .apps-track { min-height: 32px; }
+  .app { padding: 6px 13px 6px 7px; font-size: 13px; }
+  .pw-row { min-height: 118px; }
+  .pw { padding: 14px 20px; }
+  .pw-head h2 { font-size: 20px; }
+  .pw-sub { margin-top: 4px; font-size: 12.5px; }
+  .pw-chips { padding-top: 8px; }
+  .pw-chip { padding: 5px 11px 5px 6px; font-size: 12px; }
+  .pw-chip-ico { width: 21px; height: 21px; }
 }

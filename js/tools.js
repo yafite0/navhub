@@ -64,6 +64,20 @@
     specs: {
       t: '驱动工具',
       d: '先看看自己是什么显卡、CPU 和内存，认出型号后再去右边对应的官网下驱动。所有信息都在你的浏览器里读取，不会上传到任何地方。'
+    },
+    shortcut: {
+      t: '生成网页快捷方式',
+      d: '填一个网址，生成一个能放到桌面的小文件。以后双击就直接打开那个网站，不用先开浏览器再翻收藏夹。文件在本机生成，不联网、不上传。'
+    },
+    newpc: {
+      t: '新机预设',
+      d: '刚拿到一台新电脑该装什么。按用途分好类，每一条都指向官网 —— 不给安装包、没有一键安装，一个一个点，装什么由你决定。'
+    },
+    /* prompts 已经并进 translate.html，这里连面板一起删了，
+       旧的 ?tool=prompts 由 initTool 转过去，不需要再留一份说明。 */
+    share: {
+      t: '分享小工具',
+      d: '感谢您的分享，我不会忘记初心。努力做的更好，只因我被需要。'
     }
   };
 
@@ -72,11 +86,22 @@
     var want = '';
     try { want = new URLSearchParams(location.search).get('tool') || ''; } catch (e) { }
 
+    /* 提示词已经并进「提示词助手」页（translate.html），这里不再留着重复的一份。
+       旧的 ?tool=prompts 链接（可能被收藏过）原样把锚点带过去。 */
+    if (want === 'prompts') {
+      location.replace('translate.html' + String(location.hash || ''));
+      return;
+    }
+
     if (!want || !document.querySelector('[data-tool-panel="' + want + '"]')) want = 'unit';
 
     Array.prototype.forEach.call(panels, function (p) {
       p.classList.toggle('is-active', p.getAttribute('data-tool-panel') === want);
     });
+
+    /* 把当前工具名挂到 body 上：个别工具（分享）要按视口高度撑满，
+       用属性选择器比 :has() 稳，旧一点的浏览器也认。 */
+    document.body.setAttribute('data-tool', want);
 
     var meta = TOOL_META[want];
     if (meta) {

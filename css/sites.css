@@ -32,6 +32,13 @@
 }
 .as-note-text p b { display: inline; font-size: inherit; color: var(--text); }
 
+/* 收录说明那条：和上面「国外站点提示」区分开，用中性色，语气更平 */
+.as-note.is-rule {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+.as-note.is-rule .as-note-ico { color: var(--text-2); }
+
 .as-more {
   margin-top: 16px;
   font-size: 13px; line-height: 1.8; color: var(--text-3);

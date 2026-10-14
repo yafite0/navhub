@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    启航 · 网站导航  —  页面渲染 / 搜索 / 介绍弹窗 / 主题
    ============================================================ */
 (function () {
@@ -37,7 +37,12 @@
     return h;
   }
 
-  function openSite(url) { window.open(url, '_blank', 'noopener,noreferrer'); }
+  /* 移动端对 window.open 的拦截比桌面严，统一交给 seek.js ——
+     被拦下来时它会退化成当前页跳转，至少能打开，不会点了没反应 */
+  function openSite(url) {
+    if (window.Seek) Seek.open(url);
+    else window.open(url, '_blank', 'noopener,noreferrer');
+  }
 
   /* 站点图标：直接画进传进来的元素里。
      要点：图标是异步加载的，所以先把名字首字当作占位显示出来，图片就绪后再替换掉。
@@ -332,105 +337,6 @@
     initLightbox();
   }
 
-  /* ---------- 关于本站 ---------- */
-  function initAbout() {
-    var mask = document.getElementById('aboutModal');
-    var btn = document.getElementById('aboutBtn');
-    if (!mask || !btn) return;
-
-    var data = CFG.about || {};
-
-    function fill() {
-      function set(id, txt) {
-        var n = document.getElementById(id);
-        if (n && txt) n.textContent = txt;
-      }
-      set('aboutTitle', data.title);
-      set('aboutSub', data.subtitle);
-      set('aboutLead', data.lead);
-      set('aboutNote', data.note);
-
-      var grid = document.getElementById('aboutGrid');
-      if (grid) {
-        grid.textContent = '';
-        (data.items || []).forEach(function (it) {
-          var box = el('div', 'about-item');
-          box.appendChild(el('h4', null, it.t));
-          box.appendChild(el('p', null, it.d));
-          grid.appendChild(box);
-        });
-      }
-
-      var tags = document.getElementById('aboutTags');
-      if (tags) {
-        tags.textContent = '';
-        (data.tags || []).forEach(function (t) { tags.appendChild(el('span', null, t)); });
-      }
-
-      /* 署名行：data.credit 留空时整行隐藏 */
-      var creditBox = document.getElementById('aboutCredit');
-      var creditText = document.getElementById('aboutCreditText');
-      if (creditBox && creditText) {
-        if (data.credit) {
-          creditText.textContent = data.credit;
-          creditBox.hidden = false;
-        } else {
-          creditBox.hidden = true;
-        }
-      }
-
-      var gh = document.getElementById('githubBtn');
-      var ghText = document.getElementById('githubText');
-      if (gh && ghText) {
-        if (data.github) {
-          gh.href = data.github;
-          ghText.textContent = data.githubText || '在 GitHub 上查看源码';
-        } else {
-          gh.href = '#';
-          gh.classList.add('is-pending');
-          ghText.textContent = (data.githubText || '在 GitHub 上查看源码') + '（链接待补充）';
-        }
-      }
-
-      var sp = document.getElementById('sponsorBtn');
-      var spText = document.getElementById('sponsorText');
-      if (sp && data.sponsor) sp.href = data.sponsor;
-      if (spText && data.sponsorText) spText.textContent = data.sponsorText;
-    }
-
-    function close() {
-      mask.hidden = true;
-      document.body.classList.remove('modal-open');
-      btn.focus();
-    }
-
-    function open() {
-      fill();
-      mask.hidden = false;
-      document.body.classList.add('modal-open');
-      var c = document.getElementById('aboutClose');
-      if (c) c.focus();
-    }
-
-    btn.addEventListener('click', open);
-    var closeBtn = document.getElementById('aboutClose');
-    if (closeBtn) closeBtn.addEventListener('click', close);
-    mask.addEventListener('click', function (e) { if (e.target === mask) close(); });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !mask.hidden) close();
-    });
-
-    var ghBtn = document.getElementById('githubBtn');
-    if (ghBtn) {
-      ghBtn.addEventListener('click', function (e) {
-        if (!data.github) {
-          e.preventDefault();
-          if (window.showToast) window.showToast('GitHub 链接还没填，稍后补上');
-        }
-      });
-    }
-  }
-
   /* ---------- 渲染 ---------- */
   var ALL_SITES = [];
 
@@ -453,21 +359,80 @@
     });
   }
 
+  /* 首屏底部的「常去」条 —— 横向滚动的一排应用胶囊。
+     数据还是精选里标了 featured 的那些，只是从卡片换成紧凑的胶囊：
+     点一下直接在新标签打开。带「介绍」弹窗的卡片式样留在下面分类里，
+     那边信息更全，这里只负责「一眼扫过去、直接点」。 */
+  /* 首屏底部那条「精选」的候选池。
+     data.js 里标了 featured 的优先；一条都没标就每个分类挑第一个 ——
+     不然整条是空的，搜索块底下会空一大块。
+     以后想固定几个常去的，给那些站点加 featured: true 就行。 */
+  function featuredPool() {
+    var marked = ALL_SITES.filter(function (x) { return x.site.featured; })
+      .map(function (x) { return x.site; });
+    if (marked.length) return marked;
+
+    var out = [];
+    (CFG.categories || []).forEach(function (cat) {
+      var s = (cat.sites || [])[0];
+      if (s) out.push(s);
+    });
+    return out;
+  }
+
+  /* 首屏底部的「精选」条 —— 横向滚动的一排应用胶囊。
+     点一下直接在新标签打开；带「介绍」弹窗的卡片式样留在下面分类里，
+     那边信息更全，这里只负责「一眼扫过去、直接点」。 */
   function renderFeatured() {
-    var section = document.getElementById('featured');
+    var row = document.getElementById('featured');
     var box = document.getElementById('featuredGrid');
-    if (!section || !box) return;
+    if (!row || !box) return;
+
+    var list = featuredPool();
+    if (!list.length) { row.hidden = true; return; }
+    row.hidden = false;
+
+    /* 顶栏那个「常用直达」只在 data.js 里真标了 featured 时才露出来 ——
+       兜底池是自动凑的，不能拿它去改动顶栏（顶栏照旧保持原样）。 */
     var nav = document.getElementById('navFeatured');
-    var list = ALL_SITES.filter(function (x) { return x.site.featured; });
-    if (!list.length) {
-      section.hidden = true;
-      if (nav) nav.hidden = true;
-      return;
-    }
-    section.hidden = false;
-    if (nav) nav.hidden = false;
+    if (nav) nav.hidden = !ALL_SITES.some(function (x) { return x.site.featured; });
+
     box.textContent = '';
-    list.forEach(function (x) { box.appendChild(buildPickCard(x.site)); });
+    list.forEach(function (s) {
+      var a = el('a', 'app');
+      a.href = s.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.title = s.name + '：' + (s.short || s.desc || domainOf(s.url));
+      a.appendChild(buildIcon(s));
+      a.appendChild(el('span', null, s.name));
+      box.appendChild(a);
+    });
+  }
+
+  /* 首屏「预设」块里的一排入口：网页翻译 + 六大类提示词。
+     点了直接去「提示词助手」页对应那一条（锚点和左边导航是同一套）。 */
+  function renderPresetChips() {
+    var box = document.getElementById('presetChips');
+    if (!box || !CFG.prompts) return;
+    var D = CFG.prompts;
+
+    box.textContent = '';
+    (D.tools || []).forEach(function (t, ti) {
+      var a = el('a', 'pw-chip');
+      a.href = 'translate.html#pm-tool-' + ti;
+      a.appendChild(el('span', 'pw-chip-ico', t.icon || '🧰'));
+      a.appendChild(el('span', null, t.name));
+      box.appendChild(a);
+    });
+    (D.groups || []).forEach(function (g, gi) {
+      if (!(g.items || []).length) return;
+      var a = el('a', 'pw-chip');
+      a.href = 'translate.html#pm-' + gi + '-0';
+      a.appendChild(el('span', 'pw-chip-ico', g.icon || '📁'));
+      a.appendChild(el('span', null, g.name));
+      box.appendChild(a);
+    });
   }
 
   /* 把 categories 按 group 字段归到大类下。
@@ -741,18 +706,38 @@
     var input = document.getElementById('searchInput');
     var panel = document.getElementById('searchPanel');
     var clearBtn = document.getElementById('searchClear');
+    var goBtn = document.getElementById('searchGo');
     var form = document.getElementById('searchForm');
     if (!input || !panel) return;
 
-    var results = [];
-    var cursor = -1;
+    /* 输入框的提示语：要说清「没收录的也能搜」这件事。
+       很多人以为这只是个站内目录，看到没有对应条目就退出去了。 */
+    input.placeholder = '如果没有对应网站，也能进行纯净搜索！';
 
-    function isUrl(t) {
-      return /^(https?:\/\/|www\.)[^\s]+$/i.test(t) || /^[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(t);
+    /* 框里空着就把「搜索」按钮灰掉、禁掉。
+       亮着的蓝色按钮按下去什么也不会发生（go() 第一句就 return 了），
+       比灰着更让人困惑：会以为是自己哪里点错了。 */
+    function syncGo() { if (goBtn) goBtn.disabled = !input.value.trim(); }
+    syncGo();
+
+    /* 网址判断和搜索引擎都统一走 js/seek.js，别再各写一套标准 */
+    function isUrl(t) { return window.Seek ? Seek.isUrl(t) : false; }
+
+    /* 用户直接粘了个网址时，看这个域名我们收没收录。
+       收录了就给对应卡片（点它才跳官网）；没收录就不自己给跳转 ——
+       我们只对自己核对过的地址负责，剩下的交给搜索引擎。 */
+    function findByHost(raw) {
+      var host = window.Seek ? Seek.hostOf(Seek.normalize(raw)) : '';
+      if (!host) return null;
+      for (var i = 0; i < ALL_SITES.length; i++) {
+        if (Seek.hostOf(ALL_SITES[i].site.url) === host) return ALL_SITES[i];
+      }
+      return null;
     }
 
     function search(qRaw) {
-      var q = qRaw.trim().toLowerCase();
+      var raw = String(qRaw == null ? '' : qRaw).trim();
+      var q = raw.toLowerCase();
       var out = [];
 
       /* 还没输入内容时，先把精选分类里的站点列出来，方便直接点 */
@@ -768,40 +753,63 @@
         return out;
       }
 
-      if (isUrl(qRaw.trim())) {
-        var u = qRaw.trim();
-        if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
-        out.push({ url: u, site: { name: u.replace(/^https?:\/\//, '').replace(/\/$/, ''), short: '直接打开这个网址', url: u } });
+      if (isUrl(raw)) {
+        /* 网址：只可能是「我们收录了 → 给卡片」或「没收录 → 什么都不给」 */
+        var hit = findByHost(raw);
+        if (hit) {
+          out.push({
+            site: hit.site,
+            cat: hit.cat,
+            listed: hit.listed,
+            bare: hit.bare,
+            url: hit.site.url
+          });
+        }
+      } else {
+        ALL_SITES.map(function (entry) { return { entry: entry, n: score(entry, q) }; })
+          .filter(function (x) { return x.n > 0; })
+          .sort(function (a, b) {
+            /* 相关度相同时按拼音排序 */
+            return b.n - a.n || a.entry.site.name.localeCompare(b.entry.site.name, 'zh-CN');
+          })
+          .slice(0, 8)
+          .forEach(function (x) {
+            out.push({
+              site: x.entry.site,
+              cat: x.entry.cat,
+              listed: x.entry.listed,
+              bare: x.entry.bare,
+              url: x.entry.site.url
+            });
+          });
       }
 
-      ALL_SITES.map(function (entry) { return { entry: entry, n: score(entry, q) }; })
-        .filter(function (x) { return x.n > 0; })
-        .sort(function (a, b) {
-          /* 相关度相同时按拼音排序 */
-          return b.n - a.n || a.entry.site.name.localeCompare(b.entry.site.name, 'zh-CN');
-        })
-        .slice(0, 8)
-        .forEach(function (x) {
-          out.push({
-            site: x.entry.site,
-            cat: x.entry.cat,
-            listed: x.entry.listed,
-            bare: x.entry.bare,
-            url: x.entry.site.url
-          });
-        });
-
+      /* 面板里只放「点得开」的站内结果。
+         搜索本身固定走必应（回车 / 点「搜索」），不再往列表里插引擎入口 ——
+         那一条和「点条目就是前往官网」是两套动作，摆在一起只会让人分不清。 */
       return out;
     }
 
+    /* 面板是绝对定位的，默认会一路盖到下面的「预设 / 工具」上面去。
+       这里按「面板顶边 → 搜索块底边」算出还剩多少地方，超出就在面板里滚 ——
+       保证它永远不越出搜索块，也就不可能挡住那两块。 */
+    function fitPanel() {
+      var block = document.querySelector('.hero-block');
+      if (!block) return;
+      var room = block.getBoundingClientRect().bottom - panel.getBoundingClientRect().top - 14;
+      panel.style.maxHeight = Math.max(150, Math.round(room)) + 'px';
+    }
+    function show() { panel.hidden = false; fitPanel(); }
+    window.addEventListener('resize', function () { if (!panel.hidden) fitPanel(); });
+
     function renderList(q) {
-      results = search(q);
-      cursor = -1;
+      var results = search(q);
       panel.textContent = '';
 
       if (!results.length) {
-        panel.appendChild(el('div', 'search-empty', '没找到，换个名字或关键词试试（比如「网盘」「听歌」）'));
-        panel.hidden = false;
+        panel.appendChild(el('div', 'search-empty',
+          '本站没有收录相关的站点 —— 按回车或点「搜索」，用搜索引擎搜「' + String(q == null ? '' : q).trim() + '」'));
+        show();
         return;
       }
 
@@ -832,21 +840,18 @@
         else if (r.cat && r.cat.name) a.appendChild(el('span', 'si-cat', r.cat.name));
         panel.appendChild(a);
       });
-      panel.hidden = false;
+      show();
     }
 
-    function highlight(dir) {
-      var items = panel.querySelectorAll('.search-item');
-      if (!items.length) return;
-      cursor = (cursor + dir + items.length) % items.length;
-      for (var i = 0; i < items.length; i++) items[i].classList.toggle('is-on', i === cursor);
-      items[cursor].scrollIntoView({ block: 'nearest' });
-    }
+    /* 上下键高亮整套撤了：回车不再"打开高亮的那条"（改成固定去搜网页），
+       高亮了也没用，留着只会让人以为按回车会跳到那一条。
+       列表条目本身是 <a>，用 Tab 键能聚焦、回车能打开，无障碍不受影响。 */
 
-    function close() { panel.hidden = true; cursor = -1; }
+    function close() { panel.hidden = true; }
 
     input.addEventListener('input', function () {
       clearBtn.hidden = !input.value;
+      syncGo();
       renderList(input.value);
     });
 
@@ -855,27 +860,34 @@
       renderList(input.value);
     });
 
+    /* 回车、点「搜索」、手机键盘上的「前往」，三条路都走这里。
+       搜索框**只干搜索这一件事**：把输入框里的内容交给必应搜网页，
+       不做任何跳转 —— 想去某个官网，点下面列表里那一条。
+
+       以前这里会「有结果就打开第一条」，和「点条目就是前往官网」撞在一起，
+       同一个动作两套结果，说不清点了会发生什么。 */
+    function go() {
+      var raw = input.value.trim();
+      if (!raw) return;
+
+      var engines = window.Seek ? Seek.engines() : [];
+      if (!engines.length) return;
+
+      openSite(Seek.engineHref(engines[0], raw));
+      close();
+    }
+
     input.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowDown') { e.preventDefault(); highlight(1); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); highlight(-1); }
-      else if (e.key === 'Escape') { close(); input.blur(); }
-      else if (e.key === 'Enter') {
-        e.preventDefault();
-        if (cursor > -1 && results[cursor]) { openSite(results[cursor].url); close(); }
-        else if (results.length) { openSite(results[0].url); close(); }
-        else if (isUrl(input.value)) {
-          var u = input.value.trim();
-          if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
-          openSite(u);
-        }
-      }
+      if (e.key === 'Escape') { close(); input.blur(); }
+      else if (e.key === 'Enter') { e.preventDefault(); go(); }
     });
 
-    form.addEventListener('submit', function (e) { e.preventDefault(); });
+    form.addEventListener('submit', function (e) { e.preventDefault(); go(); });
 
     clearBtn.addEventListener('click', function () {
       input.value = '';
       clearBtn.hidden = true;
+      syncGo();
       close();
       input.focus();
     });
@@ -892,35 +904,6 @@
         input.select();
       }
     });
-  }
-
-  /* ---------- 主题 ---------- */
-  function initTheme() {
-    var KEY = 'navhub.theme';
-    var btn = document.getElementById('themeBtn');
-    var root = document.documentElement;
-
-    function apply(t, animate) {
-      if (animate) {
-        root.classList.add('theming');
-        window.setTimeout(function () { root.classList.remove('theming'); }, 320);
-      }
-      root.setAttribute('data-theme', t);
-      var meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', t === 'dark' ? '#0B0F1A' : '#4D6BFE');
-    }
-
-    var saved = null;
-    try { saved = localStorage.getItem(KEY); } catch (e) { }
-    apply(saved === 'dark' ? 'dark' : 'light', false);
-
-    if (btn) {
-      btn.addEventListener('click', function () {
-        var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        apply(next, true);
-        try { localStorage.setItem(KEY, next); } catch (e) { }
-      });
-    }
   }
 
   /* ---------- 提示 ---------- */
@@ -1106,19 +1089,43 @@
     run();
   }
 
-  /* ---------- 启动 ---------- */
+  /* ---------- 让首屏左右两翼等宽 ----------
+     首屏那一行是「问候 ┊ 搜索 ┊ 天气」，两边都 flex: none、中间吃剩余宽度。
+     所以「搜索」居中的是「中间那一格」，不是整块 ——
+     左边问候比右边天气窄一截，不补这一下标题会偏左几十像素。
+     补法：把问候的 min-width 抬到和天气一样宽，两翼对称，中间那格自然也居中。
+     窗口不够宽时不补 —— 宁可标题偏一点，也别把搜索框挤没了。 */
+  function syncHeroWings() {
+    var row = document.querySelector('.hb-row');
+    var hi = document.querySelector('.hb-hi');
+    var wx = document.querySelector('.wx');
+    if (!row || !hi || !wx) return;
+
+    hi.style.minWidth = '';
+    if (window.innerWidth <= 980) return;      /* 窄屏是上下两行，不适用 */
+
+    var w = Math.max(hi.offsetWidth, wx.offsetWidth);
+    var need = w * 2 + 48 + 420;               /* 两翼 + 两个 gap + 中间至少留住 420 */
+    if (row.offsetWidth >= need) hi.style.minWidth = w + 'px';
+  }
+
+  /* ---------- 启动 ----------
+     主题、"关于本站"、"设置" 这三块已经交给 js/topbar.js 了 ——
+     它们是全站共用的，放在这里只有首页和「其他网页」页能用到。
+     这个文件只管首页自己的内容：卡片、搜索、随机推荐、介绍弹窗。 */
   function boot() {
-    initTheme();
     renderBrand();
     collectSites();
     renderFeatured();
+    renderPresetChips();
     renderCategories();
     renderChips();
     paintAllEntry();
     initSearch();
     initHeroPick();
     initModal();
-    initAbout();
+    syncHeroWings();
+    window.addEventListener('resize', syncHeroWings);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

@@ -1,0 +1,260 @@
+/* ============================================================
+   小工具 · 分享 / 宣传海报
+   三栏：源码 | 海报预览 | 控件（铺满 .wrap）
+   ============================================================ */
+
+/* ============================================================
+   整页一屏：卡片撑满视口，只有代码区自己滚
+   ------------------------------------------------------------
+   小工具页默认是「内容多高页面就多高」，分享页内容长，
+   那样会拖出很长的滚动条 —— 想点下面的按钮还得先滚半天。
+   这里改成：body 变纵向 flex，主区吃掉「顶栏和页脚之间」的全部高度，
+   卡片撑满主区，代码区再吃掉卡片里剩下的空间。
+   body[data-tool] 由 js/tools.js 挂上，不用 :has()。
+
+   只在宽屏生效：窄屏是单列堆叠（源码在最后），本来就得上下滚，
+   硬套这套高度分配反而会把海报压成一条。
+   ============================================================ */
+@media (min-width: 1181px) {
+  body[data-tool="share"] {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  /* 这一页不要页脚。
+     「本机生成、数据不外传」卡片头上那个徽章和右下角那段提示已经说了两遍，
+     页脚再来一句是第三遍；而且它占的正是卡片最需要的那截高度。
+     去掉之后 .tw-main 的 flex:1 自然把那块吃掉，卡片跟着铺到底。
+     只对 share 这一页生效 —— 其它小工具页的页脚照旧。 */
+  body[data-tool="share"] .footer { display: none; }
+  body[data-tool="share"] .topbar { flex: none; }
+
+  body[data-tool="share"] .tw-main {
+    flex: 1;
+    min-height: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 16px;
+  }
+  body[data-tool="share"] .tw-head { flex: none; padding: 12px 0 14px; }
+  body[data-tool="share"] .tw-panel.is-active { display: flex; flex: 1; min-height: 0; }
+  body[data-tool="share"] .tw-share-card {
+    flex: 1; min-height: 0; box-sizing: border-box;
+    display: flex; flex-direction: column;
+  }
+  body[data-tool="share"] .tw-share-card > .tool-body { flex: 1; min-height: 0; }
+
+  /* 行高定死成「1fr 的剩余高度」—— 不这么写，grid 行会按内容撑开，
+     代码区一长整页又被顶出去了 */
+  body[data-tool="share"] .sh-grid,
+  body[data-tool="share"] .sh-right {
+    height: 100%;
+    align-items: stretch;
+    grid-template-rows: minmax(0, 1fr);
+  }
+  body[data-tool="share"] .sh-src,
+  body[data-tool="share"] .sh-side {
+    display: flex; flex-direction: column;
+    min-height: 0;
+  }
+  body[data-tool="share"] .sh-src > *,
+  body[data-tool="share"] .sh-side > * { flex: none; }
+
+  /* 代码区吃掉剩下的全部高度。min-height 压到很小 ——
+     窗口特别矮时宁可代码区挤一点，也别把整页顶出滚动条。 */
+  body[data-tool="share"] .sh-code {
+    flex: 1; min-height: 88px;
+    height: auto; max-height: none;
+  }
+  /* 海报按剩余高度等比缩放，不给它定死尺寸 */
+  body[data-tool="share"] .sh-poster {
+    display: flex; align-items: flex-start; justify-content: center;
+    min-height: 0;
+  }
+  body[data-tool="share"] .sh-poster canvas {
+    width: auto; height: auto;
+    max-width: 100%; max-height: 100%;
+  }
+}
+
+/* 窗口特别矮（1366×768 的笔记本开着工具栏就是这样）时，
+   先牺牲最不重要的说明文字，优先保证整页不用滚 */
+@media (min-width: 1181px) and (max-height: 720px) {
+  body[data-tool="share"] .sh-hint { display: none; }
+  body[data-tool="share"] .sh-lead { margin-bottom: 10px; }
+  body[data-tool="share"] .sh-block { margin-bottom: 12px; }
+  body[data-tool="share"] .sh-label { margin-bottom: 6px; }
+}
+
+.tw-share-card { max-width: none; }
+
+/* 左右各一半：左边源码，右边「海报 + 控件」。
+   原来源码一家独大（宽屏下能占 59%），海报被挤成 320px 的小方块。 */
+.sh-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.sh-src { min-width: 0; }
+
+/* 右半再分两列：海报那一列吃掉剩下的全部宽度（canvas 自己按高度等比缩，
+   给得宽就画得大），控件按内容宽度贴在最右边。
+   控件那列用 clamp(316, 40%, 348)：里面那排按钮（复制图片 或 复制链接 …
+   下载图片）自然宽度 297，中间还得留出把「下载图片」顶到右边的那点余量，
+   所以底不能低于 316 —— 少了「下载图片」就会掉到第二行去。
+   写成 minmax(300px, 348px) 也不行：grid 会先把上限 348 喂满才轮到海报那列，
+   1440 这种宽度下海报反而被挤小。 */
+.sh-right {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(316px, 40%, 348px);
+  gap: 20px;
+  align-items: start;
+  min-width: 0;
+}
+.sh-poster, .sh-side { min-width: 0; }
+
+/* 窗口还没那么宽时，源码那半再让出一点。
+   右半要同时装下海报（按高度等比，1620 高时最宽也就 480 上下）
+   和控件（最少 300），硬按 50/50 分的话，1440 这种宽度下
+   海报反而比改之前还小。让出的这点宽度给海报正好补齐。 */
+@media (min-width: 1181px) and (max-width: 1500px) {
+  .sh-grid { grid-template-columns: minmax(0, .8fr) minmax(0, 1fr); }
+}
+
+/* ---------- 左：源码 ---------- */
+.sh-src-head {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px;
+  margin-bottom: 10px;
+}
+.sh-src-head b { font-size: 13.5px; font-weight: 700; color: var(--text); }
+.sh-src-head span { font-size: 12.5px; color: var(--text-3); }
+
+/* 高度由 js 量好再设（见 share.js 的 fitHeight）——
+   目标是整页一屏放得下，需要滚的只有这块代码区。
+   这里给个上下限兜底：js 没跑起来也不会把页面撑爆。 */
+.sh-code {
+  margin: 0; padding: 14px 16px;
+  height: 420px;
+  min-height: 200px; max-height: 640px;
+  overflow: auto;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px; line-height: 1.7; color: var(--text-2);
+  white-space: pre;
+  tab-size: 2;
+}
+
+/* ---------- 中：海报 ---------- */
+.sh-poster canvas {
+  display: block; width: 100%; height: auto;
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+}
+
+/* ---------- 右：控件 ---------- */
+.sh-lead {
+  margin: 0 0 18px;
+  font-size: 13px; line-height: 1.8; color: var(--text-2);
+}
+
+.sh-block { margin-bottom: 18px; }
+/* .sh-label 后面原来跟着一个灰色小胶囊（「只能选，不能改」「固定」），
+   已经去掉了 —— 「宣传语」下面是几个按钮、「二维码指向」下面是一把锁，
+   看一眼就明白能不能改，再挂个标签反倒像是在解释一个不需要解释的事。 */
+.sh-label {
+  display: block; margin-bottom: 8px;
+  font-size: 13px; font-weight: 600; color: var(--text-2);
+}
+
+/* 宣传语预设 */
+.sh-presets { display: flex; flex-wrap: wrap; gap: 7px; }
+.sh-preset {
+  padding: 5px 13px; border-radius: 999px;
+  font-size: 12.5px; color: var(--text-2);
+  background: var(--surface-2); border: 1px solid var(--border);
+  transition: color .18s, background .18s, border-color .18s;
+}
+.sh-preset:hover { color: var(--brand); border-color: var(--brand-soft); background: var(--brand-tint); }
+.sh-preset.is-on { color: #fff; background: var(--brand-grad); border-color: transparent; }
+
+/* 锁定的地址：看起来就像「不能改」，别做成输入框的样子 */
+.sh-lock {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 13px;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  border: 1px dashed var(--border-strong);
+  color: var(--text-3);
+}
+.sh-lock span {
+  flex: 1; min-width: 0;
+  font-size: 12.5px; color: var(--text-2);
+  word-break: break-all;
+}
+
+.sh-hint {
+  margin: 10px 0 0; padding: 11px 14px;
+  border-radius: var(--r-sm);
+  background: var(--surface-2); border: 1px solid var(--border);
+  font-size: 12.5px; line-height: 1.75; color: var(--text-3);
+}
+
+/* ---------- 三个按钮 ----------
+   「复制图片」「复制链接」都是主要操作，做成常亮的主色按钮 ——
+   原来只有第一个是蓝的、另外两个要悬停才变色，扫一眼根本分不出哪几个是重点。
+   「下载图片」是退一步的选择（想先存下来再发），灰按钮 + 推到最右边。
+
+   形状统一成「复制图片」那种偏方形的圆角（--r-sm）。
+   .mini-btn 默认是 999px 的胶囊，和 .primary-btn 摆在一起一圆一方，
+   看着像两个不同层级的控件，其实它们就是并列的。 */
+.sh-actions { align-items: stretch; }
+.sh-actions > button {
+  display: inline-flex; align-items: center;
+  min-height: 38px; padding-inline: 16px;   /* 18 → 16：三个按钮 + 一个「或」才塞得进一行 */
+  border-radius: var(--r-sm);
+}
+
+/* 「复制图片」和「复制链接」中间那个「或」—— 二选一，两条路并列 */
+.sh-or {
+  flex: none; align-self: center;
+  font-size: 12.5px; color: var(--text-3);
+  padding-inline: 1px;
+}
+.sh-actions .sh-main {
+  color: #fff; background: var(--brand-grad);
+  border-color: transparent; box-shadow: var(--shadow-brand);
+}
+.sh-actions .sh-main:hover {
+  color: #fff; background: var(--brand-grad); border-color: transparent;
+  filter: brightness(1.06);
+}
+.sh-actions .sh-dl { margin-left: auto; }
+.sh-actions .sh-dl:hover { color: var(--brand); border-color: var(--brand-soft); background: var(--brand-tint); }
+
+/* ---------- 字号整体上调一档 ----------
+   这一页原来按「挤在一屏里」调的，字号偏小；现在卡片铺满了，
+   那套小字看着就更小，统一往上提一档。代码区 11 → 12.5 提得最多，
+   它本来就有横向滚动条，行长一点不受影响。 */
+.sh-src-head b { font-size: 14px; }
+.sh-src-head span { font-size: 13px; }
+.sh-code { font-size: 12.5px; line-height: 1.72; }
+.sh-lead { font-size: 13.5px; }
+.sh-preset { font-size: 13px; padding: 6px 14px; }
+.sh-lock span { font-size: 13px; }
+
+/* ---------- 窄屏：单列，海报 + 控件排前面，源码垫最后 ----------
+   这里「左右各一半」不再成立，右半（现在就是一整列）整个挪到上面去。 */
+@media (max-width: 1180px) {
+  .sh-grid { grid-template-columns: 1fr; gap: 20px; }
+  .sh-right {
+    grid-template-columns: 1fr; gap: 20px;
+    order: 1;
+  }
+  .sh-src { order: 2; }
+  .sh-poster { max-width: 330px; margin-inline: auto; }
+  .sh-code { max-height: 420px; }
+}

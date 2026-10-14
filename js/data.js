@@ -39,13 +39,26 @@ window.NAV_CONFIG = {
   tip: '启航 · 精选网站导航',
   defaultCity: '北京',
   /* 网页最后更新时间（静态、手动维护）：格式 YYYY-MM-DD HH:MM，精确到分钟 */
-  lastUpdated: '2026-10-10 16:00',
+  lastUpdated: '2026-10-14 18:00',
   notice: '内容在持续补充中 —— 每个分类只放真正值得收藏的官方站点',
+
+  /* ---------- 搜索用的引擎 ----------
+     搜索框只干一件事：把输入的关键词交给这里搜网页，不做跳转。
+     只留必应一个。url 里的 %s 会被替换成关键词（自动转义）。 */
+  searchEngines: [
+    { name: '必应', url: 'https://www.bing.com/search?q=%s' }
+  ],
+
+  /* 【不设黑名单】见 README「收录标准」。
+     本站所有网址都是手工挑进这个文件的，没有用户提交、没有自动抓取，
+     违规站点没有进来的口子；而把一批违规域名写进公开仓库，反而是亲手
+     维护了一份"去哪找"的清单。防线在录入环节，不在出口。 */
 
   /* 顶栏「关于本站」弹窗里的文案，想改介绍就改这里 */
   about: {
     title: '关于本站',
-    subtitle: '精选网站导航',
+    /* 和海报上站点标识下面那句是同一句 —— 都是站点的 slogan */
+    subtitle: '搜索预设小工具，一站搞定不乱跑！',
     lead: '这里不是"什么网站都往里塞"的导航站，只收录真正难找、值得收藏的官方网站。',
     items: [
       {
@@ -55,6 +68,10 @@ window.NAV_CONFIG = {
       {
         t: '和别的导航站有什么不同',
         d: '一是只收录官方地址，不放山寨站和推广内容；二是精挑细选，主页只留真正难找的站点，大众网站不占位置；三是没有广告、没有追踪，也不需要注册登录。'
+      },
+      {
+        t: '收录说明',
+        d: '本站主要面向国内用户，只收录在中国大陆地区可以正常访问、且内容符合规定的官方网站。对不符合中国法律法规的站点，本站不予提供链接 —— 哪怕它在别处很常见。如果你要找的站这里没有，可以直接在搜索框里输入关键词，我们会把它交给搜索引擎。'
       },
       {
         t: '本网站由 DeepSeek 编写',
@@ -69,6 +86,281 @@ window.NAV_CONFIG = {
     sponsor: 'https://afdian.com/a/L1295598306',
     sponsorText: '请我喝杯奶茶',
     note: '整站都是纯静态文件，托管在 GitHub Pages 上，没有后端、不会保存你输入的任何内容。'
+  },
+
+  /* ============================================================
+     新机预设 —— 一台新电脑装什么
+     ------------------------------------------------------------
+     · 全部是官网直链，不给安装包、不做一键安装（一个一个点，自己的机器自己决定）
+     · 是「精选」不是「大全」：宁可少，也不要塞带捆绑的
+     · 每个条目：name 名字 / url 官网 / desc 干什么的 / tip 安装或使用要注意的（可选）
+     · 没写 tip 的都是装完就能用、没什么坑的
+     ============================================================ */
+  newPC: {
+    title: '新机预设',
+    lead: '刚拿到一台新电脑，先装这些就够用了',
+
+    /* 【这段必须放在最上面】不先解释一句为什么不做一键安装，
+       很多人扫一眼觉得麻烦就关掉了 —— 其实只是少一个勾选框的事。 */
+    intro: {
+      title: '这里不提供「一键装完全部」，但不是让你多花时间',
+      body: '下面每一条都指向官网：点开就是官方下载页，不打包、不中转、不塞来路不明的安装包。' +
+        '你省掉了「在搜索结果里分辨哪个才是真官网」这一步，也不会被顺带装上别的东西。' +
+        '装完觉得不合适，回来换一个就行。',
+      points: [
+        { t: '更安全', d: '链接全部指向官网，不用猜哪个是真站' },
+        { t: '更省事', d: '不用注册登录，也不用先装个下载器再来装它' },
+        { t: '随时换', d: '不合适就回来换一个，官网安装没有卸载残留' }
+      ],
+      note: '顺便说一句：<b>不需要装「安全卫士」「电脑管家」「驱动大师」这类全家桶</b>。' +
+        '它们解决的问题（清理垃圾、装软件、更新驱动）系统本身就能做，' +
+        '代价是常驻后台、顺带装一堆用不着的程序。新机真正需要装的，下面这些就够了。'
+    },
+
+    groups: [
+      {
+        name: '浏览器',
+        icon: '🌐',
+        note: '新机第一件事。Windows 自带的 Edge 其实已经够用，嫌不顺手的再换。',
+        items: [
+          { name: 'Google Chrome', url: 'https://www.google.cn/chrome/', desc: '插件生态最全，网页兼容性最省心' },
+          { name: 'Microsoft Edge', url: 'https://www.microsoft.com/zh-cn/edge', desc: '系统自带，和 Windows 结合最紧、更省内存', tip: '其实不用下载，新系统里已经有了，这条留着给重装后的备用' },
+          { name: 'Firefox', url: 'https://www.mozilla.org/zh-CN/firefox/new/', desc: '隐私保护默认更严，完全开源' }
+        ]
+      },
+      {
+        name: '输入法',
+        icon: '⌨️',
+        note: '输入法天天用，值得挑一个干净不弹广告的。',
+        items: [
+          { name: '微信输入法', url: 'https://z.weixin.qq.com/', desc: '没有广告和资讯弹窗，手机电脑能同步词库', tip: '装上就是纯打字，不推送任何内容 —— 这点在国内输入法里很难得' },
+          { name: '搜狗输入法', url: 'https://shurufa.sogou.com/', desc: '词库最大，冷门词和专业词比较准', tip: '安装时留意取消勾选附带组件；弹窗和资讯可以在设置里关掉' },
+          { name: 'RIME 小狼毫', url: 'https://rime.im/', desc: '开源输入法引擎，完全本地、可自己配词库', tip: '上手要折腾配置，适合喜欢自己掌控的人' }
+        ]
+      },
+      {
+        name: '压缩解压',
+        icon: '📦',
+        note: '必装。系统自带的解压不支持带密码的 rar。',
+        items: [
+          { name: '7-Zip', url: 'https://www.7-zip.org/', desc: '开源免费，压缩率高，没有任何捆绑', tip: '界面朴素但干净，装完右键菜单就能用。不支持 zip 分卷' },
+          { name: 'NanaZip', url: 'https://github.com/M2Team/NanaZip', desc: '7-Zip 的现代版，界面适配 Win11', tip: '内核就是 7-Zip，只是外壳更新，二选一即可' },
+          { name: 'Bandizip', url: 'https://www.bandisoft.com/bandizip/', desc: '自动识别中文压缩包乱码，好用', tip: '免费版带广告，可在设置里关掉' }
+        ]
+      },
+      {
+        name: '影音播放',
+        icon: '🎬',
+        note: '系统自带播放器很多格式打不开，装一个全能的。',
+        items: [
+          { name: 'VLC', url: 'https://www.videolan.org/vlc/', desc: '什么格式都能播，开源免费', tip: '几乎不用配置，装上就能用，是最省事的选择' },
+          { name: 'MPV', url: 'https://mpv.io/', desc: '极简、极快，画质好，开源', tip: '没有图形界面，靠拖拽文件和快捷键操作，适合愿意折腾的人' }
+        ]
+      },
+      {
+        name: '截图与录屏',
+        icon: '📸',
+        note: 'Windows 自带截图太弱，这几个能省很多事。',
+        items: [
+          { name: 'ShareX', url: 'https://getsharex.com/', desc: '截图 + 录屏 + 上传，功能最全，开源', tip: '功能多到有点吓人，用默认配置就够' },
+          { name: 'Snipaste', url: 'https://www.snipaste.com/', desc: '截图后能「贴」在屏幕上，对资料很顺手', tip: '按 F1 截图、F3 贴图，习惯了会离不了' },
+          { name: 'OBS Studio', url: 'https://obsproject.com/', desc: '开源录屏与直播，画质和参数都能细调', tip: '要录网课或直播才装，纯截图用不上它' }
+        ]
+      },
+      {
+        name: '办公文档',
+        icon: '📄',
+        note: '国内做文档，WPS 的兼容性最省心。',
+        items: [
+          { name: 'WPS Office', url: 'https://www.wps.cn/', desc: '国内最常用，和 Office 格式兼容好', tip: '安装时取消勾选附带组件；广告可以在设置里关掉' },
+          { name: 'LibreOffice', url: 'https://zh-cn.libreoffice.org/', desc: '完全开源免费，没有任何广告', tip: '打开复杂排版的 Word 文档偶尔会串版' },
+          { name: '腾讯文档', url: 'https://docs.qq.com/', desc: '在线协作，不用装、分享链接就能一起改' }
+        ]
+      },
+      {
+        name: '效率工具',
+        icon: '🗂️',
+        note: '这几个装完，日常操作会明显快一截。',
+        items: [
+          { name: 'Everything', url: 'https://www.voidtools.com/zh-cn/', desc: '全盘文件搜索，输几个字结果就出来了', tip: 'Windows 自带搜索慢得离谱，装了它基本可以告别等搜索' },
+          { name: 'PowerToys', url: 'https://github.com/microsoft/PowerToys', desc: '微软官方的系统增强合集，含窗口分屏、批量重命名等', tip: '按需开启里面的模块，全开反而乱' },
+          { name: 'QuickLook', url: 'https://github.com/QL-Win/QuickLook', desc: '按空格直接预览文件，像 macOS 那样', tip: '装完不用配置，按空格就能用' }
+        ]
+      },
+      {
+        name: '通讯社交',
+        icon: '💬',
+        note: '这类按需装，不用一次全下。',
+        items: [
+          { name: '微信', url: 'https://weixin.qq.com/', desc: '国内必备' },
+          { name: 'QQ', url: 'https://im.qq.com/', desc: '传大文件、群聊还得好用' },
+          { name: '钉钉', url: 'https://www.dingtalk.com/', desc: '公司办公常用' },
+          { name: '飞书', url: 'https://www.feishu.cn/', desc: '文档和协作做得最顺的一款' }
+        ]
+      },
+      {
+        name: '图片与阅读',
+        icon: '🖼️',
+        note: '不修图不看书的话，这一整块可以跳过。',
+        items: [
+          { name: 'GIMP', url: 'https://www.gimp.org/', desc: '开源修图，Photoshop 的免费替代', tip: '界面和 PS 差别较大，要一点适应时间' },
+          { name: 'Krita', url: 'https://krita.org/zh/', desc: '开源绘画，配数位板做插画很合适' },
+          { name: 'Obsidian', url: 'https://obsidian.md/', desc: '本地笔记，文件就是普通的 Markdown', tip: '数据全在自己电脑上，不依赖任何云服务' },
+          { name: 'SumatraPDF', url: 'https://www.sumatrapdfreader.org/free-pdf-reader', desc: '极轻量的 PDF 阅读器，打开大文件很快' }
+        ]
+      },
+      {
+        name: '下载与传输',
+        icon: '⬇️',
+        note: '浏览器下大文件容易断，装个专门的。',
+        items: [
+          { name: 'Motrix', url: 'https://motrix.app/', desc: '开源下载工具，支持 BT 和磁力', tip: '界面干净、没有广告，适合当默认下载器' },
+          { name: 'Free Download Manager', url: 'https://www.freedownloadmanager.org/', desc: '多线程下载，能续传、能接管浏览器下载' },
+          { name: '迅雷', url: 'https://www.xunlei.com/', desc: '冷门资源有时候只有它有速度', tip: '安装时注意取消勾选附带组件' }
+        ]
+      },
+      {
+        name: '安全与系统维护',
+        icon: '🧹',
+        note: '这一块「少装」比「多装」重要，系统自带的防护已经够用。',
+        items: [
+          { name: '火绒安全', url: 'https://www.huorong.cn/', desc: '国内少见的干净杀软，没有捆绑和弹窗', tip: '它的价值主要在「弹窗拦截」和「不打扰」，不是替代系统防护' },
+          { name: 'Geek Uninstaller', url: 'https://geekuninstaller.com/', desc: '卸载软件时把残留的注册表和目录一起清干净', tip: '免费版够用，装完即用不用常驻' },
+          { name: 'CrystalDiskInfo', url: 'https://crystalmark.info/en/software/crystaldiskinfo/', desc: '看硬盘健康状态，早期预警很管用', tip: '新机装完看一眼，以后每年想起来查一次就行' }
+        ]
+      },
+      {
+        name: '硬件信息',
+        icon: '🖥️',
+        note: '想知道自己机器到底什么配置，装这俩比什么都准。',
+        items: [
+          { name: 'CPU-Z', url: 'https://www.cpuid.com/softwares/cpu-z.html', desc: '看 CPU 型号、内存频率、主板型号' },
+          { name: 'GPU-Z', url: 'https://www.techpowerup.com/gpuz/', desc: '看显卡型号、显存、温度' }
+        ]
+      },
+      {
+        name: '开发环境',
+        icon: '💻',
+        note: '不写代码就跳过整块。',
+        items: [
+          { name: 'Visual Studio Code', url: 'https://code.visualstudio.com/', desc: '最主流的代码编辑器，插件丰富', tip: '装完先换中文语言包，会顺手很多' },
+          { name: 'Git', url: 'https://git-scm.com/', desc: '版本控制，写代码基本绕不开', tip: 'Windows 上装完会带一个 Git Bash，比 cmd 好用' },
+          { name: 'Node.js', url: 'https://nodejs.org/zh-cn', desc: '跑前端项目和 npm 工具链', tip: '选 LTS 版，别选 Current' },
+          { name: 'Python', url: 'https://www.python.org/', desc: '脚本、数据处理、AI 相关都用它', tip: '安装时一定要勾上「Add Python to PATH」' },
+          { name: 'Docker Desktop', url: 'https://www.docker.com/', desc: '跑容器化环境，部署测试省事', tip: '占内存比较大，机器不行就用远程' }
+        ]
+      }
+    ],
+
+    /* 装系统 / 装机的工具，属于「用一次就收起来」的那类 */
+    once: {
+      name: '装机用一次就收起来',
+      icon: '💿',
+      note: '重装系统或做启动盘时才用得到，平时不用装。',
+      items: [
+        { name: 'Ventoy', url: 'https://www.ventoy.net/cn/', desc: '一个 U 盘放多个系统镜像，不用反复刻录' },
+        { name: 'Rufus', url: 'https://rufus.ie/zh/', desc: '做 Windows 启动盘，小、快、免安装' },
+        { name: 'balenaEtcher', url: 'https://www.balena.io/etcher/', desc: '烧录 Linux 镜像更省心，界面最直白' }
+      ]
+    },
+
+  },
+
+  /* ============================================================
+     分享 / 宣传海报
+     ------------------------------------------------------------
+     纯前端拼图：把宣传语和二维码画进 canvas，用户可以直接复制图片
+     贴进聊天窗口，或者存成文件。全部本机完成，不联网、不用任何图床。
+     · siteUrl  —— 二维码指向的地址，【写死】，页面上只读、不接受参数覆盖
+     · presets  —— 宣传语预设，【只能从里面选】，不接受自由输入
+     ============================================================ */
+  share: {
+    title: '做张分享图',
+    lead: '谢谢你愿意帮忙宣传。选一句宣传语，图就能直接复制走。左侧是它的完整源码。',
+
+    /* 【写死，页面只读展示】这是专门介绍本站的图：
+       万一被人把地址改成别的站（尤其是恶意站）再发出去，挂的是我们的名。 */
+    siteUrl: 'https://yafite0.github.io/navhub/',
+    siteName: '启航',
+    /* 海报上站点标识下面那句。和「关于本站」弹窗的副标题是同一句。 */
+    subtitle: '搜索预设小工具，一站搞定不乱跑！',
+
+    /* 默认选中第几个宣传语 */
+    sloganIndex: 0,
+
+    /* 【宣传语只能从下面选，不接受自由输入】理由同上：
+       自由输入容易被改成违规内容或者脏话再发出去。 */
+    presets: [
+      { t: '基本款', d: '搜索：无广告，不易找错，官网直达！\n预设：一段提示，AI直接化身高效工具！\n工具：本地运行不乱跑，揽括万象！\n\n一个你可能会喜欢的纯净网站！' },
+      { t: '提示词', d: '高效提示，多种预设。\n想做什么？先来看看！\n\n快速生成自定义且高质量的提示词，\n让AI成为你的专业助手！' },
+      { t: '没广告', d: '无需登录，没有广告！\n只做一个对你有用的工具，\n所见即所得，官网立刻达！' },
+      { t: '新机', d: '新电脑找必备软件太麻烦？\n不要着急，来这儿找！\n\n不用再去反复搜索，\n需要什么直接挑，\n官网下载放心装！' },
+      { t: 'AI 工具', d: 'AI工具一键找！\n\nAI对话，Agent，\nAPI，本地部署，本地对话\n不用费劲到处跑！' },
+      { t: '游戏', d: '商城引擎费劲找？\n无论你是老玩家，\n还是游戏创世神，\n这里面通通都有！' }
+    ]
+  },
+
+  /* ============================================================
+     提示词 —— 全部装在「提示词助手」（translate.html）这一个页面里
+     ------------------------------------------------------------
+     不调任何接口，只负责把话说清楚，剩下的交给用户自己去 AI 对话里粘贴。
+     · tools    —— 需要额外控件的完整工具，排在最上面（现在只有网页翻译）
+     · groups   —— 分好类的提示词，每条 = 标题 + 什么时候用 + 正文 + 提醒
+     · aiSites  —— 右栏那一列 AI 对话入口
+     · 【方括号】里是让用户替换的占位符，写提示词时保留这个写法
+     ============================================================ */
+  prompts: {
+    chatUrl: 'https://chat.deepseek.com/',
+
+    /* 右栏的那一列 AI 对话入口。点一下 = 复制中栏当前那条提示词 + 打开对话页。
+       只收录能直接在网页里对话的，要装客户端的不列。 */
+    aiSites: [
+      { name: 'DeepSeek', url: 'https://chat.deepseek.com/', note: '国内直接访问' },
+      { name: '豆包', url: 'https://www.doubao.com/chat/', note: '国内直接访问' },
+      { name: 'Kimi', url: 'https://www.kimi.com/', note: '国内直接访问' },
+      { name: '通义千问', url: 'https://www.tongyi.com/', note: '国内直接访问', icon: 'assets/icons/qwen.png' },
+      { name: '腾讯元宝', url: 'https://yuanbao.tencent.com/', note: '国内直接访问' },
+      { name: '文心一言', url: 'https://yiyan.baidu.com/', note: '国内直接访问' },
+      { name: '智谱清言', url: 'https://chatglm.cn/', note: '国内直接访问' },
+      { name: '讯飞星火', url: 'https://xinghuo.xfyun.cn/', note: '国内直接访问' },
+      { name: 'ChatGPT', url: 'https://chatgpt.com/', note: '访问可能不稳定' },
+      { name: 'Claude', url: 'https://claude.ai/new', note: '访问可能不稳定' },
+      { name: 'Gemini', url: 'https://gemini.google.com/app', note: '访问可能不稳定' }
+    ],
+
+    /* 完整工具：除了正文框还带别的控件，所以中栏有专门一套 DOM。
+       现在只有网页翻译（带语言和语气设置），内容在 js/translate.js。 */
+    tools: [
+      {
+        icon: '🌐',
+        name: '网页翻译',
+        desc: '把外文网页整篇翻成中文，保留排版、链接和代码块'
+      }
+    ],
+
+    /* 分组提示词 —— 现在是空的，只留上面那一条「网页翻译」。
+       后续往这个数组里加就行，形状照下面来（一条 = 标题 + 什么时候用 + 正文 + 提醒）：
+
+         {
+           name: '求职',                            // 分组名，会显示在左栏
+           icon: '💼',                              // 左栏那个小图标
+           note: '这组的关键是：先让 AI 问你，再让它动笔。',   // 分组说明，可省略
+           items: [
+             {
+               title: '从零生成简历',
+               tag: '先问后写',                      // 小标签，可省略
+               desc: '你什么材料都没有的时候用这个。', // 什么时候用
+               body: '提示词正文。【方括号】是留给用户替换的占位符。',
+               tip: '提醒，可省略'
+             }
+           ]
+         }
+
+       加完不用改别的地方：左栏会自己多出这一类，主页「预设」那几个按钮
+       也是从这个数组长出来的（见 js/app.js 的 renderPresetChips）。 */
+    groups: [],
+
+    footer: '用法就一句话：复制提示词 → 打开一个 AI 对话 → 把【方括号】里的内容换成你自己的 → 发送。方括号里的内容写得越具体，回答就越好用。'
   },
 
   /* ---------- 大类 ----------
@@ -1101,6 +1393,18 @@ window.NAV_CONFIG = {
     { name: 'Canva 可画', alias: ['可画'], url: 'https://www.canva.cn/', desc: '套模板做海报和封面', cat: '图像处理', region: 'cn', key: 'canva 可画 海报 模板 设计 在线 作图' },
     { name: '稿定设计', alias: ['稿定'], url: 'https://www.gaoding.com/', desc: '国内在线设计工具', cat: '图像处理', region: 'cn', key: '稿定 设计 海报 抠图 模板 在线 国产' },
     { name: 'remove.bg', url: 'https://www.remove.bg/zh', desc: '上传图片自动去背景', cat: '图像处理', region: 'global', key: '抠图 去背景 在线 免费 ai remove bg' },
+
+    /* 在线翻译：原本挂在「提示词助手」页的左侧，现在收进这里 ——
+       提示词助手那边左边要腾给提示词预设，而且这几家本来就是普通官网，
+       放在导航里更好找。 */
+    { name: '百度翻译', url: 'https://fanyi.baidu.com/', desc: '国内直接访问，支持文档翻译', cat: '在线翻译', region: 'cn', key: '翻译 中英互译 文档翻译 词典 百度' },
+    { name: '有道翻译', url: 'https://fanyi.youdao.com/', desc: '国内直接访问，词库和例句比较全', cat: '在线翻译', region: 'cn', key: '翻译 有道 词典 例句 中英互译' },
+    { name: '必应翻译', url: 'https://www.bing.com/translator', desc: '微软出品，支持多语种互译', cat: '在线翻译', region: 'global', key: '翻译 必应 bing 微软 多语种' },
+    { name: '腾讯翻译君', url: 'https://fanyi.qq.com/', desc: '国内直接访问，语音翻译好使', cat: '在线翻译', region: 'cn', key: '翻译 腾讯 翻译君 语音 同传' },
+    { name: '搜狗翻译', url: 'https://fanyi.sogou.com/', desc: '国内直接访问，支持文档和图片', cat: '在线翻译', region: 'cn', key: '翻译 搜狗 文档 图片翻译' },
+    { name: '彩云小译', url: 'https://fanyi.caiyunapp.com/', desc: '中英日韩互译，网页插件好用', cat: '在线翻译', region: 'cn', key: '翻译 彩云小译 中日 中韩 插件' },
+    { name: 'Google 翻译', url: 'https://translate.google.com/', desc: '语种最全，整页翻译方便', cat: '在线翻译', region: 'global', key: '翻译 google 谷歌 整页翻译 语种' },
+    { name: 'DeepL', url: 'https://www.deepl.com/translator', desc: '长句和书面语翻得最顺', cat: '在线翻译', region: 'global', key: '翻译 deepl 长文 书面 欧语' },
 
     { name: 'WeGame', url: 'https://www.wegame.com.cn', desc: '腾讯自家的电脑游戏平台', cat: '游戏平台', region: 'cn', key: 'wegame 腾讯游戏 英雄联盟 下载客户端 游戏大厅 LOL' },
     { name: 'GOG', url: 'https://www.gog.com', desc: '卖没有防盗版的游戏', cat: '游戏平台', region: 'global', key: 'gog 无drm 老游戏 经典游戏 波兰 单机' },

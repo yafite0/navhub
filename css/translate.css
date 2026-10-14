@@ -5,13 +5,15 @@
 
 .topbar-inner .top-btn { margin-left: auto; }
 
-/* 这个页内容多，比其它页面用更宽的版心 */
-.tr-main,
-.topbar-inner { width: min(1560px, 100% - 48px); }
+/* 版心用全站标准的那一条（style.css 的 .wrap），不再单独加宽 ——
+   原来这页是三栏挤在一张卡片里才要宽，现在 AI 列表独立成第三栏，
+   而且「预设提示词」页也要和它长得一样，两页版心必须同宽。 */
 
-.tr-main { padding-bottom: 40px; }
+/* .tr-main 的 padding-bottom 由 presets.css 的 .tr-page 规则接管（设成 0，
+   底部留白交给页脚），这里不再重复设。 */
 
-.tr-head { padding: 12px 0 14px; }
+/* 页头内边距和「预设提示词」页（tools.css 的 .tw-head）保持一致 */
+.tr-head { padding: 20px 0 18px; }
 .tr-head h1 {
   font-size: clamp(23px, 2.6vw, 29px);
   font-weight: 800; letter-spacing: -.4px;
@@ -22,130 +24,10 @@
 }
 .tr-head strong { color: var(--brand); }
 
-.tr-step {
-  flex: none; width: 28px; height: 28px; border-radius: 9px;
-  display: grid; place-items: center;
-  font-size: 14px; font-weight: 800; color: #fff;
-  background: var(--brand-grad); box-shadow: var(--shadow-brand);
-}
-
-/* ---------- 两栏 ---------- */
-.tr-layout {
-  display: grid;
-  grid-template-columns: 256px minmax(0, 1fr);
-  gap: 18px;
-  align-items: stretch;          /* 左右两张卡片等高 */
-}
-
-/* ---------- 左：在线翻译 ---------- */
-.tr-side {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  padding: 15px 14px 14px;
-}
-.tr-side-head { flex: none; display: flex; align-items: flex-start; gap: 11px; margin-bottom: 14px; }
-.tr-side-head h2 { font-size: 15.5px; font-weight: 700; }
-.tr-side-head p { margin-top: 2px; font-size: 12px; color: var(--text-3); line-height: 1.5; }
-.tr-side > .tr-foot-note { flex: none; }
-
-.tr-list { display: flex; flex-direction: column; gap: 8px; }
-
-/* 左右两个列表都是框内滚动 */
-.tr-side .tr-list,
-.tr-panel-right .tr-list {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding-right: 5px;
-  overscroll-behavior: contain;
-}
-.tr-side .tr-list::-webkit-scrollbar,
-.tr-panel-right .tr-list::-webkit-scrollbar { width: 6px; }
-.tr-side .tr-list::-webkit-scrollbar-track,
-.tr-panel-right .tr-list::-webkit-scrollbar-track { background: transparent; }
-.tr-side .tr-list::-webkit-scrollbar-thumb,
-.tr-panel-right .tr-list::-webkit-scrollbar-thumb {
-  background: var(--border-strong); border-radius: 3px;
-}
-.tr-side .tr-list::-webkit-scrollbar-thumb:hover,
-.tr-panel-right .tr-list::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
-
-.tr-item {
-  display: flex; align-items: center; gap: 11px;
-  width: 100%; text-align: left;
-  padding: 10px 12px;
-  border-radius: var(--r-md);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  transition: transform .18s, border-color .18s, background .18s, box-shadow .18s;
-}
-.tr-item:hover {
-  transform: translateY(-2px);
-  border-color: var(--brand-soft);
-  background: var(--surface);
-  box-shadow: var(--shadow-md);
-}
-.tr-item-ico {
-  flex: none; width: 34px; height: 34px; border-radius: 10px;
-  display: grid; place-items: center; overflow: hidden;
-  font-size: 14px; font-weight: 700; color: #fff;
-}
-.tr-item-ico img {
-  width: 100%; height: 100%; object-fit: contain;
-  padding: 5px; background: #fff; border-radius: inherit;
-}
-.tr-item-text { flex: 1; min-width: 0; }
-.tr-item-text b {
-  display: block; font-size: 13.5px; font-weight: 600;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.tr-item-text span {
-  display: block; margin-top: 1px;
-  font-size: 11px; color: var(--text-3);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.tr-item:hover .tr-item-text b { color: var(--brand); }
-
-.tr-foot-note { margin-top: 13px; font-size: 12px; line-height: 1.7; color: var(--text-3); }
-
-/* ---------- 右：AI 网页翻译（卡片内部再分两栏：左提示词、右 AI 列表） ---------- */
-.tr-main-panel { padding: 18px 22px 20px; }
-
-.tr-panel-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
-.tr-panel-head h2 { font-size: 18px; font-weight: 700; }
-.tr-panel-head p { margin-top: 3px; font-size: 13px; color: var(--text-3); }
-
-.tr-panel-body {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 226px;
-  gap: 22px;
-  align-items: start;
-}
-.tr-panel-left { min-width: 0; }
-.tr-panel-right {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-.tr-panel-right h3 { flex: none; font-size: 15px; font-weight: 700; }
-.tr-right-note {
-  flex: none;
-  margin: 6px 0 12px;
-  font-size: 12px; line-height: 1.65; color: var(--text-3);
-}
-.tr-right-note strong { color: var(--brand); }
-.tr-panel-right > .tr-foot-note { flex: none; }
-
-/* AI 列表的框内滚动样式见上面「左右两个列表都是框内滚动」，
-   它的整体高度由 JS 同步左侧提示词区的高度 */
-
-@media (max-width: 1180px) {
-  .tr-panel-body { grid-template-columns: 1fr; gap: 16px; }
-  .tr-panel-right { max-height: none; }
-  .tr-panel-right .tr-list { overflow: visible; }
-}
+/* ---------- 三栏骨架 ----------
+   本页的三栏（预设 / 提示词 / AI 对话）和「预设提示词」页是同一套：
+   结构、类名、样式全部走 css/presets.css 的「提示词工作台」那一节。
+   这里只留翻译自己特有的控件（语言选择器、提示词按钮、正文框）。 */
 
 /* 语言相同时的红色警告 */
 .tr-warn {
@@ -252,20 +134,11 @@
   gap: 9px;
 }
 
-/* ---------- 关于 ---------- */
-.tr-about { margin-top: 18px; padding: 22px 24px 24px; }
-.tr-about h2 {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 16px;
-  font-size: 18px; font-weight: 700;
-}
-.tr-about h2::before {
-  content: ""; width: 5px; height: 18px;
-  border-radius: 3px; background: var(--brand-grad);
-}
+/* 「关于这个页面」整块已经拿掉 —— 那些话属于说明页，不属于工具本身。
+   真要留，也该放进「关于本站」弹窗里，不该占着工具页的一块地。 */
 
+/* 三栏竖排、卡片内边距、撑满视口的响应式都在 presets.css 的「提示词工作台」那一节 */
 @media (max-width: 980px) {
-  .tr-layout { grid-template-columns: 1fr; }
   .tr-head { padding-top: 34px; }
 }
 
@@ -276,3 +149,8 @@
   .tr-count { margin-left: 0; width: 100%; }
   .tr-grid-ai { grid-template-columns: 1fr; }
 }
+
+
+/* 左栏的导航容器见 presets.css 的 .pm-nav ——
+   原来这里放的是网页在线翻译的站点列表，那批站已经收进
+   「其他网页 → 在线翻译」，左栏换成了提示词预设，两页共用同一份渲染。 */

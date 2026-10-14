@@ -7,8 +7,10 @@
 <meta name="description" content="小工具：单位换算与汇率、字数统计与 Token 预估。全部在你自己的浏览器里运行，数据不会上传。" />
 <meta name="theme-color" content="#4D6BFE" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-<link rel="stylesheet" href="css/style.css?v=20261010b" />
-<link rel="stylesheet" href="css/tools.css?v=20261010b" />
+<link rel="stylesheet" href="css/style.css?v=20261014t" />
+<link rel="stylesheet" href="css/tools.css?v=20261014t" />
+<link rel="stylesheet" href="css/presets.css?v=20261014t" />
+<link rel="stylesheet" href="css/share.css?v=20261014t" />
 </head>
 <body>
 <div class="bg-decor" aria-hidden="true">
@@ -16,33 +18,7 @@
   <span class="glow glow-b"></span>
 </div>
 
-<header class="topbar">
-  <div class="wrap topbar-inner">
-    <a class="brand" href="index.html">
-      <span class="brand-mark">启</span>
-      <span class="brand-text">
-        <strong>启航</strong>
-        <small>小工具</small>
-      </span>
-    </a>
-
-    <a class="top-btn" href="index.html">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 12H6M11 5.5 4.5 12 11 18.5"/>
-      </svg>
-      <span>返回首页</span>
-    </a>
-
-    <button id="themeBtn" class="icon-btn" type="button" title="切换深浅色" aria-label="切换深浅色">
-      <svg class="ico-sun" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-        <circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/>
-      </svg>
-      <svg class="ico-moon" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 14.2A8.4 8.4 0 1 1 9.8 4a6.9 6.9 0 0 0 10.2 10.2Z"/>
-      </svg>
-    </button>
-  </div>
-</header>
+<header class="topbar"></header>
 
 <main class="wrap tw-main">
   <section class="tw-head">
@@ -265,6 +241,202 @@
       </div>
     </div>
   </section>
+
+  <!-- 生成网页快捷方式 -->
+  <section class="tw-panel" data-tool-panel="shortcut">
+    <div class="card tw-card tw-sc-card">
+      <div class="tool-head">
+        <h3>把常用网址放到桌面</h3>
+        <span class="tool-badge">放桌面双击直达</span>
+      </div>
+
+      <div class="tool-body is-active">
+        <div class="sc-grid">
+          <!-- 左：生成的代码。文件里就是这些内容，注释也一并带上 -->
+          <section class="sc-src">
+            <div class="sc-src-head">
+              <b>生成的文件内容</b>
+              <span>复制走存成 .html / .url，一样能用</span>
+            </div>
+            <pre class="sc-preview" id="scPreview">还没有填网址</pre>
+          </section>
+
+          <div class="sc-main">
+            <p class="sc-lead">
+              填一个网址，生成一个小文件。<b>把它拖到桌面</b>，以后双击就直接打开这个网站 ——
+              不用先开浏览器、再去翻收藏夹。
+            </p>
+
+            <div class="sc-form">
+              <label class="sc-field">
+                <span>网址</span>
+                <input id="scUrl" type="text" autocomplete="off" spellcheck="false"
+                       placeholder="填一个网址，比如 godotengine.org" />
+              </label>
+              <label class="sc-field">
+                <span>快捷方式名字 <em>（可以不填，会自动认）</em></span>
+                <input id="scName" type="text" autocomplete="off" placeholder="自动识别，也可以自己改" />
+              </label>
+            </div>
+
+            <!-- 从本站收录的站点里挑：可搜索，点一下填进上面的表单 -->
+            <div class="sc-picker">
+              <div class="sc-picker-head">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <circle cx="11" cy="11" r="6.4"/><path d="M16 16l4.2 4.2"/>
+                </svg>
+                <input id="scPickSearch" type="text" autocomplete="off"
+                       placeholder="或者从本站收录的站点里挑一个" />
+              </div>
+              <div class="sc-picker-list" id="scPickList"></div>
+            </div>
+
+            <div class="sc-types">
+              <label class="sc-type">
+                <input type="radio" name="scType" value="html" checked />
+                <span>
+                  <b>.html 快捷页 <em>Windows / macOS / Linux 都能用</em></b>
+                  <small>双击后浏览器会先过一下跳转页，再进目标网站。通用性最好，建议优先选它。</small>
+                </span>
+              </label>
+              <label class="sc-type">
+                <input type="radio" name="scType" value="url" />
+                <span>
+                  <b>.url 快捷方式 <em>仅 Windows</em></b>
+                  <small>双击直接进浏览器，没有中间那一闪，图标也更正。macOS 和 Linux 不认这个格式。</small>
+                </span>
+              </label>
+            </div>
+
+            <p class="sc-warn" id="scWarn" hidden></p>
+
+            <div class="cnt-actions">
+              <button class="primary-btn" id="scMake" type="button">生成并下载</button>
+              <button class="mini-btn" id="scCopy" type="button">只复制代码</button>
+            </div>
+          </div>
+
+          <aside class="spec-help sc-help">
+            <b>哪些系统能用</b>
+            <table class="sc-os">
+              <tr><th>系统</th><th>能不能用</th></tr>
+              <tr><td>Windows</td><td>两种都行</td></tr>
+              <tr><td>macOS</td><td>只能用 .html</td></tr>
+              <tr><td>Linux</td><td>只能用 .html</td></tr>
+              <tr><td>手机 / 平板</td><td>用不了</td></tr>
+            </table>
+
+            <p>
+              <b>手机为什么不行</b>：这套靠的是桌面系统「双击文件 → 交给默认程序打开」的机制。
+              手机上的文件点击后由 App 接管，iOS 和 Android 都不允许一个文件直接唤起浏览器打开网址，
+              所以做不出来。手机请用浏览器菜单里的<b>「添加到主屏幕」</b> —— 那才是手机上的正确做法，效果还更好。
+            </p>
+            <p>
+              <b>macOS / Linux 为什么只能用 .html</b>：<code>.url</code> 是 Windows 专有的
+              「Internet 快捷方式」格式（本质是个 INI 配置），这两个系统不认，双击没有任何反应。
+              <code>.html</code> 是通用的，任何桌面系统都能用。
+            </p>
+            <p>
+              <b>下载时浏览器可能提示风险</b>：Windows 下存 <code>.url</code> 时，浏览器可能提示
+              「此类文件可能有害」。这是对所有快捷方式类文件的通用提示，选「保留」即可。
+              文件是纯文本，记事本能打开核对，不含追踪、也不会联网。
+            </p>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 新机预设 -->
+  <section class="tw-panel" data-tool-panel="newpc">
+    <div class="card tw-card tw-preset-card">
+      <div class="tool-head">
+        <h3>一台新电脑装什么</h3>
+        <span class="tool-badge" id="npBadge">新机预设</span>
+      </div>
+      <div class="tool-body is-active">
+        <p class="preset-lead" id="npLead"></p>
+        <div id="npIntro"></div>
+        <div class="preset-bar">
+          <span class="preset-count" id="npCount"></span>
+          <button class="mini-btn" id="npToggle" type="button">全部收起</button>
+        </div>
+        <div class="preset-groups" id="npGroups"></div>
+        <p class="preset-foot" id="npFoot" hidden></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 提示词已经不在这里了 —— 全部并进「提示词助手」页（translate.html）。
+       旧的 ?tool=prompts 链接由 js/tools.js 原样转过去，锚点也会带上。 -->
+
+  <!-- 分享 / 宣传海报 -->
+  <section class="tw-panel" data-tool-panel="share">
+    <div class="card tw-card tw-share-card">
+      <div class="tool-head">
+        <h3>做张分享图</h3>
+        <span class="tool-badge">本机生成 · 不联网</span>
+      </div>
+      <div class="tool-body is-active">
+        <!-- 左右各一半：左边源码，右边「海报 + 控件」。
+             原来源码一家独大（宽屏下能占 59%），把海报挤成一个 320px 的小方块。 -->
+        <div class="sh-grid">
+
+          <!-- 左半：源码。不是摆设 —— 预览、导出图片、这份代码跑出来的，是同一张图 -->
+          <section class="sh-src">
+            <div class="sh-src-head">
+              <b>这张图的源码</b>
+              <span>复制走存成 .html，双击就能打开这张图</span>
+            </div>
+            <pre class="sh-code" id="shCode"></pre>
+            <div class="cnt-actions">
+              <button class="mini-btn" id="shCopyCode" type="button">复制源码</button>
+              <button class="mini-btn" id="shSaveHtml" type="button">下载 .html</button>
+            </div>
+          </section>
+
+          <!-- 右半：海报尽量占满，控件贴在它右边 -->
+          <div class="sh-right">
+
+            <div class="sh-poster">
+              <canvas id="shCanvas" width="1080" height="1440" aria-label="宣传海报预览"></canvas>
+            </div>
+
+            <aside class="sh-side">
+            <p class="sh-lead" id="shLead"></p>
+
+            <div class="sh-block">
+              <span class="sh-label">宣传语</span>
+              <div class="sh-presets" id="shPresets"></div>
+            </div>
+
+            <div class="sh-block">
+              <span class="sh-label">二维码指向</span>
+              <p class="sh-lock">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4.5" y="10.6" width="15" height="9.4" rx="2.2"/><path d="M8 10.6V8a4 4 0 0 1 8 0v2.6"/>
+                </svg>
+                <span id="shUrlText"></span>
+              </p>
+            </div>
+
+            <!-- 三个按钮：两个「复制」是主操作，常亮；「下载图片」退一步，靠右站。
+                 中间那个「或」是给前两个用的 —— 发图还是发链接，二选一，两条路并列。
+                 不叫「保存图片」是因为它直接落进下载目录，和「另存为」不是一回事。 -->
+            <div class="cnt-actions sh-actions">
+              <button class="primary-btn" id="shCopyImg" type="button">复制图片</button>
+              <span class="sh-or">或</span>
+              <button class="mini-btn sh-main" id="shCopyLink" type="button">复制链接</button>
+              <button class="mini-btn sh-dl" id="shSave" type="button">下载图片</button>
+            </div>
+
+            <p class="sh-hint" id="shHint"></p>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer class="footer">
@@ -274,11 +446,40 @@
   </div>
 </footer>
 
+<!-- 所选格式在当前系统上用不了时的拦截弹窗。
+     默认不下载：先说明原因，用户确认「仍要下载」才放行
+     （有可能是想下好再传给用 Windows 的同事或朋友）。 -->
+<div class="sc-mask" id="scMask" hidden>
+  <div class="sc-dialog" role="dialog" aria-modal="true" aria-labelledby="scDlgTitle">
+    <span class="sc-dialog-ico">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3.6 21 19.4H3z"/><path d="M12 9.7v4.1M12 16.9h.01"/>
+      </svg>
+    </span>
+    <h4 id="scDlgTitle">这个文件在你当前的系统上用不了</h4>
+    <p id="scDlgBody"></p>
+    <p class="sc-dialog-ask" id="scDlgAsk"></p>
+    <div class="sc-dialog-actions">
+      <button class="mini-btn" id="scDlgCancel" type="button">知道了</button>
+      <button class="mini-btn" id="scDlgAnyway" type="button">仍要下载</button>
+    </div>
+    <p class="sc-dialog-tip">
+      文件本身没坏，只是你这台机器打不开。如果是要下好再传给用 Windows 的电脑，点「仍要下载」即可。
+    </p>
+  </div>
+</div>
+
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/data.js?v=20261010b"></script>
-<script src="js/widgets.js?v=20261010b"></script>
-<script src="js/tools.js?v=20261010b"></script>
-<script src="js/specs.js?v=20261010b"></script>
+<script src="js/data.js?v=20261014t"></script>
+<script src="js/seek.js?v=20261014t"></script>
+<script src="js/widgets.js?v=20261014t"></script>
+<script src="js/tools.js?v=20261014t"></script>
+<script src="js/specs.js?v=20261014t"></script>
+<script src="js/shortcut.js?v=20261014t"></script>
+<script src="js/presets.js?v=20261014t"></script>
+<script src="assets/js/qrcode.min.js?v=20261014t"></script>
+<script src="js/share.js?v=20261014t"></script>
+<script src="js/topbar.js?v=20261014t"></script>
 </body>
 </html>

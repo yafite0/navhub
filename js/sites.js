@@ -430,6 +430,17 @@
         window.clearTimeout(timer);
         timer = window.setTimeout(function () { render(input.value); }, 90);
       });
+
+      /* 回车和主页那套保持一致：不是跳转，是把输入框里的内容交给搜索引擎。
+         这个框是拿来筛列表的，不承担「打开官网」的职责 —— 要进官网就点列表里的条目。 */
+      input.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+
+        var raw = input.value.trim();
+        if (!raw || !window.Seek || !Seek.engines().length) return;
+        Seek.open(Seek.engineHref(Seek.engines()[0], raw));
+      });
     }
 
     if ($('asClear')) {

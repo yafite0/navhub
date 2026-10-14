@@ -7,8 +7,8 @@
 <meta name="description" content="离线二维码生成：把网址或文字变成二维码，纯浏览器本地生成，不联网也不上传。" />
 <meta name="theme-color" content="#4D6BFE" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-<link rel="stylesheet" href="css/style.css?v=20261010b" />
-<link rel="stylesheet" href="css/qr.css?v=20261010b" />
+<link rel="stylesheet" href="css/style.css?v=20261014t" />
+<link rel="stylesheet" href="css/qr.css?v=20261014t" />
 </head>
 <body>
 <div class="bg-decor" aria-hidden="true">
@@ -16,33 +16,7 @@
   <span class="glow glow-b"></span>
 </div>
 
-<header class="topbar">
-  <div class="wrap topbar-inner">
-    <a class="brand" href="index.html">
-      <span class="brand-mark">启</span>
-      <span class="brand-text">
-        <strong>启航</strong>
-        <small>二维码生成</small>
-      </span>
-    </a>
-
-    <a class="top-btn" href="index.html">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 12H6M11 5.5 4.5 12 11 18.5"/>
-      </svg>
-      <span>返回首页</span>
-    </a>
-
-    <button id="themeBtn" class="icon-btn" type="button" title="切换深浅色" aria-label="切换深浅色">
-      <svg class="ico-sun" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-        <circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/>
-      </svg>
-      <svg class="ico-moon" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 14.2A8.4 8.4 0 1 1 9.8 4a6.9 6.9 0 0 0 10.2 10.2Z"/>
-      </svg>
-    </button>
-  </div>
-</header>
+<header class="topbar"></header>
 
 <main class="wrap qr-main">
   <section class="qr-head">
@@ -142,7 +116,9 @@
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="assets/js/qrcode.min.js?v=20261010b"></script>
-<script src="js/qr.js?v=20261010b"></script>
+<script src="js/data.js?v=20261014t"></script>
+<script src="assets/js/qrcode.min.js?v=20261014t"></script>
+<script src="js/qr.js?v=20261014t"></script>
+<script src="js/topbar.js?v=20261014t"></script>
 </body>
 </html>

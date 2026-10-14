@@ -1,0 +1,445 @@
+﻿/* ============================================================
+   小工具 · 预设列表（新机预设 / 预设提示词）
+   ============================================================ */
+
+/* 铺满 .wrap（最多 1440px），一行放 3 个 —— 条目多，窄卡片会把页面拉得很长 */
+.tw-preset-card { max-width: none; }
+
+.preset-lead {
+  margin: 0 0 16px;
+  font-size: 14px; line-height: 1.85; color: var(--text-2);
+  max-width: 820px;
+}
+
+/* ---------- 顶部说明：先说清「为什么不做一键安装」 ----------
+   放在最上面是有意的：不解释一句，容易让人以为用起来很麻烦就走了。 */
+.preset-intro {
+  margin: 0 0 18px; padding: 18px 20px 20px;
+  border-radius: var(--r-md);
+  background: var(--brand-tint);
+  border: 1px solid var(--brand-tint-2);
+}
+.preset-intro h4 {
+  font-size: 15.5px; font-weight: 800; color: var(--text);
+  letter-spacing: -.2px;
+}
+.preset-intro > p {
+  margin-top: 9px; max-width: 900px;
+  font-size: 13.5px; line-height: 1.85; color: var(--text-2);
+}
+.preset-intro-points {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px; margin-top: 15px;
+}
+.preset-intro-point {
+  padding: 12px 14px;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  border: 1px solid var(--brand-tint-2);
+}
+.preset-intro-point b {
+  display: block; margin-bottom: 4px;
+  font-size: 13px; font-weight: 700; color: var(--brand);
+}
+.preset-intro-point span {
+  display: block; font-size: 12.5px; line-height: 1.7; color: var(--text-2);
+}
+.preset-intro-note {
+  margin-top: 15px; padding-top: 13px;
+  border-top: 1px dashed var(--brand-soft);
+  font-size: 12.5px; line-height: 1.85; color: var(--text-2);
+}
+.preset-intro-note b { color: var(--text); }
+
+@media (max-width: 900px) {
+  .preset-intro-points { grid-template-columns: 1fr; }
+}
+
+.preset-bar {
+  display: flex; align-items: center; gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+.preset-count { flex: 1; min-width: 0; font-size: 12.5px; color: var(--text-3); }
+
+/* ---------- 折叠分组 ---------- */
+.pg { border-bottom: 1px solid var(--border); }
+.pg:last-child { border-bottom: none; }
+
+.pg-head {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 14px 4px;
+  text-align: left;
+  transition: color .18s;
+}
+.pg-head:hover .pg-title b { color: var(--brand); }
+
+.pg-arrow {
+  flex: none; color: var(--text-3);
+  display: grid; place-items: center;
+  transition: transform .2s, color .18s;
+}
+.pg.is-open .pg-arrow { transform: rotate(90deg); }
+.pg-head:hover .pg-arrow { color: var(--brand); }
+
+.pg-emoji { flex: none; font-size: 18px; line-height: 1; }
+.pg-title { flex: 1; min-width: 0; }
+.pg-title b {
+  display: block; font-size: 15px; font-weight: 700; color: var(--text);
+  transition: color .18s;
+}
+.pg-num {
+  flex: none; font-style: normal;
+  font-size: 12px; color: var(--brand);
+  background: var(--brand-tint); border: 1px solid var(--brand-tint-2);
+  padding: 2px 10px; border-radius: 999px;
+}
+
+.pg-body { padding: 0 4px 18px; }
+.pg-body[hidden] { display: none; }
+.pg-note {
+  margin: 0 0 12px;
+  font-size: 12.5px; line-height: 1.8; color: var(--text-3);
+}
+
+.pg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* ---------- 一条链接（新机预设） ---------- */
+.pg-item {
+  display: flex; align-items: flex-start; gap: 11px;
+  padding: 12px 14px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  transition: border-color .18s, background .18s, transform .18s;
+}
+.pg-item:hover {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+  transform: translateY(-1px);
+}
+
+.pg-ico {
+  flex: none; width: 32px; height: 32px; border-radius: 10px;
+  display: grid; place-items: center; overflow: hidden;
+  font-size: 13px; font-weight: 700; color: #fff;
+}
+.pg-ico img { width: 100%; height: 100%; object-fit: cover; }
+
+.pg-text { flex: 1; min-width: 0; }
+.pg-text b { display: block; font-size: 13.5px; font-weight: 700; color: var(--text); }
+.pg-text em {
+  display: block; margin-top: 3px; font-style: normal;
+  font-size: 12.5px; line-height: 1.6; color: var(--text-2);
+}
+.pg-text small {
+  display: block; margin-top: 5px; padding-top: 5px;
+  border-top: 1px dashed var(--border);
+  font-size: 11.5px; line-height: 1.65; color: var(--text-3);
+}
+
+.pg-go {
+  flex: none; margin-top: 2px;
+  font-size: 11.5px; font-weight: 600; color: var(--brand);
+  opacity: 0; transition: opacity .18s;
+  white-space: nowrap;
+}
+.pg-item:hover .pg-go { opacity: 1; }
+
+/* ---------- 页脚说明 ---------- */
+.preset-foot {
+  margin: 18px 0 0; padding: 14px 16px;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: 12.5px; line-height: 1.85; color: var(--text-2);
+}
+.preset-foot[hidden] { display: none; }
+
+/* ============================================================
+   提示词工作台 —— 「提示词助手」页面的骨架
+   ------------------------------------------------------------
+   三栏，每栏结构一样：编号 + 标题 + 一句话说明，末尾一句小字。
+       ① 提示词预设   ② 提示词   ③ 去找 AI 对话
+
+   高度上有个约定：**整个内容区撑满视口剩下的那部分**。
+   内容多了在框内滚，不够就把卡片撑开 —— 不留半截空白。
+   三栏因此等高，左栏和右栏末尾那句说明也就自然对齐了。
+   ============================================================ */
+
+/* 页面：顶栏 / 内容 / 页脚 竖着排，内容吃掉中间那段。
+   高度锁在 100vh（不是 min-height）—— 用 min-height 的话，
+   内容一旦超过一屏，body 会自己长高，里面的 flex 就没有"空间不够"
+   这回事，谁也不会收缩，撑满就落了空。 */
+.tr-page {
+  height: 100vh;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.tr-page .tr-main { flex: 1; min-height: 0; display: flex; flex-direction: column; padding-bottom: 0; }
+.tr-page .tr-main > .tr-head { flex: none; }
+.tr-page .footer { flex: none; margin-top: 22px; }
+
+/* 两种情况下不锁高度，回到普通文档流整页滚：
+   · 窗口不够高（< 700px）—— 锁住的话卡片只剩三百来像素，正文框只剩一条缝
+   · 窄屏（见下面 max-width: 1000px）—— 三栏竖排，横着切三段滚动区太难用
+   不解除的话 body 的 overflow: hidden 会把下面的内容直接裁掉。 */
+@media (max-height: 700px), (max-width: 1000px) {
+  .tr-page { height: auto; min-height: 100vh; overflow: visible; }
+}
+
+/* 包住三栏的那张卡片 */
+.pm-card {
+  padding: 22px 24px 24px;
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+}
+
+.pm-layout {
+  display: grid;
+  grid-template-columns: 236px minmax(0, 1fr) 246px;
+  gap: 26px;
+  align-items: stretch;          /* 三栏等高，底部的说明才对得齐 */
+  flex: 1; min-height: 0;
+}
+.pm-side, .pm-main, .pm-ai { min-width: 0; min-height: 0; }
+
+/* 每栏的头部：编号 + 标题 + 一句话说明 */
+.pm-head {
+  flex: none;
+  display: flex; align-items: flex-start; gap: 11px;
+  margin-bottom: 14px;
+}
+.pm-step {
+  flex: none; width: 26px; height: 26px; border-radius: 8px;
+  display: grid; place-items: center;
+  font-size: 13px; font-weight: 800; color: #fff;
+  background: var(--brand-grad); box-shadow: var(--shadow-brand);
+}
+.pm-head-text { min-width: 0; }
+.pm-head h2 { font-size: 15.5px; font-weight: 700; }
+.pm-head p { margin-top: 2px; font-size: 12px; line-height: 1.5; color: var(--text-3); }
+
+/* 每栏末尾那句话 */
+.pm-foot { flex: none; margin-top: 13px; font-size: 12px; line-height: 1.7; color: var(--text-3); }
+
+/* 左栏和右栏：**头尾固定，只有中间那一列列表滚**。
+   以前是整栏一起滚，标题和末尾的说明会被卷走。 */
+.pm-side, .pm-ai {
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.pm-nav, .pm-ai-list {
+  flex: 1; min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 5px;
+}
+
+.pm-ai-list { display: flex; flex-direction: column; gap: 8px; }
+
+/* 左栏的导航容器 —— 里面的 .pm-nav-* 由 presets.js 生成 */
+.pm-nav { display: grid; align-content: start; gap: 2px; }
+
+/* 中栏：多了自己滚；正文框吃掉剩余高度，下面不留大片空白 */
+.pm-main { display: flex; flex-direction: column; overflow-y: auto; }
+.pm-main > #pmPlain,
+.pm-main > #trTool {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+}
+#pmPlain[hidden], #trTool[hidden] { display: none; }
+#pmPlain > *, #trTool > * { flex: none; }
+#pmPlain > .pm-text,
+#trTool > .tr-prompt { flex: 1; min-height: 200px; max-height: none; }
+
+/* ============================================================
+   AI 对话条目 —— 翻译助手和提示词库共用，所以放在这里
+   （两个页面都引了 presets.css，不用各写一份）
+   ============================================================ */
+.tr-item {
+  display: flex; align-items: center; gap: 11px;
+  width: 100%; text-align: left;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  transition: transform .18s, border-color .18s, background .18s, box-shadow .18s;
+}
+.tr-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand-soft);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+.tr-item-ico {
+  flex: none; width: 34px; height: 34px; border-radius: 10px;
+  display: grid; place-items: center; overflow: hidden;
+  font-size: 14px; font-weight: 700; color: #fff;
+}
+.tr-item-ico img {
+  width: 100%; height: 100%; object-fit: contain;
+  padding: 5px; background: #fff; border-radius: inherit;
+}
+.tr-item-text { flex: 1; min-width: 0; }
+.tr-item-text b {
+  display: block; font-size: 13.5px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.tr-item-text span {
+  display: block; margin-top: 1px;
+  font-size: 11px; color: var(--text-3);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.tr-item:hover .tr-item-text b { color: var(--brand); }
+
+/* .pm-side 的吸顶与滚动见上面「提示词工作台」那一节 */
+
+/* 完整工具（网页翻译）：自成一类，排最上面。
+   和分组里的条目一样是「就地选中」，不再是跳到别的页面。 */
+.pm-nav-tool {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; margin-bottom: 10px; padding: 10px 12px;
+  border-radius: var(--r-sm);
+  text-align: left;
+  background: var(--brand-tint);
+  border: 1px solid var(--brand-tint-2);
+  transition: border-color .18s, box-shadow .18s, background .18s;
+}
+.pm-nav-tool:hover { border-color: var(--brand); box-shadow: var(--shadow-brand); }
+.pm-nav-tool.is-on {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-tint-2);
+}
+.pm-nav-tool.is-on .pm-nav-txt b { color: var(--brand); }
+.pm-nav-txt { flex: 1; min-width: 0; }
+.pm-nav-txt b { display: block; font-size: 13.5px; font-weight: 700; color: var(--text); }
+.pm-nav-txt small { display: block; margin-top: 2px; font-size: 11.5px; color: var(--text-3); }
+
+/* 分组：标题点一下收起 / 展开 */
+.pm-nav-group { margin-bottom: 1px; }
+.pm-nav-group-head {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 8px 12px;
+  border-radius: var(--r-xs);
+  text-align: left; color: var(--text);
+  transition: background .18s;
+}
+.pm-nav-group-head:hover { background: var(--surface-2); }
+.pm-nav-group-head .pm-nav-emoji { font-size: 14px; }
+.pm-nav-group-head .pm-nav-name { font-size: 13px; font-weight: 600; }
+
+.pm-nav-items { display: grid; gap: 1px; padding: 2px 0 7px 10px; }
+.pm-nav-items[hidden] { display: none; }
+
+.pm-nav-item {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 6px 11px;
+  border-radius: var(--r-xs);
+  text-align: left;
+  font-size: 12.5px; color: var(--text-2);
+  transition: color .18s, background .18s;
+}
+.pm-nav-item:hover { color: var(--brand); background: var(--brand-tint); }
+.pm-nav-item.is-on { color: var(--brand); background: var(--brand-tint); font-weight: 600; }
+
+.pm-nav-dot {
+  flex: none; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--border-strong);
+  transition: background .18s;
+}
+.pm-nav-item.is-on .pm-nav-dot { background: var(--brand); }
+
+.pm-nav-emoji { flex: none; font-size: 15px; line-height: 1; }
+.pm-nav-name {
+  flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pm-nav-num { flex: none; font-style: normal; font-size: 11px; color: var(--text-3); }
+
+/* ---------- 中栏里，这一条自己的标题区 ---------- */
+.pm-detail-head { padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.pm-detail-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 9px; }
+
+.pm-group-chip {
+  padding: 2px 10px; border-radius: 999px;
+  font-size: 12px; color: var(--text-2);
+  background: var(--surface-2); border: 1px solid var(--border);
+}
+.pm-tag {
+  padding: 2px 10px; border-radius: 999px;
+  font-size: 11.5px; color: var(--brand);
+  background: var(--brand-tint); border: 1px solid var(--brand-tint-2);
+}
+
+.pm-detail-head h3 { font-size: 19px; font-weight: 800; letter-spacing: -.3px; }
+.pm-detail-desc { margin-top: 8px; font-size: 13.5px; line-height: 1.8; color: var(--text-2); }
+
+.pm-text {
+  display: block; width: 100%;
+  margin-top: 18px; padding: 16px 18px;
+  min-height: 300px; max-height: 46vh;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border); background: var(--surface-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px; line-height: 1.85; color: var(--text-2);
+  resize: vertical;
+  transition: border-color .18s, box-shadow .18s;
+}
+.pm-text:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-tint);
+}
+
+.pm-detail-tip { margin: 12px 0 0; font-size: 12px; line-height: 1.75; color: var(--text-3); }
+.pm-detail-tip::before { content: '提示 · '; color: var(--brand); font-weight: 600; }
+
+@media (hover: none) {
+  .pg-go { opacity: 1; }
+}
+
+/* 三列要够宽才排得开，窄下来就减列 */
+@media (max-width: 1180px) {
+  .pg-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 820px) {
+  .pg-grid { grid-template-columns: 1fr; }
+}
+
+/* 三栏挤了就收窄，再挤就竖着排 */
+@media (max-width: 1280px) {
+  .pm-layout { grid-template-columns: 208px minmax(0, 1fr) 216px; gap: 20px; }
+}
+
+/* 窄屏：三栏竖着排 —— 预设 → 提示词 → AI 入口。
+   这种排法下不再撑满视口：横着切三段的滚动区太难用，
+   回到普通文档流整页滚更顺。*/
+@media (max-width: 1000px) {
+  .tr-page .tr-main { display: block; }
+  .pm-card { display: block; }
+  .pm-layout { grid-template-columns: 1fr; gap: 20px; }
+
+  .pm-side, .pm-ai { overflow: visible; }
+  .pm-nav, .pm-ai-list { overflow: visible; padding-right: 0; }
+  .pm-main { overflow: visible; }
+  .pm-main > #pmPlain, .pm-main > #trTool { display: block; }
+  #pmPlain[hidden], #trTool[hidden] { display: none; }
+
+  .pm-nav-items { padding-left: 4px; }
+  .pm-text, .tr-prompt { min-height: 240px; }
+  /* AI 入口横过来铺两列，别占掉一整个屏高 */
+  .pm-ai-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 720px) {
+  .preset-lead { font-size: 13.5px; }
+  .pg-head { padding: 13px 2px; }
+  .pg-body { padding: 0 2px 16px; }
+  .pm-detail-head h3 { font-size: 17.5px; }
+}

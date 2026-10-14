@@ -3,79 +3,82 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>翻译助手 · 启航</title>
-<meta name="description" content="翻译助手：直达各大网页在线翻译，或复制一段提示词去 AI 对话页翻译。不需要 API key。" />
+<title>提示词预设 · 启航</title>
+<meta name="description" content="提示词预设：左边选预设，中间改提示词正文，右边直接去 AI 对话。复制粘贴就能用，不需要 API key。" />
 <meta name="theme-color" content="#4D6BFE" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-<link rel="stylesheet" href="css/style.css?v=20261010b" />
-<link rel="stylesheet" href="css/translate.css?v=20261010b" />
+<link rel="stylesheet" href="css/style.css?v=20261014t" />
+<link rel="stylesheet" href="css/translate.css?v=20261014t" />
+<link rel="stylesheet" href="css/presets.css?v=20261014t" />
 </head>
-<body>
+<body class="tr-page">
 <div class="bg-decor" aria-hidden="true">
   <span class="glow glow-a"></span>
   <span class="glow glow-b"></span>
 </div>
 
-<header class="topbar">
-  <div class="wrap topbar-inner">
-    <a class="brand" href="index.html">
-      <span class="brand-mark">启</span>
-      <span class="brand-text">
-        <strong>启航</strong>
-        <small>翻译助手</small>
-      </span>
-    </a>
-
-    <a class="top-btn" href="index.html">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 12H6M11 5.5 4.5 12 11 18.5"/>
-      </svg>
-      <span>返回首页</span>
-    </a>
-
-    <button id="themeBtn" class="icon-btn" type="button" title="切换深浅色" aria-label="切换深浅色">
-      <svg class="ico-sun" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-        <circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/>
-      </svg>
-      <svg class="ico-moon" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 14.2A8.4 8.4 0 1 1 9.8 4a6.9 6.9 0 0 0 10.2 10.2Z"/>
-      </svg>
-    </button>
-  </div>
-</header>
+<header class="topbar"></header>
 
 <main class="wrap tr-main">
   <section class="tr-head">
-    <h1>翻译助手</h1>
-    <p>不调用任何接口、不需要 API key、不花一分钱。左边是各家现成的<strong>网页在线翻译</strong>；
-      右边是<strong>提示词</strong>方案 —— 把提示词发给任意一个 AI，它就会变成你的双向翻译助手。</p>
+    <h1>提示词预设</h1>
+    <p>不调用任何接口、不需要 API key、不花一分钱。左边选<strong>预设</strong>，
+      中间改<strong>正文</strong>，右边直接去 <strong>AI 对话</strong> —— 复制粘贴就能用。</p>
   </section>
 
-  <div class="tr-layout">
+  <!-- 全站唯一装提示词的地方：网页翻译 + 其余 16 条都在这一个页面里。
+       旧的 tools.html?tool=prompts 由 js/tools.js 转到这里，锚点也带着。 -->
+  <div class="card pm-card">
+    <div class="pm-layout">
 
-    <aside class="card tr-side">
-      <div class="tr-side-head">
-        <span class="tr-step">1</span>
-        <div>
-          <h2>网页在线翻译</h2>
-          <p>点一下直接打开对应网站的翻译页</p>
+      <!-- ① 提示词预设 -->
+      <aside class="pm-side">
+        <header class="pm-head">
+          <span class="pm-step">1</span>
+          <div class="pm-head-text">
+            <h2>提示词预设</h2>
+            <p>这里放的是全部预设，翻译只是其中一项</p>
+          </div>
+        </header>
+        <div class="pm-nav" id="pmNav"></div>
+        <p class="pm-foot">所有提示词都配同一批 AI 对话入口 —— 就在右边那一列。</p>
+      </aside>
+
+      <!-- ② 提示词 -->
+      <section class="pm-main">
+        <header class="pm-head">
+          <span class="pm-step">2</span>
+          <div class="pm-head-text">
+            <h2>提示词</h2>
+            <p>改成你要的样子 → 复制 → 粘给常用的 AI</p>
+          </div>
+        </header>
+
+        <!-- 普通提示词：标题 + 正文 + 操作（由 presets.js 填内容） -->
+        <div id="pmPlain" hidden>
+          <div class="pm-detail-head">
+            <div class="pm-detail-top" id="pmTags"></div>
+            <h3 id="pmTitle"></h3>
+            <p class="pm-detail-desc" id="pmDesc"></p>
+          </div>
+
+          <textarea id="pmText" class="pm-text" spellcheck="false" aria-label="提示词内容"></textarea>
+
+          <p class="pm-detail-tip" id="pmTip" hidden></p>
+
+          <!-- 这里只放「和这条提示词有关」的操作。
+               去 AI 对话是右边第三栏的事，不在这儿重复一遍
+               —— 而且那些 AI 得由用户自己挑，写死一个 DeepSeek 没道理。 -->
+          <div class="cnt-actions">
+            <button class="primary-btn" id="pmCopy" type="button">复制提示词</button>
+            <button class="mini-btn" id="pmReset" type="button">重置为默认</button>
+          </div>
+
+          <p class="pm-foot">提示词可以直接改 —— 复制出去的是你改过的版本，点「重置为默认」能还原。</p>
         </div>
-      </div>
-      <div class="tr-list" id="webList"></div>
-      <p class="tr-foot-note">只收录提供网页版翻译的站点，不提供网页翻译的软件不会出现。</p>
-    </aside>
 
-    <section class="card tr-main-panel">
-      <div class="tr-panel-head">
-        <span class="tr-step">2</span>
-        <div>
-          <h2>AI 网页翻译</h2>
-          <p>选一条提示词 → 复制 → 粘贴给你常用的 AI</p>
-        </div>
-      </div>
-
-      <div class="tr-panel-body">
-        <div class="tr-panel-left">
+        <!-- 网页翻译：唯一一条「完整工具」，多带语言和语气设置 -->
+        <div id="trTool" hidden>
           <div class="tr-prompts" id="promptList"></div>
           <div class="tr-tip" id="promptTip"></div>
 
@@ -112,55 +115,38 @@
             <span class="tr-warn" id="promptWarn" hidden></span>
             <span class="tr-count" id="promptCount"></span>
           </div>
-          <p class="tr-foot-note" id="editNote">提示词可以直接编辑微调；换语言时只会更新跟语言/语气有关的那几处，你手写的内容会保留。</p>
+          <p class="pm-foot" id="editNote">提示词可以直接编辑微调；换语言时只会更新跟语言/语气有关的那几处，你手写的内容会保留。</p>
         </div>
+      </section>
 
-        <aside class="tr-panel-right">
-          <h3>去找 AI 网页翻译</h3>
-          <p class="tr-right-note">点一下会 <strong>自动复制当前提示词</strong> 并打开 AI 对话页，过去直接粘贴就行</p>
-          <div class="tr-list" id="aiList"></div>
-          <p class="tr-foot-note">只收录能直接在网页里对话的 AI，没法网页对话的不列。</p>
-        </aside>
-      </div>
-    </section>
-  </div>
-
-  <section class="card tr-about">
-    <h2>关于这个页面</h2>
-    <div class="about-grid">
-      <div class="about-item">
-        <h4>为什么不做成直接翻译</h4>
-        <p>网页里直接调翻译接口，要么得申请 key（纯静态页面的 key 等于公开，会被盗刷），要么依赖随时会变的不稳定通道。
-        做成"带你去"反而更可靠 —— 用的是各家自己维护的正规入口。</p>
-      </div>
-      <div class="about-item">
-        <h4>提示词怎么用</h4>
-        <p>先在<strong>新会话</strong>里把「双向翻译规则」发一次，AI 回复"确认"后就生效了，之后不用重复发。
-        想改语言或语气，再单独发对应的那条修改提示词。</p>
-      </div>
-      <div class="about-item">
-        <h4>复制提示词会发生什么</h4>
-        <p>只写进你电脑的剪贴板，<strong>不发送到任何地方</strong>。
-        点 AI 按钮时会自动再复制一次，避免你忘了复制就跳过去。</p>
-      </div>
-      <div class="about-item">
-        <h4>隐私提醒</h4>
-        <p>真正翻译的是你选的那个翻译网站或 AI，内容会按它们各自的规则处理。
-        涉及隐私的内容，请先看清对方的隐私政策。</p>
-      </div>
+      <!-- ③ 去找 AI 对话 -->
+      <aside class="pm-ai">
+        <header class="pm-head">
+          <span class="pm-step">3</span>
+          <div class="pm-head-text">
+            <h2>去找 AI 对话</h2>
+            <p>点一下会复制这条提示词并打开对话页，粘进去就能用</p>
+          </div>
+        </header>
+        <div class="pm-ai-list" id="aiList"></div>
+        <p class="pm-foot">只收录能直接在网页里对话的 AI，需要装客户端的不列。</p>
+      </aside>
     </div>
-  </section>
+  </div>
 </main>
 
 <footer class="footer">
   <div class="wrap footer-inner">
-    <span>启航 · 翻译助手</span>
+    <span>启航 · 提示词预设</span>
     <span class="footer-tip">不调用任何接口，不需要 API key</span>
   </div>
 </footer>
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/translate.js?v=20261010b"></script>
+<script src="js/data.js?v=20261014t"></script>
+<script src="js/translate.js?v=20261014t"></script>
+<script src="js/presets.js?v=20261014t"></script>
+<script src="js/topbar.js?v=20261014t"></script>
 </body>
 </html>
