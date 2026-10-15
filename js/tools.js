@@ -55,10 +55,11 @@
   var TOOL_META = {
     unit: {
       t: '单位 / 汇率换算',
-      d: '长度、重量、面积、体积、温度、速度、数据、时间八大类换算，外加 57 种常用货币汇率。两个输入框都可以直接改，换算是双向的。'
+      /* 没有 d：这两句说明分别写进了两个换算区自己的标题旁边，
+         页头再来一段只会把页面顶得更长（这一页本来就有滚动条）。 */
     },
     counter: {
-      t: '字数统计 / Token 预估',
+      t: '字数统计',
       d: '统计含标点和不含标点的字数，按模型估算 token 用量，再根据你填写的价格估算费用。'
     },
     specs: {
@@ -106,7 +107,13 @@
     var meta = TOOL_META[want];
     if (meta) {
       if ($('twTitle')) $('twTitle').textContent = meta.t;
-      if ($('twDesc')) $('twDesc').textContent = meta.d;
+      /* 有些工具页没有说明（比如单位换算），这时把 <p> 整个藏掉 ——
+         留个空段落会占掉一行的高度 */
+      var desc = $('twDesc');
+      if (desc) {
+        desc.textContent = meta.d || '';
+        desc.hidden = !meta.d;
+      }
     }
   }
 

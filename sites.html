@@ -6,8 +6,8 @@
 <meta name="description" content="启航 · 全部网站，按用途分类列出收录的所有官方站点，支持实时筛选。" />
 <title>其他网页 · 启航</title>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-<link rel="stylesheet" href="css/style.css?v=20261015a" />
-<link rel="stylesheet" href="css/sites.css?v=20261015a" />
+<link rel="stylesheet" href="css/style.css?v=20261015m" />
+<link rel="stylesheet" href="css/sites.css?v=20261015m" />
 </head>
 <body>
 
@@ -15,51 +15,20 @@
 
 <main class="wrap">
 
+  <!-- 页头：只有标题，「返回主页」挂在右侧。
+       标题下面那句（「这里把能找到的官网都收进来…共 100 个…」）先撤了，
+       等文案定了再补。原来那两条大提示块更早之前就删掉了。 -->
   <section class="as-head">
-    <h1>其他网页</h1>
-    <p>
-      <strong>主页每个分类里只放最值得收藏的几个，并不代表全部</strong> —— 这里才是按分类展开的完整列表。
-      另外这里只收<strong>容易被广告和山寨站挤掉、不好找官网</strong>的网址；
-      那些随手一搜就能找到的，我们就不重复提供了。
-      共 <strong id="asTotal">—</strong> 个，其中
-      国内站点 <strong id="asCn">—</strong> 个、国外站点 <strong id="asGlobal">—</strong> 个，每类都按国内 / 国外分开列。
-    </p>
-
-    <div class="as-note">
-      <span class="as-note-ico">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="8.6"/><path d="M3.6 12h16.8M12 3.4c2.2 2.4 3.3 5.4 3.3 8.6s-1.1 6.2-3.3 8.6c-2.2-2.4-3.3-5.4-3.3-8.6S9.8 5.8 12 3.4Z"/>
-        </svg>
-      </span>
-      <div class="as-note-text">
-        <b>标注「国外站点」的官网，打不开是正常现象</b>
-        <p>
-          这些站点的服务器在境外，打开慢、图片加载不出来、甚至整个页面打不开，
-          <b>都属于正常情况，和网址本身有没有失效无关</b>。
-          遇到这种先换个网络环境试试（比如切到手机热点、关掉加速器或换一个）。
-          只有极小概率是域名真的失效 —— 如果换了网络依然打不开，欢迎反馈。
-        </p>
+    <div class="page-head">
+      <div class="page-head-text">
+        <h1>其他网页</h1>
       </div>
-    </div>
 
-    <div class="as-note is-rule">
-      <span class="as-note-ico">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 3.6 19 6v6c0 4.2-2.9 7.4-7 8.4-4.1-1-7-4.2-7-8.4V6z"/><path d="M9.2 12.2l2 2 3.6-3.8"/>
-        </svg>
-      </span>
-      <div class="as-note-text">
-        <b>本站面向国内用户，只收录合规的官方网站</b>
-        <p>
-          有些在别处很常见的网址，这里就是没有 —— <b>不是漏了，是本站本来就不收录</b>。
-          这里放的每一个站都经过人工确认：国内可以正常访问，内容符合中国法律法规。
-          如果你要找的站本站确实没有，可以在上面的搜索框里输入关键词，
-          我们会把它交给搜索引擎。
-        </p>
-      </div>
+      <a class="back-home" href="index.html">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6l-6 6 6 6"/></svg>
+        <span>返回主页</span>
+      </a>
     </div>
-
-    <p class="as-more" id="asMore"></p>
   </section>
 
   <div class="as-bar">
@@ -83,19 +52,108 @@
 
 </main>
 
-<footer class="footer">
-  <div class="wrap footer-inner">
-    <a href="index.html">← 返回主页</a>
-    <span class="footer-tip">所有网站均指向官方地址 · 图标与说明仅作跳转用途</span>
+<!-- 介绍弹窗 + 灯箱：和 index.html 里那份完全一样。
+     「介绍」按钮由 js/app.js 的 openIntro() 打开，所以这里也要有这套 DOM。 -->
+<div class="modal-mask" id="introModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" type="button" aria-label="关闭">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M6 6l12 12M18 6L6 18"/>
+      </svg>
+    </button>
+
+    <div class="modal-shot" id="modalShot">
+      <button class="shot-main" id="shotMain" type="button" title="点击全屏查看原图">
+        <img id="modalImg" alt="" />
+        <span class="shot-zoom">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 4H4v5M15 4h5v5M15 20h5v-5M9 20H4v-5"/>
+          </svg>
+          全屏查看
+        </span>
+      </button>
+
+      <span class="shot-meta" id="shotMeta"></span>
+      <span class="shot-count" id="shotCount"></span>
+
+      <button class="shot-nav shot-prev" id="shotPrev" type="button" aria-label="上一张">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.5 6 8.5 12l6 6"/>
+        </svg>
+      </button>
+      <button class="shot-nav shot-next" id="shotNext" type="button" aria-label="下一张">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9.5 6l6 6-6 6"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-head">
+        <span class="site-ico" id="modalIcon"></span>
+        <div class="modal-title">
+          <h3 id="modalTitle">—</h3>
+          <p id="modalTagline"></p>
+        </div>
+        <a class="modal-mini-go" id="modalTopGo" href="#" target="_blank" rel="noopener noreferrer">直达官网</a>
+      </div>
+
+      <div class="modal-cols">
+        <section class="mcol pros">
+          <h4><span class="mcol-mark">优点</span></h4>
+          <ul id="modalPros"></ul>
+        </section>
+        <section class="mcol cons">
+          <h4><span class="mcol-mark">缺点</span></h4>
+          <ul id="modalCons"></ul>
+        </section>
+      </div>
+
+      <p class="modal-best" id="modalBest"></p>
+      <p class="modal-tips" id="modalTips"></p>
+
+      <div class="modal-foot">
+        <a class="go-btn" id="modalGo" href="#" target="_blank" rel="noopener noreferrer">
+          访问官网
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h13M12.5 5.5 19 12l-6.5 6.5"/>
+          </svg>
+        </a>
+        <span class="modal-host" id="modalHost"></span>
+      </div>
+    </div>
   </div>
-</footer>
+</div>
+
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lb-close" id="lbClose" type="button" aria-label="关闭全屏">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M6 6l12 12M18 6L6 18"/>
+    </svg>
+  </button>
+  <button class="lb-nav lb-prev" id="lbPrev" type="button" aria-label="上一张">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14.5 6 8.5 12l6 6"/>
+    </svg>
+  </button>
+  <img class="lb-img" id="lbImg" alt="" />
+  <button class="lb-nav lb-next" id="lbNext" type="button" aria-label="下一张">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9.5 6l6 6-6 6"/>
+    </svg>
+  </button>
+  <div class="lb-bar">
+    <span id="lbCaption"></span>
+    <em id="lbCount"></em>
+  </div>
+</div>
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/data.js?v=20261015a"></script>
-<script src="js/seek.js?v=20261015a"></script>
-<script src="js/app.js?v=20261015a"></script>
-<script src="js/sites.js?v=20261015a"></script>
-<script src="js/topbar.js?v=20261015a"></script>
+<script src="js/data.js?v=20261015m"></script>
+<script src="js/seek.js?v=20261015m"></script>
+<script src="js/app.js?v=20261015m"></script>
+<script src="js/sites.js?v=20261015m"></script>
+<script src="js/topbar.js?v=20261015m"></script>
 </body>
 </html>

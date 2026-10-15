@@ -102,7 +102,8 @@
     return paintIcon(el('span', 'site-ico'), site);
   }
 
-  /* 全部网站页（sites.js）也要用同一套图标逻辑 */
+  /* 全部网站页（sites.js）也要用同一套图标逻辑和介绍弹窗。
+     sites.html 同样引了这个文件，所以这里挂到 window 上就能直接用。 */
   window.paintIcon = paintIcon;
 
   /* ---------- 精选卡片 ---------- */
@@ -250,6 +251,9 @@
     document.body.classList.add('modal-open');
     document.getElementById('modalClose').focus();
   }
+
+  /* 「其他网页」页的卡片上也有一个「介绍」按钮，走的是同一个弹窗 */
+  window.openIntro = openIntro;
 
   function closeIntro() {
     var mask = document.getElementById('introModal');
@@ -1098,15 +1102,20 @@
   function syncHeroWings() {
     var row = document.querySelector('.hb-row');
     var hi = document.querySelector('.hb-hi');
+    var hold = document.querySelector('.hb-hold');
     var wx = document.querySelector('.wx');
     if (!row || !hi || !wx) return;
 
     hi.style.minWidth = '';
+    if (hold) hold.style.width = '';
     if (window.innerWidth <= 980) return;      /* 窄屏是上下两行，不适用 */
 
     var w = Math.max(hi.offsetWidth, wx.offsetWidth);
     var need = w * 2 + 48 + 420;               /* 两翼 + 两个 gap + 中间至少留住 420 */
-    if (row.offsetWidth >= need) hi.style.minWidth = w + 'px';
+    if (row.offsetWidth < need) return;
+    hi.style.minWidth = w + 'px';
+    /* 右角那个空占位跟着左翼一样宽，中间那组才是夹在正中间 */
+    if (hold) hold.style.width = w + 'px';
   }
 
   /* ---------- 启动 ----------

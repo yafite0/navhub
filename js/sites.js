@@ -38,7 +38,8 @@
         sites.push({
           name: s.name, url: s.url, desc: s.short || '',
           icon: s.icon, key: s.key || '', alias: s.alias || null,
-          region: s.region || 'global', top: true
+          region: s.region || 'global', top: true,
+          raw: s        /* 「介绍」按钮要拿原始对象去开弹窗（intro / shots 在里面） */
         });
       });
       if (sites.length) {
@@ -63,7 +64,8 @@
       byCat[c].push({
         name: s.name, url: s.url, desc: s.desc || '',
         icon: s.icon, key: s.key || '', alias: s.alias || null,
-        region: s.region || 'global', top: false
+        region: s.region || 'global', top: false,
+        raw: s          /* 同上：「介绍」按钮要用它开弹窗 */
       });
     });
 
@@ -152,37 +154,64 @@
   var TOTAL = GROUPS.reduce(function (n, g) { return n + g.sites.length; }, 0);
   var TOTAL_CN = GROUPS.reduce(function (n, g) { return n + g.cn.length; }, 0);
   var TOTAL_GLOBAL = TOTAL - TOTAL_CN;
-  var EXTRA = (CFG.urls || []).length;
 
-  /* ---------- 单个站点 ---------- */
+  /* ---------- 单个站点（卡片） ----------
+     格式和主页那张「精选卡片」对齐：
+       上行：图标 + 名字（+ 别名 + 国内/国外标签）+ 一句话介绍
+       下行：介绍（有 intro 才出现）+ 直达
+     和主页那张的差别只有一个：**不加背景图 / 截图** ——
+     这一页动辄上百个条目，图上去了列表会长得没边。
+     图标走 app.js 的 paintIcon（和主页同一套），抓不到才退回名字首字。 */
   function buildItem(s) {
-    var a = el('a', 'as-item' + (s.top ? ' is-top' : ''));
-    a.href = s.url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.title = s.name + ' · ' + domainOf(s.url);
+    var card = el('article', 'as-card');
 
+    var top = el('div', 'as-card-top');
     var ico = el('span', 'site-ico');
-    a.appendChild(ico);
     if (window.paintIcon) window.paintIcon(ico, s);
-    else ico.textContent = (s.name.charAt(0) || '?').toUpperCase();
+    else ico.textContent = (String(s.name).charAt(0) || '?').toUpperCase();
+    top.appendChild(ico);
 
-    var text = el('span', 'as-text');
-    var b = el('b');
-    b.appendChild(document.createTextNode(s.name));
+    /* 名字单独包一层才收得住：这一行是 flex，名字那截负责省略号，
+       别名和标签 flex: none 不会被压掉 —— 不这么写，站名一长
+       （还带着别名的那种），标签就被挤出去或者叠上去了。 */
+    var title = el('div', 'as-card-title');
+    var h4 = el('h4');
+    h4.appendChild(el('span', 'name-main', s.name));
     /* 别名跟在名字后面：Photoshop（PS） */
     if (s.alias && s.alias.length) {
-      b.appendChild(el('span', 'name-alias', '（' + s.alias.slice(0, 2).join('、') + '）'));
+      h4.appendChild(el('span', 'name-alias', '（' + s.alias.slice(0, 2).join('、') + '）'));
     }
-    text.appendChild(b);
-    if (s.desc) text.appendChild(el('em', null, s.desc));
-    a.appendChild(text);
+    /* 标签只用两个字：「国内站点」那种四字版会把名字挤到只剩三四个字
+       （「WinRAR（RAR）」直接变「WinR…」），两个字省下的 26px 刚好还给名字。 */
+    var isCn = s.region === 'cn';
+    h4.appendChild(el('span', 'region-tag' + (isCn ? ' is-cn' : ' is-global'),
+      isCn ? '国内' : '国外'));
+    title.appendChild(h4);
+    title.appendChild(el('p', 'as-card-short', s.desc || domainOf(s.url)));
+    top.appendChild(title);
+    card.appendChild(top);
 
-    var go = el('span', 'as-go');
-    go.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>';
-    a.appendChild(go);
+    var actions = el('div', 'as-card-actions');
+    var raw = s.raw || s;
 
-    return a;
+    if (raw.intro) {
+      var ib = el('button', 'as-card-btn is-ghost');
+      ib.type = 'button';
+      ib.innerHTML = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11v5.4M12 7.8h.01"/></svg>介绍';
+      /* openIntro 由 js/app.js 提供（sites.html 也引了它） */
+      ib.addEventListener('click', function () { if (window.openIntro) window.openIntro(raw); });
+      actions.appendChild(ib);
+    }
+
+    var go = el('a', 'as-card-btn is-solid');
+    go.href = s.url;
+    go.target = '_blank';
+    go.rel = 'noopener noreferrer';
+    go.innerHTML = '直达<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h12M12 6l6 6-6 6"/></svg>';
+    actions.appendChild(go);
+    card.appendChild(actions);
+
+    return card;
   }
 
   /* ---------- 渲染 ----------
@@ -191,15 +220,14 @@
        · 输入关键词 → keyword 生效，跨分类模糊匹配
      之前只有关键词模式，点标签时是拿分类名当关键词去搜，
      结果「游戏商城」会把「游戏平台」里的站点也带出来，看起来像两个分类打架。 */
-  function subBlock(label, list, isGlobal) {
-    var wrap = el('div', 'as-sub' + (isGlobal ? ' is-global' : ''));
-    wrap.appendChild(el('span', 'as-sub-title', label));
-    wrap.appendChild(el('span', 'as-sub-num', list.length));
-
+  /* 一个分类下的一排站点。
+     原来这里按国内 / 国外拆成两块（subBlock），现在不再拆 ——
+     同一个分类里混着排、按名字排，归属改由每个条目自己那个标签标，
+     省掉两层小标题，一屏能多放不少。 */
+  function siteGrid(list) {
     var grid = el('div', 'as-grid');
     list.forEach(function (s) { grid.appendChild(buildItem(s)); });
-    wrap.appendChild(grid);
-    return wrap;
+    return grid;
   }
 
   function render(keyword, onlyGroup, onlyCat) {
@@ -226,11 +254,12 @@
 
       grp.cats.forEach(function (cat) {
         if (onlyCat && cat.id !== onlyCat) return;
-        var cn = cat.cn.filter(function (s) { return hit(s, cat.title); });
-        var gl = cat.global.filter(function (s) { return hit(s, cat.title); });
-        if (!cn.length && !gl.length) return;
-        grpNum += cn.length + gl.length;
-        blocks.push({ cat: cat, cn: cn, gl: gl });
+        /* 国内 / 国外合并成一个列表，按名字排 —— 归属看条目上的标签 */
+        var list = cat.cn.concat(cat.global).sort(byName)
+          .filter(function (s) { return hit(s, cat.title); });
+        if (!list.length) return;
+        grpNum += list.length;
+        blocks.push({ cat: cat, list: list });
       });
 
       if (!blocks.length) return;
@@ -283,12 +312,11 @@
           if (b.cat.emoji) h3.appendChild(el('span', 'as-cat-emoji', b.cat.emoji));
           h3.appendChild(document.createTextNode(b.cat.title));
           cHead.appendChild(h3);
-          cHead.appendChild(el('span', 'as-cat-num', (b.cn.length + b.gl.length) + ' 个'));
+          cHead.appendChild(el('span', 'as-cat-num', b.list.length + ' 个'));
           catSec.appendChild(cHead);
         }
 
-        if (b.cn.length) catSec.appendChild(subBlock('国内站点', b.cn, false));
-        if (b.gl.length) catSec.appendChild(subBlock('国外站点', b.gl, true));
+        catSec.appendChild(siteGrid(b.list));
         sec.appendChild(catSec);
       });
 
@@ -380,18 +408,48 @@
     box.appendChild(panel);
   }
 
+  /* ---------- 「关于国外站点」 ----------
+     这条讲的是「打不开别慌，先换个网络试试」，第一次来的人最需要看到它。
+     所以不折叠、不藏在左栏，直接摊在内容区最上面（见 boot 里的插入）。
+     原来它先是页头一整块大提示，后来收成左栏分类卡片里的一个折叠按钮 ——
+     折叠之后等于把这条最需要被看到的话藏起来了。 */
+  /* 把这块插到内容区最上面（第一个分类之前）。
+     左栏只有 236px 宽，全文塞进去要折十行；放在内容区是一两句的事，
+     而且它本来就该在视线最先落到的地方。 */
+  function mountGlobalNote() {
+    var main = document.querySelector('.as-main');
+    if (!main) return;
+    main.insertBefore(buildGlobalNote(), main.firstChild);
+  }
+
+  function buildGlobalNote() {
+    var wrap = el('div', 'as-global-note');
+
+    var head = el('div', 'as-global-head');
+    head.appendChild(el('span', 'as-global-ico', '🌐'));
+    head.appendChild(el('b', null, '关于国外站点'));
+    wrap.appendChild(head);
+
+    wrap.appendChild(el('p', null,
+      '这些站点的服务器在境外，打开慢、图片加载不出来、甚至整个页面打不开，' +
+      '都属于正常情况，和网址本身有没有失效无关。' +
+      '遇到这种先换个网络环境试试（比如切到手机热点、关掉加速器或换一个）。' +
+      '只有极小概率是域名真的失效 —— 如果换了网络依然打不开，欢迎反馈。'));
+
+    return wrap;
+  }
+
   /* ---------- 启动 ---------- */
   function boot() {
     if ($('asTotal')) $('asTotal').textContent = TOTAL;
     if ($('asCn')) $('asCn').textContent = TOTAL_CN;
     if ($('asGlobal')) $('asGlobal').textContent = TOTAL_GLOBAL;
-    if ($('asMore')) {
-      $('asMore').textContent = '另外还有 ' + EXTRA +
-        ' 个「一搜就能找到」的官网（网盘、视频、音乐、购物等）没有列在这里；' +
-        '如果你不想自己搜，直接在下面的输入框里打关键词也能找到，比如「网盘」「听歌」「买票」。';
-    }
+    /* 原来这里还有一句「另外还有 N 个『一搜就能找到』的官网没有列在这里」——
+       方向改了（要尽量多收、不挑好不好搜），这句和新的说法打架，删了。
+       后面的 EXTRA 常量也跟着没用了。 */
 
     initSide();
+    mountGlobalNote();
     render('');
 
     /* 从主页分类的「更多」按钮跳过来时会带 ?cat=xxx，

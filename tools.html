@@ -4,13 +4,13 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>小工具 · 启航</title>
-<meta name="description" content="小工具：单位换算与汇率、字数统计与 Token 预估。全部在你自己的浏览器里运行，数据不会上传。" />
+<meta name="description" content="小工具：单位换算与汇率、字数统计。全部在你自己的浏览器里运行，数据不会上传。" />
 <meta name="theme-color" content="#4D6BFE" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-<link rel="stylesheet" href="css/style.css?v=20261015a" />
-<link rel="stylesheet" href="css/tools.css?v=20261015a" />
-<link rel="stylesheet" href="css/presets.css?v=20261015a" />
-<link rel="stylesheet" href="css/share.css?v=20261015a" />
+<link rel="stylesheet" href="css/style.css?v=20261015m" />
+<link rel="stylesheet" href="css/tools.css?v=20261015m" />
+<link rel="stylesheet" href="css/presets.css?v=20261015m" />
+<link rel="stylesheet" href="css/share.css?v=20261015m" />
 </head>
 <body>
 <div class="bg-decor" aria-hidden="true">
@@ -22,83 +22,112 @@
 
 <main class="wrap tw-main">
   <section class="tw-head">
-    <h1 id="twTitle">小工具</h1>
-    <p id="twDesc">不用装软件、不用注册，打开就能用。<strong>全部在你的浏览器里运行</strong>，输入的内容不会上传到任何地方。</p>
+    <div class="page-head">
+      <div class="page-head-text">
+        <h1 id="twTitle">小工具</h1>
+        <p id="twDesc">不用装软件、不用注册，打开就能用。<strong>全部在你的浏览器里运行</strong>，输入的内容不会上传到任何地方。</p>
+      </div>
+      <a class="back-home" href="index.html">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6l-6 6 6 6"/></svg>
+        <span>返回主页</span>
+      </a>
+    </div>
   </section>
 
-  <!-- 单位 / 汇率 -->
+  <!-- 单位换算 + 汇率换算（同一个界面） -->
   <section class="tw-panel" data-tool-panel="unit">
     <div class="card tw-card">
-      <div class="tool-head">
-        <h3>单位换算 / 汇率</h3>
-        <div class="tabs" id="convTabs">
-          <button class="tab is-active" data-tab="unit" type="button">单位换算</button>
-          <button class="tab" data-tab="fx" type="button">汇率</button>
-        </div>
-      </div>
+      <!-- 两个换算区上下叠着放，中间那个按钮点一下换上下位置。
+           原来这里是两个 tab（单位换算 / 汇率），一次只能看一个；
+           现在两块同时在，少一次点击，对照着看也方便。
+           没有卡片大标题 —— 两块各自的标题就放在自己板块的左上角。 -->
+      <div class="tool-body is-active conv-stack" id="convStack">
 
-      <div class="tool-body tab-panel is-active" data-panel="unit">
-        <div class="unit-cats" id="unitCats"></div>
-        <div class="conv-row">
-          <div class="conv-col">
-            <input class="conv-input" id="unitFrom" type="number" inputmode="decimal" value="1" aria-label="原数值" />
-            <select class="conv-select" id="unitFromSel" aria-label="原单位"></select>
+        <!-- 上：单位换算（默认在上） -->
+        <div class="conv-block" id="convUnit">
+          <div class="conv-block-head">
+            <h3>单位换算</h3>
+            <span>长度、重量、面积、体积、温度、速度、数据、时间八大类</span>
           </div>
-          <button class="swap-btn" id="unitSwap" type="button" title="互换" aria-label="互换单位">
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 8.5h13M14 5.5l3 3-3 3M20 15.5H7M10 12.5l-3 3 3 3"/>
-            </svg>
-          </button>
-          <div class="conv-col">
-            <input class="conv-input" id="unitTo" type="number" inputmode="decimal" aria-label="结果" />
-            <select class="conv-select" id="unitToSel" aria-label="目标单位"></select>
+          <div class="unit-cats" id="unitCats"></div>
+          <div class="conv-row">
+            <div class="conv-col">
+              <input class="conv-input" id="unitFrom" type="number" inputmode="decimal" value="1" aria-label="原数值" />
+              <select class="conv-select" id="unitFromSel" aria-label="原单位"></select>
+            </div>
+            <button class="swap-btn" id="unitSwap" type="button" title="互换" aria-label="互换单位">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 8.5h13M14 5.5l3 3-3 3M20 15.5H7M10 12.5l-3 3 3 3"/>
+              </svg>
+            </button>
+            <div class="conv-col">
+              <input class="conv-input" id="unitTo" type="number" inputmode="decimal" aria-label="结果" />
+              <select class="conv-select" id="unitToSel" aria-label="目标单位"></select>
+            </div>
           </div>
+          <!-- 这里原来有一行「1 毫米 = 0.1 厘米」的结果说明，
+               已经去掉了：上面两个框里写的就是这两个数，再复述一遍多余 -->
         </div>
-        <p class="tool-note" id="unitNote"></p>
-      </div>
 
-      <div class="tool-body tab-panel" data-panel="fx">
-        <div class="conv-row">
-          <div class="conv-col">
-            <input class="conv-input" id="fxFrom" type="number" inputmode="decimal" value="100" aria-label="金额" />
-            <select class="conv-select" id="fxFromSel" aria-label="原币种"></select>
-          </div>
-          <button class="swap-btn" id="fxSwap" type="button" title="互换" aria-label="互换币种">
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 8.5h13M14 5.5l3 3-3 3M20 15.5H7M10 12.5l-3 3 3 3"/>
-            </svg>
-          </button>
-          <div class="conv-col">
-            <input class="conv-input" id="fxTo" type="number" inputmode="decimal" aria-label="换算结果" />
-            <select class="conv-select" id="fxToSel" aria-label="目标币种"></select>
-          </div>
-        </div>
-        <div class="fx-quick" id="fxQuick"></div>
-        <p class="tool-note" id="fxNote">正在获取最新汇率…</p>
+        <!-- 中：点一下把上下两个换算区换个位置 -->
+        <button class="conv-swap" id="convSwap" type="button" aria-label="交换上下两个换算区">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 4.6v14.8M8 19.4l-3.4-3.4M8 19.4l3.4-3.4M16 19.4V4.6M16 4.6l-3.4 3.4M16 4.6l3.4 3.4"/>
+          </svg>
+          <span>交换上下</span>
+        </button>
 
-        <div class="fx-src">
-          <div class="fx-src-head">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="8.5"/><path d="M12 10.8v5.4M12 7.9h.01"/>
-            </svg>
-            <b>汇率数据来源：open.er-api.com</b>
-            <a href="https://www.exchangerate-api.com/" target="_blank" rel="noopener noreferrer">接口官网 ↗</a>
+        <!-- 下：汇率换算（默认在下） -->
+        <div class="conv-block" id="convFx">
+          <div class="conv-block-head">
+            <h3>汇率换算</h3>
+            <span>57 种常用货币，两个输入框都可以直接改，换算是双向的</span>
           </div>
-          <p>
-            汇率<b>不是这台电脑算出来的</b> —— 计算机本身没有行情数据，也拿不到实时成交价。
-            这里的数字来自
-            <a href="https://open.er-api.com/" target="_blank" rel="noopener noreferrer">open.er-api.com</a>
-            提供的免费公开接口（无需注册、无需密钥），它汇总公开市场的参考汇率，每个交易日更新一次。
-            页面每 6 小时重新拉取一次，并把结果缓存在你自己的浏览器里。
-          </p>
-          <p>
-            换算方式：先把金额换算成基准币种，再换算成目标币种，因此<b>两个输入框都可以直接修改</b>。
-          </p>
-          <p class="fx-src-warn">
-            数据仅供参考，不构成任何交易或投资依据。实际换汇请以银行、卡组织或支付平台当时的成交价为准。
-          </p>
-          <p class="fx-src-time" id="fxUpdated">上次获取：—</p>
+          <div class="conv-row">
+            <div class="conv-col">
+              <input class="conv-input" id="fxFrom" type="number" inputmode="decimal" value="100" aria-label="金额" />
+              <select class="conv-select" id="fxFromSel" aria-label="原币种"></select>
+            </div>
+            <button class="swap-btn" id="fxSwap" type="button" title="互换" aria-label="互换币种">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 8.5h13M14 5.5l3 3-3 3M20 15.5H7M10 12.5l-3 3 3 3"/>
+              </svg>
+            </button>
+            <div class="conv-col">
+              <input class="conv-input" id="fxTo" type="number" inputmode="decimal" aria-label="换算结果" />
+              <select class="conv-select" id="fxToSel" aria-label="目标币种"></select>
+            </div>
+          </div>
+          <div class="fx-quick" id="fxQuick"></div>
+          <p class="tool-note" id="fxNote">正在获取最新汇率…</p>
+
+          <div class="fx-src">
+            <div class="fx-src-head">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="8.5"/><path d="M12 10.8v5.4M12 7.9h.01"/>
+              </svg>
+              <b>汇率数据来源：open.er-api.com</b>
+              <a href="https://www.exchangerate-api.com/" target="_blank" rel="noopener noreferrer">接口官网 ↗</a>
+            </div>
+            <p>
+              汇率<b>不是这台电脑算出来的</b> —— 计算机本身没有行情数据，也拿不到实时成交价。
+              这里的数字来自
+              <a href="https://open.er-api.com/" target="_blank" rel="noopener noreferrer">open.er-api.com</a>
+              提供的免费公开接口（无需注册、无需密钥），它汇总公开市场的参考汇率，每个交易日更新一次。
+              页面每 6 小时重新拉取一次，并把结果缓存在你自己的浏览器里。
+            </p>
+            <!-- 「换算方式：先把金额换算成基准币种…」那段删了 ——
+                 两个输入框都能直接改，上面那个结构自己就说明白了，
+                 再文字解释一遍反而要读完才知道「哦，原来能改」。 -->
+            <div class="fx-src-foot">
+              <p class="fx-src-warn">
+                数据仅供参考，不构成任何交易或投资依据。实际换汇请以银行、卡组织或支付平台当时的成交价为准。
+              </p>
+              <p class="fx-src-time" id="fxUpdated">上次获取：—</p>
+            </div>
+          </div>
         </div>
+
       </div>
     </div>
   </section>
@@ -439,13 +468,6 @@
   </section>
 </main>
 
-<footer class="footer">
-  <div class="wrap footer-inner">
-    <span>启航 · 小工具</span>
-    <span class="footer-tip">全部本地运行，数据不会离开你的浏览器</span>
-  </div>
-</footer>
-
 <!-- 所选格式在当前系统上用不了时的拦截弹窗。
      默认不下载：先说明原因，用户确认「仍要下载」才放行
      （有可能是想下好再传给用 Windows 的同事或朋友）。 -->
@@ -471,15 +493,15 @@
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/data.js?v=20261015a"></script>
-<script src="js/seek.js?v=20261015a"></script>
-<script src="js/widgets.js?v=20261015a"></script>
-<script src="js/tools.js?v=20261015a"></script>
-<script src="js/specs.js?v=20261015a"></script>
-<script src="js/shortcut.js?v=20261015a"></script>
-<script src="js/presets.js?v=20261015a"></script>
-<script src="assets/js/qrcode.min.js?v=20261015a"></script>
-<script src="js/share.js?v=20261015a"></script>
-<script src="js/topbar.js?v=20261015a"></script>
+<script src="js/data.js?v=20261015m"></script>
+<script src="js/seek.js?v=20261015m"></script>
+<script src="js/widgets.js?v=20261015m"></script>
+<script src="js/tools.js?v=20261015m"></script>
+<script src="js/specs.js?v=20261015m"></script>
+<script src="js/shortcut.js?v=20261015m"></script>
+<script src="js/presets.js?v=20261015m"></script>
+<script src="assets/js/qrcode.min.js?v=20261015m"></script>
+<script src="js/share.js?v=20261015m"></script>
+<script src="js/topbar.js?v=20261015m"></script>
 </body>
 </html>

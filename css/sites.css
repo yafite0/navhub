@@ -2,6 +2,7 @@
    启航 · 全部网站
    ============================================================ */
 
+/* 页头（.page-head 那一行的排布在 css/style.css，全站共用） */
 .as-head { padding-top: 34px; }
 .as-head h1 {
   font-size: 30px; font-weight: 800; letter-spacing: -.7px;
@@ -10,79 +11,57 @@
   -webkit-text-fill-color: transparent;
 }
 .as-head p {
-  margin-top: 11px; max-width: 660px;
+  margin-top: 11px; max-width: 720px;
   font-size: 14px; line-height: 1.85; color: var(--text-3);
 }
 .as-head strong { color: var(--brand); font-weight: 700; }
 
-/* ---------- 国外站点的网络提示 ---------- */
-.as-note {
-  display: flex; gap: 13px;
-  margin-top: 20px; padding: 17px 20px 18px;
+/* ============================================================
+   条目上的「国内站点 / 国外站点」标签
+   ------------------------------------------------------------
+   颜色只染标签自己：国内绿、国外蓝。按钮底色一律照旧（白 / 深色下的面层色）——
+   一整页红绿蓝按钮看着太花，标签小面积用色就够区分了。
+   原来这是两个整块的分组（.as-sub），现在收进条目里。
+   ============================================================ */
+.region-tag {
+  flex: none;
+  margin-left: 7px; padding: 1px 7px; border-radius: 999px;
+  font-size: 11px; font-weight: 600; letter-spacing: .2px;
+  white-space: nowrap; vertical-align: 1px;
+  color: #0B8F63;
+  background: rgba(16, 185, 129, .13);
+  border: 1px solid rgba(16, 185, 129, .3);
+}
+.region-tag.is-global {
+  color: var(--brand);
+  background: var(--brand-tint);
+  border-color: var(--brand-tint-2);
+}
+[data-theme="dark"] .region-tag { color: #5FE0B0; background: rgba(16, 185, 129, .18); border-color: rgba(16, 185, 129, .4); }
+[data-theme="dark"] .region-tag.is-global { color: var(--brand); background: var(--brand-tint); border-color: var(--brand-tint-2); }
+
+/* ============================================================
+   内容区最上面那条「关于国外站点」
+   ------------------------------------------------------------
+   它讲的是「打不开别慌，先换个网络试试」，第一次来的人最需要看到。
+   所以常驻摊开、不折叠、也不塞进左栏那个分类卡片里 ——
+   左栏只有 236px 宽，全文进去要折十行；放内容区是一两句的事。
+   ============================================================ */
+.as-global-note {
+  margin-bottom: 22px;
+  padding: 14px 18px 16px;
   border-radius: var(--r-lg);
   background: var(--brand-tint);
   border: 1px solid var(--brand-tint-2);
 }
-.as-note-ico { flex: none; color: var(--brand); margin-top: 1px; }
-.as-note-text { min-width: 0; }
-.as-note-text b { display: block; font-size: 14px; font-weight: 700; }
-.as-note-text p {
-  margin-top: 6px;
+.as-global-head {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 700; color: var(--text);
+}
+.as-global-ico { flex: none; font-size: 15px; }
+.as-global-note p {
+  margin-top: 7px;
   font-size: 13px; line-height: 1.85; color: var(--text-2);
-}
-.as-note-text p b { display: inline; font-size: inherit; color: var(--text); }
-
-/* 收录说明那条：和上面「国外站点提示」区分开，用中性色，语气更平 */
-.as-note.is-rule {
-  background: var(--surface-2);
-  border-color: var(--border);
-}
-.as-note.is-rule .as-note-ico { color: var(--text-2); }
-
-.as-more {
-  margin-top: 16px;
-  font-size: 13px; line-height: 1.8; color: var(--text-3);
-}
-
-/* ---------- 分类内的国内 / 国外小节 ----------
-   两块用不同色系区分，一眼能看出哪些站点要看网络脸色：
-     国内站点 → 绿调；国外站点 → 蓝调。
-   透明度压得低，不抢内容。 */
-.as-sub {
-  margin-top: 16px;
-  padding: 14px 16px 16px;
-  border-radius: var(--r-lg);
-  background: rgba(16, 185, 129, .07);
-  border: 1px solid rgba(16, 185, 129, .22);
-}
-.as-sub.is-global {
-  background: rgba(77, 107, 254, .07);
-  border-color: rgba(77, 107, 254, .22);
-}
-[data-theme="dark"] .as-sub {
-  background: rgba(16, 185, 129, .12);
-  border-color: rgba(16, 185, 129, .28);
-}
-[data-theme="dark"] .as-sub.is-global {
-  background: rgba(77, 107, 254, .14);
-  border-color: rgba(77, 107, 254, .3);
-}
-
-.as-sub-title {
-  display: inline-flex; align-items: center; gap: 7px;
-  margin-bottom: 10px;
-  font-size: 13px; font-weight: 600; color: var(--text-2);
-}
-.as-sub-title::before {
-  content: ""; width: 3px; height: 13px; border-radius: 2px;
-  background: #10b981; opacity: .85;
-}
-.as-sub.is-global .as-sub-title::before { background: var(--brand); }
-.as-sub-num {
-  padding: 1px 8px; border-radius: 999px;
-  font-size: 11.5px; font-weight: 500; color: var(--text-3);
-  background: var(--surface-2); border: 1px solid var(--border);
-  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- 筛选条 ---------- */
@@ -153,48 +132,73 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* 条目现在是卡片：一行放不下三样东西（图标 + 名字 + 一句话 + 两个按钮），
+   所以列宽从 236 放宽到 320，一屏少放几个但每个都看得清。 */
 .as-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(236px, 1fr));
-  gap: 9px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 12px;
 }
 
-.as-item {
-  display: flex; align-items: center; gap: 11px;
-  min-width: 0; padding: 11px 13px;
-  border-radius: var(--r-md);
+.as-card {
+  display: flex; flex-direction: column; gap: 12px;
+  min-width: 0; padding: 14px 16px 13px;
+  border-radius: var(--r-lg);
   background: var(--surface);
   border: 1px solid var(--border);
   transition: transform .18s cubic-bezier(.2,.7,.3,1), border-color .18s, box-shadow .18s;
 }
-.as-item.is-top { background: var(--surface-2); }
-.as-item:hover {
-  transform: translateY(-2px);
+.as-card:hover {
+  transform: translateY(-3px);
   border-color: var(--brand-soft);
-  background: var(--surface);
   box-shadow: var(--shadow-md);
 }
-.as-item .site-ico { width: 34px; height: 34px; border-radius: 10px; font-size: 14px; }
-.as-item .site-ico img { padding: 4px; }
-.as-item:hover .site-ico { transform: scale(1.05); }
+.as-card-top { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.as-card .site-ico { width: 38px; height: 38px; border-radius: 11px; font-size: 15px; }
+.as-card:hover .site-ico { transform: scale(1.05); }
+.as-card-title { flex: 1; min-width: 0; }
 
-.as-text { flex: 1; min-width: 0; }
-.as-text b {
-  display: block; font-size: 13.5px; font-weight: 600;
+/* 名字 · 别名 · 标签挤在同一行：
+   名字那截带省略号（可以缩到没有），别名和标签 flex: none 守住自己 ——
+   站名一长（尤其还带别名的），标签不会被挤歪或者盖到名字上。 */
+.as-card h4 {
+  display: flex; align-items: center; min-width: 0;
+  font-size: 14.5px; font-weight: 700; letter-spacing: -.1px;
+}
+/* 名字优先：它能长就长，缩也先缩它自己那截；别名封顶 38% 给名字让位 */
+.name-main {
+  flex: 1 1 auto; min-width: 0;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.as-text em {
-  display: block; margin-top: 2px;
-  font-style: normal; font-size: 12px; color: var(--text-3);
+.name-alias {
+  flex: 0 1 auto; min-width: 0; max-width: 38%;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  font-weight: 500; color: var(--text-3);
+}
+.as-card:hover h4 { color: var(--brand); }
+
+/* 一句话介绍。没写 desc 的条目退而显示域名（domainOf），
+   总比空着一行强。 */
+.as-card-short {
+  margin-top: 3px;
+  font-size: 12.5px; color: var(--text-3);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.as-item:hover .as-text b { color: var(--brand); }
 
-.as-go {
-  flex: none; color: var(--text-3); opacity: 0;
-  transition: opacity .18s, color .18s;
+/* 两个按钮：介绍（有 intro 才出现）、直达 */
+.as-card-actions { display: flex; gap: 8px; }
+.as-card-btn {
+  flex: 1 1 auto; min-width: 0;
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  height: 34px; padding: 0 12px; border-radius: 10px;
+  font-size: 13px; font-weight: 600;
+  transition: all .18s;
 }
-.as-item:hover .as-go { opacity: 1; color: var(--brand); }
+.as-card-btn svg { flex: none; }
+.as-card-btn.is-ghost { color: var(--text-2); background: var(--surface-3); border: 1px solid var(--border); }
+.as-card-btn.is-ghost:hover { color: var(--brand); background: var(--brand-tint); border-color: var(--brand-soft); }
+.as-card-btn.is-solid { color: #fff; background: var(--brand-grad); box-shadow: var(--shadow-brand); }
+.as-card-btn.is-solid:hover { filter: brightness(1.07); }
 
 .as-empty {
   padding: 70px 0; text-align: center;

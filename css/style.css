@@ -102,6 +102,38 @@ button { cursor: pointer; border: none; background: none; }
    ============================================================ */
 .wrap { width: calc(100% - var(--gutter) * 2); margin-inline: auto; }
 
+/* ============================================================
+   次级页的页头 —— 标题 + 一句介绍，右侧一个「返回主页」
+   ------------------------------------------------------------
+   除了首页，其余页面左上角都有这么一段介绍。统一配一个显眼的
+   返回入口（顶栏那两个导航已经撤了，回来得有个明确的落点）。
+   各页的 h1 / p 样式还归各自的样式表，这里只管这一行的排布。
+   ============================================================ */
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+.page-head-text { min-width: 0; }
+
+.back-home {
+  flex: none;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 18px; border-radius: var(--r-sm);
+  font-size: 13.5px; font-weight: 600; color: #fff;
+  background: var(--brand-grad); box-shadow: var(--shadow-brand);
+  transition: transform .18s, filter .18s;
+}
+.back-home:hover { transform: translateY(-1px); filter: brightness(1.07); }
+.back-home:active { transform: translateY(0); }
+
+/* 手机上标题和按钮挤一行会互相压，改成上下排 */
+@media (max-width: 720px) {
+  .page-head { flex-direction: column; align-items: stretch; gap: 14px; }
+  .back-home { align-self: flex-start; }
+}
+
 :focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: 2px;
@@ -168,6 +200,11 @@ button { cursor: pointer; border: none; background: none; }
 .top-btn img { width: 17px; height: 17px; border-radius: 5px; flex: none; }
 .top-btn.is-sponsor { color: #7c5cff; }
 .top-btn.is-sponsor:hover { color: #fff; background: linear-gradient(135deg, #8f6dff, #6a45f5); border-color: transparent; }
+
+/* 顶栏右侧那一组（最后更新 + 深浅色 / 分享 / 设置）——
+   自己撑到最右边。原来这个 margin-left: auto 挂在 .topnav 上，
+   导航一撤就没人推了，整组会缩在左边、右边空一大条。 */
+.top-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
 
 .topnav { display: flex; gap: 4px; margin-left: auto; }
 
@@ -954,37 +991,130 @@ main { padding-bottom: 40px; }
 }
 .conv-select:focus { border-color: var(--brand); }
 
+/* 两个输入框中间那个「互换」——
+   原来是 40×40 的小圆钮，夹在两个大控件中间显得没分量。
+   改成和两侧等高、方形带圆角：高度 align-self: stretch 跟两侧那一列走，
+   宽度写死（两侧 = 输入框 45 + 间隙 8 + 下拉 45 = 98）。
+   本来想用 aspect-ratio 让它自己算成方的，但 flex item 的宽度由
+   flex-basis 决定，aspect-ratio 插不上手 —— 实测宽度只有 31px。 */
 .swap-btn {
-  flex: none; width: 40px; height: 40px; border-radius: 50%;
+  flex: none;
+  align-self: stretch;
+  width: 98px;
   display: grid; place-items: center;
+  border-radius: var(--r-md);
   color: var(--brand); background: var(--brand-tint);
   border: 1px solid var(--brand-tint-2);
-  align-self: center;
   transition: all .2s;
 }
 .swap-btn:hover { background: var(--brand); color: #fff; transform: rotate(180deg); }
 .swap-btn:active { transform: rotate(180deg) scale(.92); }
 
-.tool-note { margin-top: 14px; font-size: 12.5px; color: var(--text-3); }
-.fx-quick { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
-.fx-chip {
-  padding: 5px 12px; border-radius: 999px; font-size: 12.5px;
-  background: var(--surface-2); border: 1px solid var(--border); color: var(--text-2);
-}
-.fx-chip:hover { color: var(--brand); border-color: var(--brand-soft); }
-.fx-chip b { font-weight: 600; color: var(--text); margin-left: 4px; }
-
-/* 汇率数据来源说明 */
-.fx-src {
-  margin-top: 16px;
-  padding: 15px 17px 16px;
-  border-radius: var(--r-sm);
+/* ---------- 单位 / 汇率：两个换算区上下叠着 ----------
+   原来这里是两个 tab，一次只能看一个；现在两块同时在，
+   中间一个按钮点一下换上下位置。 */
+.conv-stack { display: flex; flex-direction: column; gap: 14px; }
+.conv-block {
+  padding: 15px 17px 17px;
+  border-radius: var(--r-md);
   background: var(--surface-2);
   border: 1px solid var(--border);
+}
+
+/* 每一块自己的标题，钉在自己板块的左上角。
+   卡片头上原来那个「单位换算 / 汇率」大标题已经撤了 —— 两块各自有标题，
+   再在上面挂一个总标题就是重复，还多占一行高度。 */
+.conv-block-head {
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px;
+  margin-bottom: 14px;
+}
+.conv-block-head h3 { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: -.2px; }
+.conv-block-head span { font-size: 12.5px; color: var(--text-3); }
+
+/* 两个换算区中间那个按钮。
+   用淡蓝打底、蓝字 —— 上面一块、下面一块都是浅灰白底，
+   夹在中间再来一块灰的，一眼扫过去分不出「这是按钮」还是「这是又一块面板」。
+   悬停再深一档，字翻成白的。 */
+.conv-swap {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 9px 20px; border-radius: 999px;
+  font-size: 13px; font-weight: 700;
+  color: #fff;
+  background: var(--brand);
+  border: 1px solid transparent;
+  box-shadow: 0 6px 16px -10px rgba(77, 107, 254, .9);
+  transition: background .18s, box-shadow .18s, transform .18s;
+}
+.conv-swap:hover { background: #3350E0; box-shadow: 0 10px 22px -10px rgba(77, 107, 254, 1); }
+.conv-swap:active { transform: scale(.985); }
+.conv-swap svg { flex: none; }
+
+/* ---------- 「单位 / 汇率换算」这一页压一压高度 ----------
+   两块换算区 + 汇率来源那一大段说明本来就长，去掉页头那句之后还差一截，
+   一进页面就出滚动条。这里把内边距和行距统一收一档 —— 只对 unit 这一页生效，
+   别的工具页照旧。 */
+[data-tool-panel="unit"] .tw-card { padding: 16px 18px 18px; }
+[data-tool-panel="unit"] .conv-stack { gap: 8px; }
+[data-tool-panel="unit"] .conv-block { padding: 12px 14px 13px; }
+[data-tool-panel="unit"] .conv-block-head { margin-bottom: 10px; }
+[data-tool-panel="unit"] .conv-block-head h3 { font-size: 16px; }
+[data-tool-panel="unit"] .unit-cats { margin-bottom: 12px; }
+[data-tool-panel="unit"] .tool-note { margin-top: 10px; }
+[data-tool-panel="unit"] .fx-quick { margin-top: 10px; }
+[data-tool-panel="unit"] .fx-src { margin-top: 14px; padding: 12px 14px; }
+/* 输入框和下拉各收 6 / 4 像素。中间那个互换按钮的宽度是按这两行
+   「输入框 44 + 间隙 8 + 下拉 36 = 88」算出来的，改高度就得跟着改宽度 */
+[data-tool-panel="unit"] .conv-input { height: 44px; font-size: 17px; }
+[data-tool-panel="unit"] .conv-select { height: 36px; }
+[data-tool-panel="unit"] .swap-btn { width: 88px; }
+
+.tool-note { margin-top: 14px; font-size: 12.5px; color: var(--text-3); }
+/* 没话说的时候别占着一行高度（汇率那个 #fxNote 平时就是空的，
+   只在「正在获取…」和取不到时报错时才出场） */
+.tool-note:empty { display: none; }
+/* 快捷换算：两个板块横着并排，板块里的条目竖着列。
+   组标题交代了「谁兑谁」，条目上就只留目标货币和数字。 */
+.fx-quick { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+/* 板块按内容宽度站住，别各占一半 —— 撑满整行的话，
+   左边「人民币」、右边「6.7065」中间拉开 400 多像素，读起来要来回找 */
+.fx-quick-group {
+  flex: 0 1 220px; min-width: 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.fx-quick-title { font-size: 12px; font-weight: 600; color: var(--text-3); }
+.fx-chip {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 5px 12px; border-radius: 999px; font-size: 12.5px;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text-2);
+  text-align: left;
+}
+.fx-chip:hover { color: var(--brand); border-color: var(--brand-soft); }
+.fx-chip b { font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+.fx-chip:hover b { color: var(--brand); }
+
+/* 汇率数据来源说明 —— 比上下两块再深一档，
+   一眼能分出「这是说明文字」而不是又一个操作区。 */
+.fx-src {
+  margin-top: 18px;
+  padding: 15px 17px 16px;
+  border-radius: var(--r-sm);
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
   font-size: 12.5px;
   line-height: 1.8;
   color: var(--text-3);
 }
+
+/* 「数据仅供参考…」和右边那串时间同一行 —— 时间本来就是脚注，
+   单独占一行只是白多一行高度。窄了会自动折下去。 */
+.fx-src-foot {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 6px 18px; flex-wrap: wrap;
+  margin-top: 8px;
+}
+.fx-src-foot p { margin: 0; }
+/* 要比 .fx-src p + p 那条更具体，否则会被它加上 8px 的段间距 */
+.fx-src .fx-src-foot p + p { margin-top: 0; }
 .fx-src-head {
   display: flex; align-items: center; gap: 7px;
   margin-bottom: 9px;
@@ -1000,11 +1130,9 @@ main { padding-bottom: 40px; }
 .fx-src a { color: var(--brand); }
 .fx-src a:hover { text-decoration: underline; }
 .fx-src-warn { color: var(--text-3); }
-.fx-src-time {
-  font-variant-numeric: tabular-nums;
-  padding-top: 8px;
-  border-top: 1px dashed var(--border);
-}
+/* 时间那串现在和「数据仅供参考」同一行，不再自己占一行、也就不需要
+   上面那条虚线和 padding 了 */
+.fx-src-time { font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* 待办 */
 .todo-add { display: flex; gap: 10px; }
@@ -1704,9 +1832,13 @@ body.modal-open { overflow: hidden; }
   font-size: 14px; line-height: 1.75;
 }
 
-/* 条目数不定：一条占满整行，两条并排，三条以上自动排成两列。
-   原来写死 1fr 1fr —— 只剩一条时它只占左半边，右边空一块。 */
-.about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 16px; }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+
+/* 「关于本站」弹窗里那个网格（#aboutGrid）条目数不定，不能写死两列：
+   原来 1fr 1fr，只剩一条时它只占左半边、右边空一块。
+   注意别改上面的 .about-grid —— qr.html 页里那块「关于二维码」用的是同一个类名，
+   这里用 id 限定，免得顺手把那一页也改了。 */
+#aboutGrid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
 .about-item {
   padding: 15px 17px;
   border-radius: var(--r-md);
@@ -1742,6 +1874,14 @@ body.modal-open { overflow: hidden; }
 }
 .about-credit svg { flex: none; }
 .about-credit[hidden] { display: none; }
+
+/* lead / 板块 / 标签这几块有没有内容由 data.js 决定（js/topbar.js 按需 hidden）。
+   #aboutGrid 和 .about-tags 是 grid / flex 容器 —— 会盖掉 hidden 自带的
+   display: none，所以得显式补一条，否则空着的那块照样占着 margin。
+   这里同样用 #aboutGrid 而不是 .about-grid：那个类名 qr.html 页也在用。 */
+.about-lead[hidden],
+#aboutGrid[hidden],
+.about-tags[hidden] { display: none; }
 
 .about-links {
   display: flex; flex-wrap: wrap; gap: 12px;
@@ -1796,8 +1936,10 @@ body.modal-open { overflow: hidden; }
   .weather { max-width: none; }
   .conv-row { flex-wrap: wrap; }
   .conv-col { flex: 1 1 100%; }
-  .swap-btn { margin: -4px auto; transform: rotate(90deg); }
-  .swap-btn:hover { transform: rotate(270deg); }
+  /* 窄屏下两个输入框上下排，互换按钮独占一行 —— 这时候再跟两侧等高
+     会把它拉成一条横的长方形，所以宽高都写死、align-self 收回来，保持正方形 */
+  .swap-btn { margin: -4px auto; align-self: center; width: 58px; height: 58px; }
+  .swap-btn:hover { transform: rotate(180deg); }
   .section { margin-top: 46px; }
   .modal-mask { padding: 10px; }
   .modal { max-height: 94vh; border-radius: 20px; }
@@ -1855,11 +1997,24 @@ body.modal-open { overflow: hidden; }
 .hero-block {
   /* 搜索块占大头：下面两块是入口，这块是主战场，而且搜索面板要有地方展开 */
   flex: 1.5; min-height: 420px;
-  padding: 24px 34px 18px;
+  /* 上下左右内边距各拎成一个变量：右角那条「更多官网」要按它们对齐
+     （上边和天气齐、下边和板块底齐），而每个断点这四个数都不一样，
+     写死的话矮窗口下按钮会戳出去几个像素。 */
+  --hero-pad-x: 34px;
+  --hero-pad-y: 24px;
+  /* 右角那条「更多官网」占的宽度。底下「猜你需要」那两行要按它留白，
+     不然芯片会横穿到按钮上面去（按钮是绝对定位的，不占流）。 */
+  --hero-rail: 200px;
+  position: relative;              /* 右角 .hb-side 的定位基准 */
+  padding: var(--hero-pad-y) var(--hero-pad-x) 18px;
   border-radius: 22px;
   display: flex; flex-direction: column;
   color: #fff;
-  background: linear-gradient(135deg, #3D5AFE 0%, #6C8CFF 62%, #8FA8FF 100%);
+  /* 底色比原来淡一档：右边那条「更多官网」是从板块色渐变到深色的，
+     板块本身太饱和的话，按钮左半边直接融进底色、整条按钮就「消失」了。
+     淡下去之后按钮立住了，同时它仍是三块里最显眼的一块 ——
+     比起下面那两块浅紫 / 浅绿，这一整块蓝还是最抢眼的。 */
+  background: linear-gradient(135deg, #5C76FF 0%, #8AA2FF 62%, #A9BCFF 100%);
   box-shadow: 0 20px 48px -24px rgba(61, 90, 254, .62);
 }
 
@@ -1873,13 +2028,36 @@ body.modal-open { overflow: hidden; }
    两翼宽度差会让「搜索」偏离中轴线（问候比天气窄一截），
    .hb-hi 的 min-width 由 js/app.js 的 syncHeroWings() 补到和天气一样宽，
    前提是补完还剩得下中间那组。窄屏（≤980px）走文末的媒体查询。 */
+/* 「问候 ┊ 搜索 ┊ 占位」一行，只占内容高度。
+   以前这里是 flex: 1 —— 一撑满，「猜你需要 / 收藏网址」就被一路顶到块底，
+   和搜索框之间空出 170 多像素。 */
 .hb-row {
+  flex: none;
   display: flex;
   align-items: flex-start;
   gap: 24px;
 }
 .hb-hi { flex: none; min-width: 0; }
 .hb-center { flex: 1; min-width: 0; }
+/* 右角的空占位（宽度由 syncHeroWings() 补齐，和天气一样宽）——
+   中间那组要夹在「问候」和「天气」正中间，右列就得占住位置 */
+.hb-hold { flex: none; }
+
+/* 右角：绝对定位，跨整个搜索块。
+   天气在上、「更多官网」竖着撑满剩下的，一路到底。
+   绝对定位是为了让它不受 .hb-row 的高度限制 —— 那条按钮要高，
+   而上面那行又不能跟着变高（变高就把「猜你需要」推下去了）。 */
+.hb-side {
+  position: absolute;
+  top: var(--hero-pad-y);
+  right: 0;
+  bottom: var(--hero-pad-y);
+  display: flex; flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+}
+.hb-side .wx { flex: none; margin-right: var(--hero-pad-x); }   /* 天气留在内边距里 */
+.hb-side .apps-more { flex: 1; margin-right: 0; }               /* 按钮贴到板块右边缘 */
 .hb-hi { min-width: 0; }
 .hb-hello {
   display: inline-flex; align-items: center; gap: 6px;
@@ -1954,7 +2132,14 @@ body.modal-open { overflow: hidden; }
 
 /* 第三层：猜你需要（原来的「常用直达」改成横滑条）。
    紧跟搜索区往下排，不推到块底部 —— 块底下那块空档留给「收藏网址」。 */
-.apps { margin-top: 22px; display: flex; align-items: center; gap: 12px; }
+/* 右边留出右角那条按钮的宽度 —— 它是绝对定位的，不占流，
+   不留白的话「猜你需要」的芯片会一路横穿到按钮上面。
+   留下的空间窄一点没关系，那一排本来就是横向滚动的。 */
+.apps {
+  margin-top: 22px; flex: none;
+  padding-right: calc(var(--hero-pad-x) + var(--hero-rail) + 20px);
+  display: flex; align-items: center; gap: 12px;
+}
 .apps[hidden] { display: none; }
 /* 「猜你需要：」「收藏网址：」—— 这两行是整块区域的分类标题，
    字号往上提了一档、加了字重，不然缩在那一排白胶囊旁边像句小字注释。 */
@@ -1979,8 +2164,27 @@ body.modal-open { overflow: hidden; }
 }
 .app:hover { transform: translateY(-2px); box-shadow: 0 10px 22px -12px rgba(11, 24, 74, .55); }
 .app .site-ico { flex: none; width: 24px; height: 24px; border-radius: 50%; font-size: 11px; }
-.apps-more { flex: none; font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, .8); }
-.apps-more:hover { color: #fff; }
+/* ============================================================
+   三个「更多…」大按钮
+   ------------------------------------------------------------
+   统一做成竖长条：宽度固定 92px，高度撑满各自板块剩下的那截。
+   渐变方向和板块一致 —— 搜索块是深蓝底，按钮走「上浅蓝 → 下深蓝」；
+   预设 / 工具是浅底，按钮走「浅紫 → 深紫」「浅绿 → 深绿」（见 .pw-go）。
+   文字竖排：92px 宽横着放不下「更多提示词」五个字。
+   ============================================================ */
+.apps-more {
+  flex: 1; width: 200px; min-height: 0;
+  display: flex; align-items: center; justify-content: center;
+  writing-mode: vertical-rl; letter-spacing: 4px;
+  border-radius: var(--r-md) 0 0 var(--r-md);   /* 右边和板块齐平，不圆 */
+  font-size: 15px; font-weight: 700; color: #fff;
+  /* 左端就是板块底色的那个蓝，往右一路压深 ——
+     板块本身已经调淡了，这条才立得出来 */
+  background: linear-gradient(90deg, #A9BCFF 0%, #6E86FF 42%, #2E48C8 100%);
+  box-shadow: -10px 0 26px -12px rgba(11, 24, 74, .75);
+  transition: filter .2s;
+}
+.apps-more:hover { filter: brightness(1.08); }
 
 /* 「收藏网址」那行 —— 轨道现在是空的，给个最小高度让它和上一行等高，
    不然只有孤零零一个标签，看着像没加载出来。往 #favGrid 里塞东西就自然撑开。 */
@@ -1993,13 +2197,38 @@ body.modal-open { overflow: hidden; }
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
-.pw { min-width: 0; padding: 22px 26px; border-radius: 22px; display: flex; flex-direction: column; }
+/* 两块卡片改成「内容占左边、按钮占右边一整条」——
+   按钮要撑到和板块一样高，就不能再挤在标题那一行里。
+   用绝对定位把它钉在右边缘：这样它才真正贴满卡片（上下右三面都不留缝）。 */
+.pw {
+  position: relative;
+  min-width: 0;
+  padding: 22px 26px;
+  padding-right: 226px;       /* 26 + 200 的按钮位 */
+  border-radius: 22px;
+  overflow: hidden;           /* 按钮顶到卡片圆角上，靠它裁一下 */
+  display: flex; flex-direction: column;
+}
 .pw-preset { background: #E7ECFF; color: #2C3A7E; }
 .pw-tool { background: #DBF2EB; color: #12514A; }
-.pw-head { display: flex; align-items: baseline; gap: 12px; }
+
+.pw-head { display: flex; align-items: center; gap: 12px; }
 .pw-head h2 { margin: 0; font-size: 27px; font-weight: 800; letter-spacing: -.4px; }
-.pw-go { margin-left: auto; font-size: 13px; font-weight: 600; opacity: .72; }
-.pw-go:hover { opacity: 1; }
+
+/* 板块右侧那一整条。文字竖排：这条只有 130px 宽，横着放不下「更多提示词」。
+   渐变的**最浅那头就是板块底色**（预设 #E7ECFF / 工具 #DBF2EB），
+   方向从左到右 —— 左边和卡片融成一片，往右越来越深，像卡片自己长出来的。 */
+.pw-go {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: 200px;
+  display: flex; align-items: center; justify-content: center;
+  writing-mode: vertical-rl; letter-spacing: 4px;
+  font-size: 15px; font-weight: 700; color: #fff;
+  transition: filter .2s;
+}
+.pw-preset .pw-go { background: linear-gradient(90deg, #E7ECFF 0%, #8B96CE 42%, #2C3A7E 100%); }
+.pw-tool .pw-go { background: linear-gradient(90deg, #DBF2EB 0%, #5AAE96 42%, #12514A 100%); }
+.pw-go:hover { filter: brightness(1.05); }
 .pw-sub { margin: 8px 0 0; font-size: 14px; opacity: .82; }
 /* 标签推到底部，两块高度不一样时也对得齐 */
 .pw-chips { margin-top: auto; padding-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
@@ -2040,20 +2269,22 @@ body.modal-open { overflow: hidden; }
        下面   搜索那组（标题 + 标语 + 框）整组居中 */
 @media (max-width: 980px) {
   .home-top { min-height: 0; }
-  .hero-block { flex: none; padding: 22px 20px; }
+  .hero-block { flex: none; --hero-pad-x: 20px; --hero-pad-y: 22px; --hero-rail: 130px; padding: 22px 20px; }
 
   .hb-row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
-      "greet  wx"
+      "greet  hold"
       "center center";
     gap: 14px 16px;
     align-items: start;
   }
   .hb-hi { grid-area: greet; }
-  .wx { grid-area: wx; }
   .hb-center { grid-area: center; }
+  /* 窄屏的天气缩成右上角一个方块（见下面的 .wx），
+     占位照着同样尺寸来，中间那组才不偏 */
+  .hb-hold { grid-area: hold; width: 100px; }
 
   .hb-title { margin-top: 16px; font-size: 34px; letter-spacing: 5px; text-indent: 5px; }
   .hb-h1 { font-size: 23px; }
@@ -2069,12 +2300,22 @@ body.modal-open { overflow: hidden; }
 
   .apps { flex-wrap: wrap; }
   .pw-row { grid-template-columns: 1fr; }
-  .pw { min-height: 0; padding: 20px 22px; }
+  /* 按钮尺寸手机端保持不变，但卡片右边得照样给它让出位置 ——
+     不写这一条的话 padding-right 会被上面撑成 22px，chips 压到按钮底下 */
+  .pw { min-height: 0; padding: 20px 156px 20px 22px; }
+  .pw-go { width: 130px; }
   .pw-chips { margin-top: 16px; }
+
+  /* 手机上「更多官网」继续竖着（和桌面一致，用户按这个尺寸要的）。
+     给个明确宽度和最小高度，不然竖排下会被压成一条、文字挤成一团。 */
+  .apps-more {
+    flex: 1; width: 130px; min-height: 132px;
+    border-radius: var(--r-md) 0 0 var(--r-md);
+  }
 }
 
 @media (max-width: 560px) {
-  .hero-block { padding: 20px 16px; }
+  .hero-block { --hero-pad-x: 16px; --hero-pad-y: 20px; padding: 20px 16px; }
   .hb-title { font-size: 28px; letter-spacing: 4px; text-indent: 4px; }
   .hb-sub { font-size: 13.5px; }
   .hb-clock .clock { font-size: 27px; }
@@ -2144,7 +2385,7 @@ body.modal-open { overflow: hidden; }
    在 768p 这类笔记本上也能不滚动。 */
 @media (max-height: 820px) {
   .home-top { gap: 14px; padding: 14px 0; }
-  .hero-block { min-height: 300px; padding: 16px 28px 14px; }
+  .hero-block { min-height: 300px; --hero-pad-x: 28px; --hero-pad-y: 16px; padding: 16px 28px 14px; }
   .hb-h1 { margin-top: 6px; font-size: 22px; }
   .hb-date { margin-top: 6px; }
   .hb-clock .clock { font-size: 26px; }
@@ -2173,7 +2414,7 @@ body.modal-open { overflow: hidden; }
 /* 更矮的窗口（768p 笔记本等）再压一档，目标一样是一屏放下 */
 @media (max-height: 700px) {
   .home-top { gap: 12px; padding: 12px 0; }
-  .hero-block { min-height: 226px; padding: 14px 26px 12px; }
+  .hero-block { min-height: 226px; --hero-pad-x: 26px; --hero-pad-y: 14px; padding: 14px 26px 12px; }
   .hb-h1 { font-size: 20px; margin-top: 5px; }
   .hb-date { margin-top: 5px; font-size: 12.5px; }
   .hb-clock .clock { font-size: 23px; }

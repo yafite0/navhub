@@ -7,8 +7,8 @@
 <meta name="description" content="离线二维码生成：把网址或文字变成二维码，纯浏览器本地生成，不联网也不上传。" />
 <meta name="theme-color" content="#4D6BFE" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-<link rel="stylesheet" href="css/style.css?v=20261015a" />
-<link rel="stylesheet" href="css/qr.css?v=20261015a" />
+<link rel="stylesheet" href="css/style.css?v=20261015m" />
+<link rel="stylesheet" href="css/qr.css?v=20261015m" />
 </head>
 <body>
 <div class="bg-decor" aria-hidden="true">
@@ -20,8 +20,16 @@
 
 <main class="wrap qr-main">
   <section class="qr-head">
-    <h1>二维码生成</h1>
-    <p>把网址或文字变成二维码，手机扫一下就能打开。全部在<b>你的浏览器里现场生成</b>，不联网、不上传。</p>
+    <div class="page-head">
+      <div class="page-head-text">
+        <h1>二维码生成</h1>
+        <p>把网址或文字变成二维码，手机扫一下就能打开。全部在<b>你的浏览器里现场生成</b>，不联网、不上传。</p>
+      </div>
+      <a class="back-home" href="index.html">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6l-6 6 6 6"/></svg>
+        <span>返回主页</span>
+      </a>
+    </div>
   </section>
 
   <section class="qr-grid">
@@ -107,18 +115,11 @@
   </section>
 </main>
 
-<footer class="footer">
-  <div class="wrap footer-inner">
-    <span>启航 · 二维码生成</span>
-    <span class="footer-tip">纯前端离线生成，不收集任何数据</span>
-  </div>
-</footer>
-
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/data.js?v=20261015a"></script>
-<script src="assets/js/qrcode.min.js?v=20261015a"></script>
-<script src="js/qr.js?v=20261015a"></script>
-<script src="js/topbar.js?v=20261015a"></script>
+<script src="js/data.js?v=20261015m"></script>
+<script src="assets/js/qrcode.min.js?v=20261015m"></script>
+<script src="js/qr.js?v=20261015m"></script>
+<script src="js/topbar.js?v=20261015m"></script>
 </body>
 </html>

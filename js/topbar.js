@@ -57,14 +57,17 @@
             '<img src="assets/icons/afdian.png" alt="" /><span>赞助</span>' +
           '</a>' +
         '</div>' +
-        '<nav class="topnav" id="topnav">' +
-          '<a href="index.html">首页</a>' +
-          '<a href="sites.html" class="nav-all">其他网页</a>' +
-        '</nav>' +
-        '<div class="updated" id="updatedBox" hidden>' + ICO.clock + '<span id="updatedText"></span></div>' +
-        '<button id="themeBtn" class="icon-btn" type="button" title="切换深浅色" aria-label="切换深浅色">' + ICO.sun + ICO.moon + '</button>' +
-        '<a class="icon-btn" href="tools.html?tool=share" title="做张分享图" aria-label="做张分享图">' + ICO.share + '</a>' +
-        '<button id="setBtn" class="icon-btn" type="button" title="设置" aria-label="设置">' + ICO.gear + '</button>' +
+        /* 顶栏那两个导航（首页 / 其他网页）撤了：
+           回首页靠左上角那个 logo（它本来就是个链接，而且位置固定不变）、
+           以及次级页页头那个「返回主页」大按钮；去其他网页页靠首页的「更多官网」。
+           撤掉之后右边这一堆得自己撑到最右 —— 原来那个 margin-left: auto
+           挂在 .topnav 上，导航一走就没人推了，所以这里包一层 .top-right。 */
+        '<div class="top-right">' +
+          '<div class="updated" id="updatedBox" hidden>' + ICO.clock + '<span id="updatedText"></span></div>' +
+          '<button id="themeBtn" class="icon-btn" type="button" title="切换深浅色" aria-label="切换深浅色">' + ICO.sun + ICO.moon + '</button>' +
+          '<a class="icon-btn" href="tools.html?tool=share" title="做张分享图" aria-label="做张分享图">' + ICO.share + '</a>' +
+          '<button id="setBtn" class="icon-btn" type="button" title="设置" aria-label="设置">' + ICO.gear + '</button>' +
+        '</div>' +
       '</div>';
   }
 
@@ -177,9 +180,20 @@
     document.body.appendChild(mask);
 
     function set(id, txt) { var n = $(id); if (n && txt) n.textContent = txt; }
+
+    /* lead、tags 这些段落是可有可无的：有内容才显示，没内容就把整块藏起来。
+       它们的节点一直挂在 DOM 里、各自还带 margin，
+       留空会在弹窗里留出一段莫名其妙的空白。 */
+    function setBlock(id, txt) {
+      var n = $(id);
+      if (!n) return;
+      if (txt) { n.textContent = txt; n.hidden = false; }
+      else { n.hidden = true; }
+    }
+
     set('aboutTitle', d.title || '关于本站');
     set('aboutSub', d.subtitle);
-    set('aboutLead', d.lead);
+    setBlock('aboutLead', d.lead);
     set('aboutNote', d.note);
 
     var grid = $('aboutGrid');
@@ -189,9 +203,11 @@
       box.appendChild(el('p', null, it.d));
       grid.appendChild(box);
     });
+    if (grid) grid.hidden = !grid.children.length;
 
     var tags = $('aboutTags');
     (d.tags || []).forEach(function (t) { tags.appendChild(el('span', null, t)); });
+    if (tags) tags.hidden = !tags.children.length;
 
     if (d.credit && $('aboutCredit')) {
       $('aboutCreditText').textContent = d.credit;

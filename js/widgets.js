@@ -658,55 +658,66 @@
   /* ============================================================
      3. 单位换算
      ============================================================ */
+  /* 每个单位的显示名统一是「中文名（缩写）」——
+     下拉里只写「厘米」的话，习惯用 CM 的人还得对一下；
+     只写 CM 又有人认不出。两个都给。
+     缩写就用行业惯用的写法；「斤 / 两 / 亩」这类没有通行英文缩写的，
+     括号里照样写自己（斤（JIN）读着别扭，索性不加括号）。 */
   var UNIT_CATS = [
     {
       id: 'length', name: '长度', base: 'm', units: [
-        { k: 'mm', n: '毫米', f: 0.001 }, { k: 'cm', n: '厘米', f: 0.01 }, { k: 'm', n: '米', f: 1 },
-        { k: 'km', n: '千米', f: 1000 }, { k: 'in', n: '英寸', f: 0.0254 }, { k: 'ft', n: '英尺', f: 0.3048 },
-        { k: 'yd', n: '码', f: 0.9144 }, { k: 'mi', n: '英里', f: 1609.344 }, { k: 'nmi', n: '海里', f: 1852 }
+        { k: 'mm', n: '毫米（MM）', f: 0.001 }, { k: 'cm', n: '厘米（CM）', f: 0.01 },
+        { k: 'm', n: '米（M）', f: 1 }, { k: 'km', n: '千米（KM）', f: 1000 },
+        { k: 'in', n: '英寸（IN）', f: 0.0254 }, { k: 'ft', n: '英尺（FT）', f: 0.3048 },
+        { k: 'yd', n: '码（YD）', f: 0.9144 }, { k: 'mi', n: '英里（MI）', f: 1609.344 },
+        { k: 'nmi', n: '海里（NMI）', f: 1852 }
       ]
     },
     {
       id: 'weight', name: '重量', base: 'kg', units: [
-        { k: 'mg', n: '毫克', f: 0.000001 }, { k: 'g', n: '克', f: 0.001 }, { k: 'kg', n: '千克', f: 1 },
-        { k: 't', n: '吨', f: 1000 }, { k: 'jin', n: '斤', f: 0.5 }, { k: 'liang', n: '两', f: 0.05 },
-        { k: 'lb', n: '磅', f: 0.45359237 }, { k: 'oz', n: '盎司', f: 0.028349523 }
+        { k: 'mg', n: '毫克（MG）', f: 0.000001 }, { k: 'g', n: '克（G）', f: 0.001 },
+        { k: 'kg', n: '千克（KG）', f: 1 }, { k: 't', n: '吨（T）', f: 1000 },
+        { k: 'jin', n: '斤', f: 0.5 }, { k: 'liang', n: '两', f: 0.05 },
+        { k: 'lb', n: '磅（LB）', f: 0.45359237 }, { k: 'oz', n: '盎司（OZ）', f: 0.028349523 }
       ]
     },
     {
       id: 'area', name: '面积', base: 'm2', units: [
-        { k: 'cm2', n: '平方厘米', f: 0.0001 }, { k: 'm2', n: '平方米', f: 1 }, { k: 'km2', n: '平方千米', f: 1000000 },
-        { k: 'ha', n: '公顷', f: 10000 }, { k: 'mu', n: '亩', f: 666.6667 },
-        { k: 'ft2', n: '平方英尺', f: 0.09290304 }
+        { k: 'cm2', n: '平方厘米（CM²）', f: 0.0001 }, { k: 'm2', n: '平方米（M²）', f: 1 },
+        { k: 'km2', n: '平方千米（KM²）', f: 1000000 }, { k: 'ha', n: '公顷（HA）', f: 10000 },
+        { k: 'mu', n: '亩', f: 666.6667 }, { k: 'ft2', n: '平方英尺（FT²）', f: 0.09290304 }
       ]
     },
     {
       id: 'volume', name: '体积', base: 'L', units: [
-        { k: 'ml', n: '毫升', f: 0.001 }, { k: 'l', n: '升', f: 1 }, { k: 'm3', n: '立方米', f: 1000 },
-        { k: 'gal', n: '加仑(美)', f: 3.785411784 }, { k: 'cup', n: '杯(美)', f: 0.2365882 }
+        { k: 'ml', n: '毫升（ML）', f: 0.001 }, { k: 'l', n: '升（L）', f: 1 },
+        { k: 'm3', n: '立方米（M³）', f: 1000 },
+        { k: 'gal', n: '美制加仑（GAL）', f: 3.785411784 }, { k: 'cup', n: '美制杯（CUP）', f: 0.2365882 }
       ]
     },
     {
       id: 'temp', name: '温度', special: 'temp', units: [
-        { k: 'c', n: '摄氏度 ℃' }, { k: 'f', n: '华氏度 ℉' }, { k: 'k', n: '开尔文 K' }
+        { k: 'c', n: '摄氏度（℃）' }, { k: 'f', n: '华氏度（℉）' }, { k: 'k', n: '开尔文（K）' }
       ]
     },
     {
       id: 'speed', name: '速度', base: 'ms', units: [
-        { k: 'ms', n: '米/秒', f: 1 }, { k: 'kmh', n: '千米/时', f: 0.2777778 },
-        { k: 'mph', n: '英里/时', f: 0.44704 }, { k: 'knot', n: '节', f: 0.5144444 }
+        { k: 'ms', n: '米/秒（M/S）', f: 1 }, { k: 'kmh', n: '千米/时（KM/H）', f: 0.2777778 },
+        { k: 'mph', n: '英里/时（MPH）', f: 0.44704 }, { k: 'knot', n: '节（KN）', f: 0.5144444 }
       ]
     },
     {
       id: 'data', name: '数据', base: 'MB', units: [
-        { k: 'b', n: '字节 B', f: 1 / 1048576 }, { k: 'kb', n: 'KB', f: 1 / 1024 },
-        { k: 'mb', n: 'MB', f: 1 }, { k: 'gb', n: 'GB', f: 1024 }, { k: 'tb', n: 'TB', f: 1048576 }
+        { k: 'b', n: '字节（B）', f: 1 / 1048576 }, { k: 'kb', n: '千字节（KB）', f: 1 / 1024 },
+        { k: 'mb', n: '兆字节（MB）', f: 1 }, { k: 'gb', n: '吉字节（GB）', f: 1024 },
+        { k: 'tb', n: '太字节（TB）', f: 1048576 }
       ]
     },
     {
       id: 'time', name: '时间', base: 's', units: [
-        { k: 's', n: '秒', f: 1 }, { k: 'min', n: '分钟', f: 60 }, { k: 'h', n: '小时', f: 3600 },
-        { k: 'd', n: '天', f: 86400 }, { k: 'w', n: '周', f: 604800 }, { k: 'mon', n: '月(30天)', f: 2592000 }
+        { k: 's', n: '秒（S）', f: 1 }, { k: 'min', n: '分钟（MIN）', f: 60 },
+        { k: 'h', n: '小时（H）', f: 3600 }, { k: 'd', n: '天（D）', f: 86400 },
+        { k: 'w', n: '周（W）', f: 604800 }, { k: 'mon', n: '月（MON）', f: 2592000 }
       ]
     }
   ];
@@ -777,25 +788,17 @@
       });
     }
 
+    /* 这里原来还会在下面补一行「1 毫米 = 0.1 厘米」的结果说明，已经去掉了 ——
+       上下两个框里写的就是这两个数，再复述一遍只是多占一行高度。 */
     function compute(origin) {
       var v = parseFloat(origin === 'from' ? fromInput.value : toInput.value);
       if (isNaN(v)) {
         (origin === 'from' ? toInput : fromInput).value = '';
-        updateNote();
         return;
       }
       var base = toBase(active, origin === 'from' ? fromSel.value : toSel.value, v);
       var out = fromBase(active, origin === 'from' ? toSel.value : fromSel.value, base);
       (origin === 'from' ? toInput : fromInput).value = fmt(out);
-      updateNote();
-    }
-
-    function updateNote() {
-      var a = fromSel.options[fromSel.selectedIndex], b = toSel.options[toSel.selectedIndex];
-      var note = $('unitNote');
-      if (!a || !b) return;
-      var one = fromBase(active, toSel.value, toBase(active, fromSel.value, 1));
-      note.textContent = '1 ' + a.textContent + ' = ' + fmt(one) + ' ' + b.textContent;
     }
 
     fromInput.addEventListener('input', function () { compute('from'); });
@@ -820,6 +823,9 @@
      想再加就往下续一行即可（代码用接口返回的 key 匹配）。 */
   var CURRENCIES = [
     { k: 'CNY', n: '人民币 ¥' }, { k: 'USD', n: '美元 $' }, { k: 'EUR', n: '欧元 €' },
+    /* 下面这些 n 是「中文名 + 符号」，代码那串由下面统一补进括号。
+       光写 CNY / USD 一般人认不出，光写「人民币」又和符号对不上，
+       所以下拉里显示成「人民币（CNY）¥」。 */
     { k: 'JPY', n: '日元 ¥' }, { k: 'GBP', n: '英镑 £' }, { k: 'HKD', n: '港币 HK$' },
     { k: 'TWD', n: '新台币 NT$' }, { k: 'MOP', n: '澳门元 MOP$' }, { k: 'KRW', n: '韩元 ₩' },
     { k: 'SGD', n: '新加坡元' }, { k: 'MYR', n: '马来西亚林吉特' }, { k: 'THB', n: '泰铢' },
@@ -841,17 +847,55 @@
     { k: 'ILS', n: '以色列新谢克尔' }, { k: 'JOD', n: '约旦第纳尔' }, { k: 'IRR', n: '伊朗里亚尔' }
   ];
 
+  /* 每个币种补两个名字：
+       s —— 纯中文名（「人民币」），说明行和快捷条用它。
+             写 CNY / USD 一般人要愣一下，写「人民币」谁都懂。
+       n —— 下拉选项的显示名：「人民币（CNY）¥」。
+     s 是从上面的 n 里拆出来的：去掉尾巴上那串符号就是中文名。 */
+  CURRENCIES.forEach(function (c) {
+    var m = String(c.n).match(/^([\u4e00-\u9fa5]+)\s*(.*)$/);
+    c.s = m ? m[1] : c.k;
+    c.n = c.s + '（' + c.k + '）' + (m ? m[2] : '');
+  });
+
+  /* 按代码取中文名 */
+  function curName(k) {
+    for (var i = 0; i < CURRENCIES.length; i++) {
+      if (CURRENCIES[i].k === k) return CURRENCIES[i].s;
+    }
+    return k;
+  }
+
+  /* 快捷换算：两组写死的组合，一边「外币兑人民币」、一边「人民币兑外币」。
+     两个板块横着并排，板块里的条目竖着列。
+     组标题已经交代了「谁兑谁」，所以条目上只写目标货币和数字，不再重复「1 美元」。 */
+  var QUICK_GROUPS = [
+    { title: '美元兑', from: 'USD', to: ['CNY', 'JPY', 'KRW'] },
+    { title: '人民币兑', from: 'CNY', to: ['USD', 'JPY', 'KRW'] }
+  ];
+
   function initFx() {
     var fromInput = $('fxFrom'), toInput = $('fxTo');
     var fromSel = $('fxFromSel'), toSel = $('fxToSel');
     if (!fromInput || !fromSel) return;
 
+    /* 建元素的小助手（这一块自己的，别和天气那块同名的混了） */
+    function el2(tag, cls, text) {
+      var n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (text != null) n.textContent = text;
+      return n;
+    }
+
     CURRENCIES.forEach(function (c) {
       var a = document.createElement('option'); a.value = c.k; a.textContent = c.n; fromSel.appendChild(a);
       var b = document.createElement('option'); b.value = c.k; b.textContent = c.n; toSel.appendChild(b);
     });
-    fromSel.value = 'CNY';
-    toSel.value = 'USD';
+    /* 默认「美元 → 人民币」：和快捷条的规矩一致（汇率大的在前）。
+       写「1 人民币 = 0.14 美元」的话，看的人还得在脑子里倒一下。 */
+    fromSel.value = 'USD';
+    toSel.value = 'CNY';
+    if (fromInput) fromInput.value = '1';
 
     var rates = null;      // 相对基准 CNY
     var rateTime = '';
@@ -859,7 +903,19 @@
 
     function setNote(msg) { var n = $('fxNote'); if (n) n.textContent = msg; }
 
-    /* 数据来源说明里的「上次获取」时间戳 */
+    /* 接口给的是英文日期（Thu, 15 Oct 2026），换成 2026-10-15。
+       用 UTC 取，别让本地时区把它推到前一天去。 */
+    function cnDate(raw) {
+      if (!raw) return '';
+      var d = new Date(String(raw));
+      if (isNaN(d.getTime())) return String(raw);
+      function p2(n) { return n < 10 ? '0' + n : '' + n; }
+      return d.getUTCFullYear() + '-' + p2(d.getUTCMonth() + 1) + '-' + p2(d.getUTCDate());
+    }
+
+    /* 数据来源说明里的「上次获取」+「接口公布」时间戳，两个并排放在最后一行。
+       接口公布那串统一过一道 cnDate()：早先的缓存里存的还是英文格式
+       （Thu, 15 Oct 2026），直接从缓存读出来的话又会显示成英文。 */
     function stampUpdated(at) {
       var el = $('fxUpdated');
       if (!el) return;
@@ -867,7 +923,7 @@
       function p2(n) { return n < 10 ? '0' + n : '' + n; }
       el.textContent = '本机上次获取：' + d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) +
         ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes()) +
-        (rateTime ? '　·　接口公布：' + rateTime : '');
+        (rateTime ? ' · 接口公布：' + cnDate(rateTime) : '');
     }
 
     function cached() {
@@ -884,6 +940,7 @@
       var c = cached();
       if (c) {
         rates = c.rates; rateTime = c.time;
+        setNote('');
         stampUpdated(c.at);
         compute('from'); renderQuick();
         return;
@@ -895,8 +952,9 @@
         .then(function (d) {
           if (!d || !d.rates) throw new Error('bad');
           rates = d.rates;
-          rateTime = d.time_last_update_utc ? String(d.time_last_update_utc).slice(0, 16) : '';
+          rateTime = cnDate(d.time_last_update_utc);
           store('navhub.rates', JSON.stringify({ rates: rates, time: rateTime, at: Date.now() }));
+          setNote('');                 /* 数据到手，「正在获取…」该收了 */
           stampUpdated(Date.now());
           compute('from');
           renderQuick();
@@ -927,38 +985,47 @@
       var dstRate = origin === 'from' ? rt : rf;
 
       var v = parseFloat(fromEl.value);
-      if (isNaN(v)) { toEl.value = ''; updateNote(); return; }
+      if (isNaN(v)) { toEl.value = ''; return; }
 
       toEl.value = fmt(Number((v / srcRate * dstRate).toFixed(4)));
-      updateNote();
     }
 
-    /* 基准汇率说明行：写清换算关系、数据来源与更新时间 */
-    function updateNote() {
-      var f = fromSel.value, t = toSel.value;
-      var rf = rateOf(f), rt = rateOf(t);
-      if (!rf || !rt) return;
-      setNote('1 ' + f + ' ≈ ' + fmt(Number((rt / rf).toFixed(4))) + ' ' + t +
-        (rateTime ? ' · 更新于 ' + rateTime : '') + ' · 来源 open.er-api.com');
-    }
+    /* 这里原来还有一行「1 美元 ≈ 6.7065 人民币」的结果说明，已经去掉了 ——
+       下面那排快捷条写的是一模一样的东西，再来一行纯属重复。
+       #fxNote 现在只承担两件事：加载中的提示、以及取不到汇率时的报错。 */
 
     function renderQuick() {
       var box = $('fxQuick');
       if (!box || !rates) return;
       box.textContent = '';
-      ['USD', 'JPY', 'HKD', 'EUR'].forEach(function (k) {
-        var r = rateOf(k);
-        if (!r) return;
-        var b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'fx-chip';
-        b.innerHTML = '1 CNY' + '<b>' + fmt(Number(r.toFixed(4))) + ' ' + k + '</b>';
-        b.addEventListener('click', function () {
-          fromSel.value = 'CNY';
-          toSel.value = k;
-          compute('from');
+
+      QUICK_GROUPS.forEach(function (g) {
+        var rf = rateOf(g.from);
+        if (!rf) return;
+
+        var group = document.createElement('div');
+        group.className = 'fx-quick-group';
+        group.appendChild(el2('span', 'fx-quick-title', g.title));
+
+        g.to.forEach(function (t) {
+          var rt = rateOf(t);
+          if (!rt) return;
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'fx-chip';
+          /* 组标题已经说了「美元兑」，条目上只留目标货币和数字 */
+          b.appendChild(el2('span', null, curName(t)));
+          b.appendChild(el2('b', null, fmt(Number((rt / rf).toFixed(4)))));
+          b.addEventListener('click', function () {
+            fromSel.value = g.from;
+            toSel.value = t;
+            fromInput.value = '1';
+            compute('from');
+          });
+          group.appendChild(b);
         });
-        box.appendChild(b);
+
+        box.appendChild(group);
       });
     }
 
@@ -971,18 +1038,48 @@
       compute('from');
     });
 
-    var tabs = $('convTabs');
-    if (tabs) {
-      tabs.addEventListener('click', function (e) {
-        var btn = e.target.closest('.tab');
-        if (!btn) return;
-        Array.prototype.forEach.call(tabs.children, function (b) { b.classList.remove('is-active'); });
-        btn.classList.add('is-active');
-        var name = btn.getAttribute('data-tab');
-        document.querySelectorAll('.tab-panel').forEach(function (p) {
-          p.classList.toggle('is-active', p.getAttribute('data-panel') === name);
+    /* 「交换上下」——把两个换算区换个位置，按钮自己钉在中间不动。
+       用 order 换，不挪 DOM：两块里的输入框和事件都还绑在原处，
+       挪 DOM 就得把它们重新初始化一遍。
+       三档 order：上块 1、按钮 2、下块 3，换的时候只翻两头 ——
+       按钮不设 order 的话默认是 0，一点就被顶到最上面去。 */
+    var swapRows = $('convSwap');
+    if (swapRows) {
+      var flipped = false;
+      var blockA = $('convUnit'), blockB = $('convFx');
+      swapRows.style.order = '2';
+      if (blockA) blockA.style.order = '1';
+      if (blockB) blockB.style.order = '3';
+      swapRows.addEventListener('click', function () {
+        if (!blockA || !blockB) return;
+        flipped = !flipped;
+
+        /* FLIP 动画：先把三块的当前位置记下来，换完 order 再量一次，
+           用 transform 把差值补回去、下一帧过渡到 0。
+           上下两块高度差得多（单位那块矮、汇率那块高），直接换的话
+           中间按钮会「啪」地跳一大截，看着别扭。 */
+        var nodes = [blockA, blockB, swapRows];
+        var before = nodes.map(function (n) { return n.getBoundingClientRect().top; });
+
+        blockA.style.order = flipped ? '3' : '1';
+        blockB.style.order = flipped ? '1' : '3';
+
+        nodes.forEach(function (n, i) {
+          var dy = before[i] - n.getBoundingClientRect().top;
+          if (!dy) return;
+          n.style.transition = 'none';
+          n.style.transform = 'translateY(' + dy + 'px)';
+          /* 用 setTimeout 而不是 requestAnimationFrame：
+             rAF 在某些环境（无头浏览器、后台标签页）会被压住不跑，
+             那样 transform 就永远留在第一个状态上，板块直接错位。 */
+          window.setTimeout(function () {
+            n.style.transition = 'transform .34s cubic-bezier(.22, .72, .3, 1)';
+            n.style.transform = '';
+            window.setTimeout(function () { n.style.transition = ''; }, 400);
+          }, 20);
         });
-        if (name === 'fx') loadRates();
+
+        swapRows.setAttribute('aria-pressed', flipped ? 'true' : 'false');
       });
     }
 
@@ -990,6 +1087,9 @@
     if (warm) { rates = warm.rates; rateTime = warm.time; }
     compute('from');
     renderQuick();
+    /* 两个换算区现在同时显示，汇率一开始就得拉 ——
+       原来是切到「汇率」那个 tab 才拉的。 */
+    loadRates();
   }
 
   /* ============================================================
@@ -1070,7 +1170,7 @@
   }
 
   /* ============================================================
-     6. 字数统计 / Token 预估 / 费用计算
+     6. 字数统计（含 Token 预估 / 费用计算）
      ============================================================ */
   var TK_MODELS = [
     {
