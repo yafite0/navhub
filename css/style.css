@@ -1704,7 +1704,9 @@ body.modal-open { overflow: hidden; }
   font-size: 14px; line-height: 1.75;
 }
 
-.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+/* 条目数不定：一条占满整行，两条并排，三条以上自动排成两列。
+   原来写死 1fr 1fr —— 只剩一条时它只占左半边，右边空一块。 */
+.about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 16px; }
 .about-item {
   padding: 15px 17px;
   border-radius: var(--r-md);
