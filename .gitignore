@@ -18,3 +18,10 @@ tmp-*.js
 # 首页改版的布局测试稿，只在本地看，不跟着站点发布
 layout-test/
 
+# 「工具试验田」（lab.html + css/lab.css + js/lab.js）——
+# 一批还没定要不要上主站的小工具，只在本地开着用，不进仓库、不上线。
+# 三个文件照旧留在工作区，直接开 lab.html 就能用。
+lab.html
+css/lab.css
+js/lab.js
+

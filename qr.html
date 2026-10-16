@@ -7,8 +7,8 @@
 <meta name="description" content="离线二维码生成：把网址或文字变成二维码，纯浏览器本地生成，不联网也不上传。" />
 <meta name="theme-color" content="#4D6BFE" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-<link rel="stylesheet" href="css/style.css?v=20261015m" />
-<link rel="stylesheet" href="css/qr.css?v=20261015m" />
+<link rel="stylesheet" href="css/style.css?v=20261016w" />
+<link rel="stylesheet" href="css/qr.css?v=20261016w" />
 </head>
 <body>
 <div class="bg-decor" aria-hidden="true">
@@ -35,24 +35,79 @@
   <section class="qr-grid">
     <div class="card qr-panel">
       <div class="qr-block">
+        <!-- 内容类型：二维码不只能装网址。
+             WiFi 和名片都走标准格式，手机相机扫一下能直接连网 / 存联系人，
+             不用装任何 App。 -->
+        <div class="qr-kinds" id="qrKinds">
+          <button class="qr-kind is-on" type="button" data-kind="text">文字 / 网址</button>
+          <button class="qr-kind" type="button" data-kind="wifi">WiFi</button>
+          <button class="qr-kind" type="button" data-kind="vcard">名片</button>
+        </div>
+
         <label class="qr-label" for="qrText">要生成的内容</label>
         <textarea id="qrText" class="qr-text" spellcheck="false"
-          placeholder="粘贴网址，例如 https://store.steampowered.com/&#10;也可以放任意文字"></textarea>
-        <div class="qr-chips">
+          placeholder="粘贴网址，例如 www.deepseek.com&#10;也可以放任意文字"></textarea>
+        <div class="qr-chips" id="qrTextChips">
           <button class="mini-btn" id="qrSiteUrl" type="button">用本站地址</button>
           <button class="mini-btn" id="qrPaste" type="button">粘贴</button>
           <button class="mini-btn" id="qrClear" type="button">清空</button>
+        </div>
+
+        <!-- WiFi：扫一下自动连，不用念一长串密码 -->
+        <div class="qr-form" id="qrWifiForm" hidden>
+          <label class="qr-field">
+            <span>网络名称（SSID）</span>
+            <input id="qrWifiSsid" type="text" autocomplete="off" spellcheck="false"
+                   placeholder="家里 WiFi 的名字，区分大小写" />
+          </label>
+          <label class="qr-field">
+            <span>密码</span>
+            <input id="qrWifiPass" type="text" autocomplete="off" spellcheck="false"
+                   placeholder="留空表示开放网络" />
+          </label>
+          <label class="qr-field">
+            <span>加密方式</span>
+            <select id="qrWifiType" class="conv-select">
+              <option value="WPA" selected>WPA / WPA2 / WPA3 · 绝大多数路由器</option>
+              <option value="WEP">WEP · 老设备</option>
+              <option value="nopass">不加密</option>
+            </select>
+          </label>
+          <p class="qr-form-tip">手机自带相机对着二维码扫一下就能连上，不用输密码。</p>
+        </div>
+
+        <!-- 名片：vCard 标准格式，扫一下直接存进通讯录 -->
+        <div class="qr-form" id="qrVcardForm" hidden>
+          <label class="qr-field">
+            <span>姓名</span>
+            <input id="qrVName" type="text" autocomplete="off" placeholder="必填" />
+          </label>
+          <label class="qr-field">
+            <span>电话</span>
+            <input id="qrVTel" type="tel" autocomplete="off" placeholder="选填" />
+          </label>
+          <label class="qr-field">
+            <span>邮箱</span>
+            <input id="qrVEmail" type="email" autocomplete="off" placeholder="选填" />
+          </label>
+          <label class="qr-field">
+            <span>公司 / 职位</span>
+            <input id="qrVOrg" type="text" autocomplete="off" placeholder="选填" />
+          </label>
+          <label class="qr-field">
+            <span>网址</span>
+            <input id="qrVUrl" type="text" autocomplete="off" placeholder="选填" />
+          </label>
+          <p class="qr-form-tip">扫出来是「添加联系人」，比手打一遍省事。</p>
         </div>
       </div>
 
       <div class="qr-block">
         <span class="qr-label">外观设置</span>
 
-        <div class="qr-row">
-          <span class="qr-row-label">尺寸</span>
-          <input type="range" id="qrSize" min="140" max="520" step="20" value="300" />
-          <b id="qrSizeVal">300</b>
-        </div>
+        <!-- 「尺寸」滑块去掉了：二维码在页面上只是个示意，
+             实际下载的是固定 1024×1024 的高清图，调它不影响导出结果，
+             摆在那里只会让人以为下载的图也跟着变。 -->
 
         <div class="qr-row">
           <span class="qr-row-label">纠错等级</span>
@@ -86,40 +141,42 @@
       </div>
       <p class="qr-note" id="qrNote">下载的 PNG 是 1024×1024 高清图，适合打印</p>
     </div>
-  </section>
 
-  <section class="card qr-about">
-    <h2>关于这个工具</h2>
-    <div class="about-grid">
-      <div class="about-item">
-        <h4>用的什么技术</h4>
-        <p>用开源库 <b>qrcode-generator</b>（MIT 协议，作者 Kazuhiko Arase），按 QR Code 国际标准
-        （ISO/IEC 18004）在你浏览器里现场绘制，没有任何服务器参与。</p>
+    <!-- 说明这块原来横在页面最下面整一长条，现在挪进网格当第三列 ——
+         三块（输入 / 二维码 / 说明）均分整屏，不用来回滚。 -->
+    <section class="card qr-panel qr-about">
+      <h2>关于这个工具</h2>
+      <div class="about-grid">
+        <div class="about-item">
+          <h4>用的什么技术</h4>
+          <p>用开源库 <b>qrcode-generator</b>（MIT 协议，作者 Kazuhiko Arase），按 QR Code 国际标准
+          （ISO/IEC 18004）在你浏览器里现场绘制，没有任何服务器参与。</p>
+        </div>
+        <div class="about-item">
+          <h4>安全性怎么样</h4>
+          <p>生成过程<b>不发送任何网络请求</b>，你输入的内容和生成的图片都不会离开这台电脑。
+          没有上传、没有记录、没有统计，断网之后照样能用。</p>
+        </div>
+        <div class="about-item">
+          <h4>要注意什么</h4>
+          <p>二维码本身就是公开信息，<b>谁扫都能看到里面的内容</b>。
+          不要拿它传密码、身份证号、验证码这类敏感信息。</p>
+        </div>
+        <div class="about-item">
+          <h4>纠错等级怎么选</h4>
+          <p>等级越高，二维码被遮挡或磨损后越容易被扫出来，但图案会更密。
+          屏幕上展示用 <b>M</b> 就够；打算打印、或者想在中间放 logo，用 <b>Q</b> 或 <b>H</b>。</p>
+        </div>
       </div>
-      <div class="about-item">
-        <h4>安全性怎么样</h4>
-        <p>生成过程<b>不发送任何网络请求</b>，你输入的内容和生成的图片都不会离开这台电脑。
-        没有上传、没有记录、没有统计，断网之后照样能用。</p>
-      </div>
-      <div class="about-item">
-        <h4>要注意什么</h4>
-        <p>二维码本身就是公开信息，<b>谁扫都能看到里面的内容</b>。
-        不要拿它传密码、身份证号、验证码这类敏感信息。</p>
-      </div>
-      <div class="about-item">
-        <h4>纠错等级怎么选</h4>
-        <p>等级越高，二维码被遮挡或磨损后越容易被扫出来，但图案会更密。
-        屏幕上展示用 <b>M</b> 就够；打算打印、或者想在中间放 logo，用 <b>Q</b> 或 <b>H</b>。</p>
-      </div>
-    </div>
+    </section>
   </section>
 </main>
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/data.js?v=20261015m"></script>
-<script src="assets/js/qrcode.min.js?v=20261015m"></script>
-<script src="js/qr.js?v=20261015m"></script>
-<script src="js/topbar.js?v=20261015m"></script>
+<script src="js/data.js?v=20261016w"></script>
+<script src="assets/js/qrcode.min.js?v=20261016w"></script>
+<script src="js/qr.js?v=20261016w"></script>
+<script src="js/topbar.js?v=20261016w"></script>
 </body>
 </html>

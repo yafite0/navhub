@@ -7,7 +7,7 @@
 <meta name="description" content="常用网站导航页：常用直达、分类浏览、快速搜索，还有天气、便签待办和单位换算小工具。" />
 <meta name="theme-color" content="#4D6BFE" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-<link rel="stylesheet" href="css/style.css?v=20261015m" />
+<link rel="stylesheet" href="css/style.css?v=20261016w" />
 </head>
 <body>
 <div class="bg-decor" aria-hidden="true">
@@ -187,15 +187,9 @@
             新机预设
           </a>
 
-          <a class="pw-chip" href="tools.html?tool=share">
-            <span class="pw-chip-ico">
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="17.5" cy="6" r="2.6"/><circle cx="6.5" cy="12" r="2.6"/><circle cx="17.5" cy="18" r="2.6"/>
-                <path d="M8.9 10.8 15.1 7.2M8.9 13.2l6.2 3.6"/>
-              </svg>
-            </span>
-            分享海报
-          </a>
+          <!-- 「分享海报」的入口撤了：那个工具是给我们自己宣传本站用的，
+               不属于「方便用户使用的小工具」。工具本身还留着（tools.html?tool=share），
+               需要的时候直接开那个地址就行。 -->
 
         </div>
         <a class="pw-go" href="tools.html?tool=unit">更多工具</a>
@@ -248,7 +242,7 @@
 
     <div class="modal-shot" id="modalShot">
       <button class="shot-main" id="shotMain" type="button" title="点击全屏查看原图">
-        <img id="modalImg" alt="" />
+        <img id="modalImg" alt="" width="1280" height="720" />
         <span class="shot-zoom">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 4H4v5M15 4h5v5M15 20h5v-5M9 20H4v-5"/>
@@ -333,10 +327,10 @@
 </div>
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/data.js?v=20261015m"></script>
-<script src="js/seek.js?v=20261015m"></script>
-<script src="js/app.js?v=20261015m"></script>
-<script src="js/widgets.js?v=20261015m"></script>
-<script src="js/topbar.js?v=20261015m"></script>
+<script src="js/data.js?v=20261016w"></script>
+<script src="js/seek.js?v=20261016w"></script>
+<script src="js/app.js?v=20261016w"></script>
+<script src="js/widgets.js?v=20261016w"></script>
+<script src="js/topbar.js?v=20261016w"></script>
 </body>
 </html>

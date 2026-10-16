@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    小工具 · 生成网页快捷方式
    ------------------------------------------------------------
    思路：生成一个只有几十行的纯文本文件，放到桌面双击就能直达网址。
@@ -349,33 +349,102 @@
     return { type: 'html', url: url, name: name, file: safeName(name) + '.html', code: buildHtml(url, name) };
   }
 
+  /* 左列（代码框）和右列（说明）都撑到和中间那列一样高。
+     grid 的行高是按各行 item 的 max-content 算的 —— 代码一长、说明一多
+     都能把行顶上去，光靠 CSS 的 min-height: 0 压不住。
+     量之前先把上一轮写的高度清掉，否则量到的是自己被撑出来的值。 */
+  function syncColumns() {
+    var main = document.querySelector('.sc-main');
+    var src = document.querySelector('.sc-src');
+    var help = document.querySelector('.sc-help');
+    if (!main || !src) return;
+
+    src.style.height = '';
+    if (help) help.style.height = '';
+    var h = main.offsetHeight + 'px';
+    src.style.height = h;
+    if (help) help.style.height = h;
+  }
+
   function renderPreview() {
     var box = $('scPreview');
     if (!box) return;
     var r = build();
-    /* 还没填网址时给句话占位，别把整块留空 —— 让人知道这里会出东西 */
-    box.textContent = r ? r.code
-      : '还没有填网址 —— 上面填一个，这里会实时显示写进文件的完整内容。';
+    /* 还没填网址时给句话占位，别把整块留空 —— 让人知道这里会出东西。
+       占位那行单独放大加粗（.is-empty）。 */
+    box.classList.toggle('is-empty', !r);
+    box.textContent = r ? r.code : '还没有填网址';
+    syncColumns();
   }
 
   /* ---------- 从本站收录的站点里挑 ----------
      表单不预设任何内容，这里只是给个「不用手打」的入口：
      点一下填进表单，右边那个小按钮单独把网址复制到剪贴板。 */
+  /* ---------- 从本站收录的站点里挑 ----------
+     表单不预设任何内容，这里只是给个「不用手打」的入口：
+     点一下填进表单，右边那个小按钮单独把网址复制到剪贴板。
+
+     默认是**按分类折叠**的（<details>，不带 open）。
+     原来是一上来就平铺 8 条、再挂一句「还有 N 个」——
+     上百个站摊在一个滚动框里，找谁都得先扫一遍。 */
+  /* 分类口径和「其他网页」页完全对齐：
+       大类  ← CFG.groups（常用软件 / AI 工具 / 游戏 / 在线翻译）
+       小类  ← CFG.categories 的 name，它靠 group 字段挂到大类下
+     那边只有两级，这里也就两级，不多不少。 */
+  var BIGNAME = (function () {
+    var m = {};
+    (CFG.groups || []).forEach(function (g) { m[g.id || g.name] = g.name; });
+    return m;
+  })();
+
+  var CAT_ICO = (function () {
+    var m = {};
+    (CFG.categories || []).forEach(function (c) { if (c.name) m[c.name] = c.icon || ''; });
+    return m;
+  })();
+
+  var BIGICO = (function () {
+    var m = {};
+    (CFG.groups || []).forEach(function (g) { m[g.id || g.name] = g.icon || ''; });
+    return m;
+  })();
+
   var PICKS = (function () {
     var out = [];
     var seen = {};
 
-    function add(list, catName) {
+    function add(list, catName, big) {
       (list || []).forEach(function (s) {
         if (!s || !s.url || !s.name || seen[s.url]) return;
         seen[s.url] = true;
-        out.push({ name: s.name, url: s.url, cat: catName || '' });
+        out.push({
+          name: s.name, url: s.url,
+          cat: catName || '其他',
+          big: big || '其他'
+        });
       });
     }
 
-    (CFG.categories || []).forEach(function (c) { add(c.sites, c.name); });
-    (CFG.index || []).forEach(function (s) { add([s], s.cat); });
-    add(CFG.urls, '常见官网');
+    (CFG.categories || []).forEach(function (c) {
+      /* 兜底用 group 的原文、再不行用分类名自己 ——
+         直接丢「其他」的话，没登记进 CFG.groups 的那些会挤成一大坨 */
+      add(c.sites, c.name, BIGNAME[c.group] || c.group || c.name || '其他');
+    });
+
+    /* index 里的分类要挂到大类：先查 indexGroupOf，
+       查不到就按「和 categories 里同名的小类」找它的 group。
+       indexGroupOf 只登记了三个（游戏平台 / AI 对话 / AI Agent），
+       只靠它的话「解压压缩」「视频剪辑」这些会各自变成一个假大类。 */
+    var CATGROUP = {};
+    (CFG.categories || []).forEach(function (c) { CATGROUP[c.name] = c.group; });
+
+    var gOf = CFG.indexGroupOf || {};
+    (CFG.index || []).forEach(function (s) {
+      var gid = gOf[s.cat] || CATGROUP[s.cat] || '';
+      add([s], s.cat, BIGNAME[gid] || s.cat || '其他');
+    });
+
+    add(CFG.urls, '常见官网', '常见官网');
     return out;
   })();
 
@@ -391,59 +460,126 @@
     renderPreview();
   }
 
+  function el3(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  /* 一行：名字 + 网址 + 「复制网址」 */
+  function pickRow(s) {
+    var row = el3('div', 'sc-picker-item');
+    row.title = '点击填入：' + s.name;
+
+    var txt = el3('button', 'sc-picker-name');
+    txt.type = 'button';
+    txt.appendChild(el3('b', null, s.name));
+    txt.appendChild(document.createTextNode(s.url.replace(/^https?:\/\//, '').replace(/\/$/, '')));
+    txt.addEventListener('click', function () { fillFrom(s); });
+
+    var cp = el3('button', 'sc-picker-copy', '复制网址');
+    cp.type = 'button';
+    cp.addEventListener('click', function (e) {
+      e.stopPropagation();
+      copyText(s.url, '网址已复制');
+    });
+
+    row.appendChild(txt);
+    row.appendChild(cp);
+    return row;
+  }
+
   function renderPicks() {
     var box = $('scPickList');
     if (!box) return;
 
     var raw = $('scPickSearch') ? $('scPickSearch').value.trim().toLowerCase() : '';
-    var hits = PICKS.filter(function (s) { return pickHit(s, raw); });
-    var shown = hits.slice(0, raw ? 12 : 8);
-
     box.textContent = '';
 
-    if (!shown.length) {
-      var none = document.createElement('p');
-      none.className = 'sc-picker-none';
-      none.textContent = '本站没有收录和「' + raw + '」相关的站点 —— 直接在上面的网址框里填就行。';
-      box.appendChild(none);
+    /* 有搜索词：平铺命中的，最多 12 条 */
+    if (raw) {
+      var hits = PICKS.filter(function (s) { return pickHit(s, raw); });
+      if (!hits.length) {
+        box.appendChild(el3('p', 'sc-picker-none',
+          '本站没有收录和「' + raw + '」相关的站点 —— 直接在上面的网址框里填就行。'));
+        return;
+      }
+      hits.slice(0, 12).forEach(function (s) { box.appendChild(pickRow(s)); });
       return;
     }
 
-    shown.forEach(function (s) {
-      var row = document.createElement('div');
-      row.className = 'sc-picker-item';
-      row.title = '点击填入：' + s.name;
-
-      var txt = document.createElement('button');
-      txt.type = 'button';
-      txt.className = 'sc-picker-name';
-      var b = document.createElement('b');
-      b.textContent = s.name;
-      txt.appendChild(b);
-      txt.appendChild(document.createTextNode(s.url.replace(/^https?:\/\//, '').replace(/\/$/, '')));
-      txt.addEventListener('click', function () { fillFrom(s); });
-
-      var cp = document.createElement('button');
-      cp.type = 'button';
-      cp.className = 'sc-picker-copy';
-      cp.textContent = '复制网址';
-      cp.addEventListener('click', function (e) {
-        e.stopPropagation();
-        copyText(s.url, '网址已复制');
-      });
-
-      row.appendChild(txt);
-      row.appendChild(cp);
-      box.appendChild(row);
+    /* 没搜索词：大类 → 小类 → 站点，两级都默认收起 */
+    var bigOrder = [], bigMap = {};
+    PICKS.forEach(function (s) {
+      if (!bigMap[s.big]) { bigMap[s.big] = { order: [], map: {} }; bigOrder.push(s.big); }
+      var b = bigMap[s.big];
+      if (!b.map[s.cat]) { b.map[s.cat] = []; b.order.push(s.cat); }
+      b.map[s.cat].push(s);
     });
 
-    if (hits.length > shown.length) {
-      var more = document.createElement('p');
-      more.className = 'sc-picker-more';
-      more.textContent = '还有 ' + (hits.length - shown.length) + ' 个，继续输入可以缩小范围';
-      box.appendChild(more);
-    }
+    bigOrder.forEach(function (bk) {
+      var b = bigMap[bk];
+      var total = 0;
+      b.order.forEach(function (k) { total += b.map[k].length; });
+
+      var bd = el3('details', 'sc-pick-group is-big');
+      bd.appendChild(pickSummary(BIGICO[bk] || '📂', bk, total));
+
+      b.order.forEach(function (k) {
+        var list = b.map[k];
+
+        /* 小类名和大类名一样时（「在线翻译」「常见官网」这种
+           本来就没有再分小类的），不再套一层同名的小类 ——
+           套上去就是「在线翻译 › 在线翻译」，看着像重复了一遍。 */
+        if (k === bk) {
+          list.forEach(function (s) { bd.appendChild(pickRow(s)); });
+          return;
+        }
+
+        var cd = el3('details', 'sc-pick-group is-cat');
+        cd.appendChild(pickSummary(CAT_ICO[k] || '📁', k, list.length));
+        list.forEach(function (s) { cd.appendChild(pickRow(s)); });
+        bd.appendChild(cd);
+      });
+
+      box.appendChild(bd);
+    });
   }
+
+  function pickSummary(ico, title, num) {
+    var sum = document.createElement('summary');
+    sum.appendChild(el3('span', 'sc-pick-group-ico', ico));
+    sum.appendChild(el3('b', null, title));
+    sum.appendChild(el3('em', null, num + ' 个'));
+    return sum;
+  }
+
+  /* 手风琴：展开一个就把同一层的其他都收起来。
+     上百个站全铺开的话，同时开着好几栏反而不知道在看哪儿。
+     挂在 click 上而不是 toggle 上 —— toggle 不冒泡，
+     光靠捕获阶段监听在部分浏览器里收不到，click 最稳。 */
+  function accordion(e) {
+    var s = e.target.closest && e.target.closest('summary');
+    if (!s) return;
+    var d = s.parentNode;
+    if (!d || d.tagName !== 'DETAILS' || !d.classList.contains('sc-pick-group')) return;
+
+    /* 等浏览器把 open 翻过来再判断 */
+    window.setTimeout(function () {
+      if (!d.open) return;
+      var sibs = d.parentNode.children;
+      for (var i = 0; i < sibs.length; i++) {
+        if (sibs[i] !== d && sibs[i].tagName === 'DETAILS') sibs[i].open = false;
+      }
+      syncColumns();
+    }, 0);
+  }
+
+  /* 高度跟着走：窗口大小变了、或者列表展开收起让中间那列变高变矮，
+     左右两列都要重新对一次 */
+  window.addEventListener('resize', function () { syncColumns(); });
+  document.addEventListener('click', accordion);
 
   /* 名字框的自动值：用户手输过就别再覆盖他了 */
   var lastAuto = '';
@@ -493,7 +629,7 @@
       $('scMake').addEventListener('click', function () {
         var r = build();
         if (!r) {
-          if (window.showToast) window.showToast('先填一个网址，比如 godotengine.org');
+          if (window.showToast) window.showToast('先填一个网址，比如 www.deepseek.com');
           if ($('scUrl')) $('scUrl').focus();
           return;
         }

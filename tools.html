@@ -7,10 +7,10 @@
 <meta name="description" content="小工具：单位换算与汇率、字数统计。全部在你自己的浏览器里运行，数据不会上传。" />
 <meta name="theme-color" content="#4D6BFE" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-<link rel="stylesheet" href="css/style.css?v=20261015m" />
-<link rel="stylesheet" href="css/tools.css?v=20261015m" />
-<link rel="stylesheet" href="css/presets.css?v=20261015m" />
-<link rel="stylesheet" href="css/share.css?v=20261015m" />
+<link rel="stylesheet" href="css/style.css?v=20261016w" />
+<link rel="stylesheet" href="css/tools.css?v=20261016w" />
+<link rel="stylesheet" href="css/presets.css?v=20261016w" />
+<link rel="stylesheet" href="css/share.css?v=20261016w" />
 </head>
 <body>
 <div class="bg-decor" aria-hidden="true">
@@ -135,28 +135,48 @@
   <!-- 字数 / Token / 费用 -->
   <section class="tw-panel" data-tool-panel="counter">
     <div class="card tw-card">
-      <div class="tool-head">
-        <h3>字数 · Token · 费用</h3>
-        <span class="tool-badge" id="cntBadge">0 字</span>
-      </div>
+      <!-- 这里原来有一行「字数 · Token · 费用」+ 右上角的「242 字」角标，
+           整行去掉了：标题和页头的「字数统计」重复，
+           角标和下面统计排里的「含标点字数」是同一个数，也是重复。
+           一行不留，页面还更清爽。 -->
 
       <div class="tool-body counter-grid">
         <div class="cnt-col">
-          <textarea id="cntText" class="cnt-text" spellcheck="false"
-            placeholder="把文字粘贴到这里，下面会自动统计字数，并预估 token 用量和费用"></textarea>
-
-          <div class="stat-grid">
-            <div class="stat"><b id="statAll">0</b><span>含标点字数</span></div>
-            <div class="stat"><b id="statNoPunct">0</b><span>不含标点</span></div>
-            <div class="stat"><b id="statHan">0</b><span>汉字</span></div>
-            <div class="stat"><b id="statWord">0</b><span>英文单词</span></div>
-            <div class="stat"><b id="statChar">0</b><span>字符(含空格)</span></div>
-            <div class="stat"><b id="statLine">0</b><span>行数</span></div>
+          <!-- 输入区三层叠着：行号 ┊ 高亮层 ┊ textarea。
+               textarea 在最上面负责接收输入，但文字是透明的 ——
+               真正画出来的是下面那个 <pre>（按字符类型刷了底色）。
+               行号和高亮层都 aria-hidden + user-select: none：
+               它们只是「看得见」，选中和复制走的还是 textarea 里的原文，
+               复制出来永远是干净的，不会带上行号或任何标记。 -->
+          <div class="cnt-editor">
+            <div class="cnt-gutter" id="cntGutter" aria-hidden="true"></div>
+            <div class="cnt-pane">
+              <pre class="cnt-hl" id="cntHl" aria-hidden="true"></pre>
+              <!-- wrap="off"：不自动折行，长行靠横向滚动看 ——
+                   和高亮层的 white-space: pre 是一对，两边必须一致 -->
+              <textarea id="cntText" class="cnt-text" spellcheck="false" wrap="off"
+                placeholder="把文字粘贴到这里，下面会自动统计字数，并预估 token 用量和费用"></textarea>
+            </div>
           </div>
 
-          <div class="cnt-actions">
-            <button class="mini-btn" id="cntCopy" type="button">复制文本</button>
-            <button class="mini-btn" id="cntClear" type="button">清空</button>
+          <!-- 统计 + 操作贴在输入框下面，和它同属右边这一列
+               （左边那列放的是 Token / 费用）。
+               说明文字的颜色和上面高亮用的是同一套（汉字蓝、英文绿、标点橙…），
+               扫一眼就知道每个数字对应文本里的哪一类字符。 -->
+          <div class="cnt-foot">
+            <div class="stat-grid">
+              <div class="stat is-all"><b id="statAll">0</b><span>含标点字数</span></div>
+              <div class="stat is-nopunct"><b id="statNoPunct">0</b><span>不含标点</span></div>
+              <div class="stat is-cn"><b id="statHan">0</b><span>汉字</span></div>
+              <div class="stat is-en"><b id="statWord">0</b><span>英文单词</span></div>
+              <div class="stat is-space"><b id="statChar">0</b><span>字符(含空格)</span></div>
+              <div class="stat is-line"><b id="statLine">0</b><span>行数</span></div>
+            </div>
+
+            <div class="cnt-actions">
+              <button class="mini-btn is-brand" id="cntCopy" type="button">复制文本</button>
+              <button class="mini-btn is-brand-soft" id="cntClear" type="button">清空</button>
+            </div>
           </div>
         </div>
 
@@ -202,12 +222,13 @@
             </div>
 
             <div class="cnt-actions">
-              <button class="mini-btn" id="pricePreset" type="button">填入 DeepSeek 参考价</button>
-              <a class="mini-btn" id="priceLink" href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing"
+              <button class="mini-btn is-brand" id="pricePreset" type="button">填入 DeepSeek 参考价</button>
+              <a class="mini-btn is-brand" id="priceLink" href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing"
                 target="_blank" rel="noopener noreferrer">核对官方价格 ↗</a>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </section>
@@ -217,7 +238,11 @@
     <div class="card tw-card tw-spec-card">
       <div class="tool-head">
         <h3>查看我的电脑配置</h3>
-        <span class="tool-badge">本机运行</span>
+        <!-- 「本机运行」太笼统了 —— 用户看不出这些数字到底是哪儿来的。
+             实际来源是浏览器几个公开接口（WebGL 的 UNMASKED_RENDERER、
+             navigator.hardwareConcurrency / deviceMemory 等），
+             任何网页都能读到，读到的也只是型号级别，不涉及个人身份。 -->
+        <span class="tool-badge">浏览器公开接口读取 · 只在本机</span>
       </div>
 
       <div class="tool-body is-active">
@@ -237,9 +262,11 @@
 
             <div class="spec-list" id="specList"></div>
 
+            <!-- 「重新检测」删了：这一页的数据是进页面时自动读的，
+                 配置不会在页面开着的时候变，再点一遍结果还是那些。
+                 真要看新的，刷新一下页面就行。 -->
             <div class="cnt-actions">
-              <button class="mini-btn" id="specCopy" type="button">复制配置信息</button>
-              <button class="mini-btn" id="specAgain" type="button">重新检测</button>
+              <button class="mini-btn is-brand" id="specCopy" type="button">复制配置信息</button>
             </div>
           </div>
 
@@ -274,20 +301,19 @@
   <!-- 生成网页快捷方式 -->
   <section class="tw-panel" data-tool-panel="shortcut">
     <div class="card tw-card tw-sc-card">
-      <div class="tool-head">
-        <h3>把常用网址放到桌面</h3>
-        <span class="tool-badge">放桌面双击直达</span>
-      </div>
+      <!-- 原来这里有一行「把常用网址放到桌面」+「放桌面双击直达」角标，
+           整行去掉了：标题和页头的「生成网页快捷方式」重复，
+           角标那句和页头描述也在说同一件事。 -->
 
       <div class="tool-body is-active">
         <div class="sc-grid">
           <!-- 左：生成的代码。文件里就是这些内容，注释也一并带上 -->
           <section class="sc-src">
             <div class="sc-src-head">
-              <b>生成的文件内容</b>
+              <b>桌面快捷方式代码</b>
               <span>复制走存成 .html / .url，一样能用</span>
             </div>
-            <pre class="sc-preview" id="scPreview">还没有填网址</pre>
+            <pre class="sc-preview is-empty" id="scPreview">还没有填网址</pre>
           </section>
 
           <div class="sc-main">
@@ -296,19 +322,9 @@
               不用先开浏览器、再去翻收藏夹。
             </p>
 
-            <div class="sc-form">
-              <label class="sc-field">
-                <span>网址</span>
-                <input id="scUrl" type="text" autocomplete="off" spellcheck="false"
-                       placeholder="填一个网址，比如 godotengine.org" />
-              </label>
-              <label class="sc-field">
-                <span>快捷方式名字 <em>（可以不填，会自动认）</em></span>
-                <input id="scName" type="text" autocomplete="off" placeholder="自动识别，也可以自己改" />
-              </label>
-            </div>
-
-            <!-- 从本站收录的站点里挑：可搜索，点一下填进上面的表单 -->
+            <!-- 从本站收录的站点里挑：可搜索，点一下自动填进下面的网址框。
+                 这块放在网址框**上面** —— 两种用法里「从列表里挑」更省事，
+                 先从挑开始，挑完网址框自己就填好了。 -->
             <div class="sc-picker">
               <div class="sc-picker-head">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -318,6 +334,18 @@
                        placeholder="或者从本站收录的站点里挑一个" />
               </div>
               <div class="sc-picker-list" id="scPickList"></div>
+            </div>
+
+            <div class="sc-form">
+              <label class="sc-field">
+                <span>网址</span>
+                <input id="scUrl" type="text" autocomplete="off" spellcheck="false"
+                       placeholder="填一个网址，比如 www.deepseek.com" />
+              </label>
+              <label class="sc-field">
+                <span>快捷方式名字 <em>（可以不填，会自动认）</em></span>
+                <input id="scName" type="text" autocomplete="off" placeholder="自动识别，也可以自己改" />
+              </label>
             </div>
 
             <div class="sc-types">
@@ -350,23 +378,23 @@
             <table class="sc-os">
               <tr><th>系统</th><th>能不能用</th></tr>
               <tr><td>Windows</td><td>两种都行</td></tr>
-              <tr><td>macOS</td><td>只能用 .html</td></tr>
-              <tr><td>Linux</td><td>只能用 .html</td></tr>
-              <tr><td>手机 / 平板</td><td>用不了</td></tr>
+              <tr><td>macOS</td><td>只能用 <code>.html</code></td></tr>
+              <tr><td>Linux</td><td>只能用 <code>.html</code></td></tr>
+              <tr><td>手机 / 平板</td><td class="is-no">用不了</td></tr>
             </table>
 
             <p>
-              <b>手机为什么不行</b>：这套靠的是桌面系统「双击文件 → 交给默认程序打开」的机制。
+              <b class="key">手机为什么不行</b>：这套靠的是桌面系统「双击文件 → 交给默认程序打开」的机制。
               手机上的文件点击后由 App 接管，iOS 和 Android 都不允许一个文件直接唤起浏览器打开网址，
-              所以做不出来。手机请用浏览器菜单里的<b>「添加到主屏幕」</b> —— 那才是手机上的正确做法，效果还更好。
+              所以做不出来。手机请用浏览器菜单里的<b class="key">添加到主屏幕</b> —— 那才是手机上的正确做法，效果还更好。
             </p>
             <p>
-              <b>macOS / Linux 为什么只能用 .html</b>：<code>.url</code> 是 Windows 专有的
+              <b class="key">macOS / Linux 为什么只能用 .html</b>：<code>.url</code> 是 Windows 专有的
               「Internet 快捷方式」格式（本质是个 INI 配置），这两个系统不认，双击没有任何反应。
               <code>.html</code> 是通用的，任何桌面系统都能用。
             </p>
             <p>
-              <b>下载时浏览器可能提示风险</b>：Windows 下存 <code>.url</code> 时，浏览器可能提示
+              <b class="key">下载时浏览器可能提示风险</b>：Windows 下存 <code>.url</code> 时，浏览器可能提示
               「此类文件可能有害」。这是对所有快捷方式类文件的通用提示，选「保留」即可。
               文件是纯文本，记事本能打开核对，不含追踪、也不会联网。
             </p>
@@ -493,15 +521,15 @@
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/data.js?v=20261015m"></script>
-<script src="js/seek.js?v=20261015m"></script>
-<script src="js/widgets.js?v=20261015m"></script>
-<script src="js/tools.js?v=20261015m"></script>
-<script src="js/specs.js?v=20261015m"></script>
-<script src="js/shortcut.js?v=20261015m"></script>
-<script src="js/presets.js?v=20261015m"></script>
-<script src="assets/js/qrcode.min.js?v=20261015m"></script>
-<script src="js/share.js?v=20261015m"></script>
-<script src="js/topbar.js?v=20261015m"></script>
+<script src="js/data.js?v=20261016w"></script>
+<script src="js/seek.js?v=20261016w"></script>
+<script src="js/widgets.js?v=20261016w"></script>
+<script src="js/tools.js?v=20261016w"></script>
+<script src="js/specs.js?v=20261016w"></script>
+<script src="js/shortcut.js?v=20261016w"></script>
+<script src="js/presets.js?v=20261016w"></script>
+<script src="assets/js/qrcode.min.js?v=20261016w"></script>
+<script src="js/share.js?v=20261016w"></script>
+<script src="js/topbar.js?v=20261016w"></script>
 </body>
 </html>

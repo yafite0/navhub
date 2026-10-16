@@ -44,6 +44,42 @@
     else window.open(url, '_blank', 'noopener,noreferrer');
   }
 
+  /* ============================================================
+     图标加载：排队 + 进视口才抓
+     ------------------------------------------------------------
+     「其他网页」页有 100 个站点，本地 assets/icons 只覆盖八成，
+     剩下十几个要往外网抓。手机浏览器的并发数很少（同一域名大约 6 个），
+     一股脑全发出去会互相抢、还可能撞上限卡在超时上 ——
+     表现就是「图标半天不出来、页面发飘」。所以外网请求排个队，
+     一次最多 3 个。
+     ============================================================ */
+  var ICON_REMOTE_MAX = 3;
+
+  var ICON_QUEUE = (function () {
+    var running = 0, wait = [];
+    function next() {
+      while (running < ICON_REMOTE_MAX && wait.length) {
+        running++;
+        (wait.shift())(function () { running--; next(); });
+      }
+    }
+    return { push: function (task) { wait.push(task); next(); } };
+  })();
+
+  /* 图标是**先离屏加载、成功后再插进 DOM** 的，所以 img.loading='lazy'
+     对它完全无效 —— 浏览器判断不了一个还没入 DOM 的图在不在视口里，
+     懒加载可能永远不触发、图标就一直停在名字首字上。
+     改成盯住那个占位盒子：进了视口（再往外放 300px）才开始抓。 */
+  var ICON_EYE = window.IntersectionObserver ? new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      ICON_EYE.unobserve(e.target);
+      var go = e.target.__iconGo;
+      e.target.__iconGo = null;
+      if (go) go();
+    });
+  }, { rootMargin: '300px' }) : null;
+
   /* 站点图标：直接画进传进来的元素里。
      要点：图标是异步加载的，所以先把名字首字当作占位显示出来，图片就绪后再替换掉。
      这里必须「直接操作目标元素」，不能先造一个临时元素再搬内容 ——
@@ -72,30 +108,73 @@
     placeholder();
     if (!chain.length) return box;
 
-    /* 注意：这里不能写 img.loading = 'lazy'。
-       图片在 onload 之前是游离在 DOM 之外的，浏览器没法判断它"在不在视口里"，
-       于是懒加载可能永远不触发，图标就一直停在名字首字上。
-       图标本身只有几十 KB，直接加载即可，也不需要超时兜底
-       （超时反而会把已经加载好的状态覆盖回首字）。 */
-    var idx = 0;
-    var img = new Image();
-    img.alt = '';
-    img.decoding = 'async';
-    img.referrerPolicy = 'no-referrer';
+    /* 真正的抓取从这里开始。链条上每一环失败了才试下一环；
+       外网那两环走 ICON_QUEUE 排队，本地那个直接发。 */
+    function start() {
+      var idx = 0;
 
-    img.onload = function () {
-      box.textContent = '';
-      box.appendChild(img);
-      box.style.background = '#fff';
-    };
-    img.onerror = function () {
-      idx++;
-      if (idx < chain.length) img.src = chain[idx];
-      else placeholder();
-    };
-    img.src = chain[0];
-    return box;
+      function tryOne() {
+        if (idx >= chain.length) { placeholder(); return; }
+        var src = chain[idx++];
+        var remote = /^https?:/i.test(src);
+
+        var img = new Image();
+        img.alt = '';
+        img.decoding = 'async';
+        img.referrerPolicy = 'no-referrer';
+        img.className = 'site-ico-img';
+        /* 属性上先写死 1:1，再由 CSS 拉满盒子 ——
+           不占位的话，图从无到有那一下会把这一行顶一顶，列表长了就是满屏抖 */
+        img.width = 1;
+        img.height = 1;
+
+        function ok() {
+          box.textContent = '';
+          box.appendChild(img);
+          box.style.background = '#fff';
+        }
+
+        img.onload = ok;
+        img.onerror = tryOne;
+
+        if (remote) {
+          ICON_QUEUE.push(function (done) {
+            img.onload = function () { done(); ok(); };
+            img.onerror = function () { done(); tryOne(); };
+            img.src = src;
+          });
+        } else {
+          img.src = src;
+        }
+      }
+
+      tryOne();
     }
+
+    /* 进了视口才开始抓。没有 IntersectionObserver 的老浏览器直接抓。
+
+       注意这里必须**等盒子真的进了文档**再 observe ——
+       调用方是「paintIcon 拿到盒子 → 自己 append 到列表里」，
+       直接在 paintIcon 里 observe 的话，观察的是一个游离节点，
+       永远等不到 isIntersecting（实测：出图 0/101，全卡在首字上）。 */
+    if (ICON_EYE) {
+      box.__iconGo = start;
+      (function arm(tries) {
+        if (!box.__iconGo) return;
+        if (box.isConnected) { ICON_EYE.observe(box); return; }
+        if (tries > 60) { box.__iconGo = null; start(); return; }   /* 1.2s 还没插进来就别等了 */
+        window.setTimeout(function () { arm(tries + 1); }, 20);
+      })(0);
+      /* 兜底：万一一直没进视口（被折叠、被隐藏），也别永远停在首字上 */
+      window.setTimeout(function () {
+        if (box.__iconGo) { box.__iconGo = null; start(); }
+      }, 5000);
+    } else {
+      start();
+    }
+
+    return box;
+  }
 
   /* 需要一个独立图标元素时用这个（卡片等） */
   function buildIcon(site) {

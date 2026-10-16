@@ -237,7 +237,7 @@ button { cursor: pointer; border: none; background: none; }
 [data-theme="dark"] .ico-moon { display: block; }
 
 /* ---------- 首屏 ---------- */
-main { padding-bottom: 40px; }
+main { padding-bottom: 22px; }
 
 .hero {
   display: grid;
@@ -622,7 +622,18 @@ main { padding-bottom: 40px; }
   box-shadow: var(--shadow-xs);
   transition: transform .2s, background .2s;
 }
-.site-ico img { width: 100%; height: 100%; object-fit: contain; padding: 6px; background: #fff; border-radius: inherit; }
+/* 图标是「先出现首字、再被图片替换」的，盒子尺寸本来就定死，不会抖。
+   这里再明确一下图片自身的盒模型，免得某些浏览器按图片原始尺寸闪一帧。 */
+.site-ico img {
+  display: block; width: 100%; height: 100%;
+  object-fit: contain; padding: 6px;
+  background: #fff; border-radius: inherit;
+}
+
+/* 弹窗里那张官网截图。容器高度是写死的（.modal-shot），
+   图本身再带一组 width/height 属性，浏览器在图片下载完之前
+   就能按 16:9 先把位置占住，不会整块往下弹一下。 */
+#modalImg { display: block; width: 100%; height: 100%; object-fit: cover; }
 [data-theme="dark"] .site-ico img { background: rgba(255,255,255,.92); }
 
 .site-text { min-width: 0; }
@@ -1127,6 +1138,9 @@ main { padding-bottom: 40px; }
 .fx-src p { margin: 0; }
 .fx-src p + p { margin-top: 8px; }
 .fx-src b { color: var(--text-2); font-weight: 600; }
+/* 正文里的重点用品牌蓝 —— 「不是这台电脑算出来的」这种一句，
+   是整段里最需要被读到的，灰色加粗在 12.5px 的小字里几乎看不出区别 */
+.fx-src p b { color: var(--brand); font-weight: 700; }
 .fx-src a { color: var(--brand); }
 .fx-src a:hover { text-decoration: underline; }
 .fx-src-warn { color: var(--text-3); }
@@ -1193,6 +1207,36 @@ main { padding-bottom: 40px; }
   transition: all .18s;
 }
 .mini-btn:hover { color: var(--brand); border-color: var(--brand-soft); background: var(--brand-tint); }
+
+/* 实心蓝的版本（「复制文本」「复制配置信息」「填入参考价」这些）。
+   默认那个是浅灰底，一页里放好几个的话，最该点的那个反而最不显眼。 */
+.mini-btn.is-brand {
+  color: #fff;
+  background: var(--brand-grad);
+  border-color: transparent;
+  box-shadow: 0 8px 18px -12px rgba(77, 107, 254, .95);
+}
+.mini-btn.is-brand:hover {
+  color: #fff;
+  border-color: transparent;
+  background: var(--brand-grad);
+  filter: brightness(1.08);
+}
+
+/* 浅蓝版：给「清空」这类有后果的按钮。
+   和上面那个一样显眼，但不会抢过主操作 —— 两个都做成实心蓝的话，
+   「复制」和「清空」长得一模一样，点错的概率就上来了。 */
+.mini-btn.is-brand-soft {
+  color: var(--brand);
+  background: var(--brand-tint);
+  border-color: var(--brand-tint-2);
+}
+.mini-btn.is-brand-soft:hover {
+  color: var(--brand);
+  background: var(--brand-tint);
+  border-color: var(--brand-soft);
+  filter: brightness(.97);
+}
 
 /* ---------- 最后更新徽章 ---------- */
 .updated {
@@ -1373,32 +1417,144 @@ main { padding-bottom: 40px; }
 /* ---------- 字数 / Token / 费用 ---------- */
 .tool-wide { grid-column: 1 / -1; }
 
+/* 左右两块用 order 对调，不动 DOM 顺序（HTML 里还是先输入框后计算列，
+   读起来顺）：现在左边是 Token / 费用，右边是输入框。
+   统计那排和两个按钮已经挪到最底部、跨整宽（.cnt-foot）。 */
 .counter-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   gap: 24px;
-  align-items: start;
+  align-items: stretch;   /* 右列要和左列一样高，输入框才能一路撑到底 */
 }
+.counter-grid .calc-col { order: 1; }
+.counter-grid .cnt-col { order: 2; }
 
-.cnt-text {
-  width: 100%;
-  min-height: 216px;
-  max-height: 460px;
-  padding: 14px 16px;
-  resize: vertical;
-  font: inherit;
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--text);
+/* 右列 = 输入框 + 统计 + 操作，三块竖着摞。
+   输入框吃满剩下的高度，统计和按钮保持原尺寸钉在下面。
+   字号和行高拎成变量：三层（行号 / 高亮层 / textarea）必须用同一套，
+   行号那列字号更小，但它照样得按正文的行高算，否则一行差几像素、几行就错开。 */
+.cnt-col {
+  display: flex; flex-direction: column; min-width: 0;
+  /* min-height: 0 是关键：grid item 默认 min-height: auto，
+     里面灌一大段文本会把这一格顶高，整页跟着往下长。
+     同一条规则也要给 .sc-src（快捷方式页那个代码框）。 */
+  min-height: 0;
+  --cnt-fs: 15px;
+  --cnt-lh: 25.5px;      /* 15 × 1.7 */
+}
+/* 输入框的高度锁死。
+   光写 min-height: 0 不够：grid 的行高是按各行 item 的 max-content 算的，
+   textarea 一灌长文就把那一行顶上去，整页跟着往下长。
+   所以高度直接写死（跟着视口走，上下限兜住），内容再多也在框内滚。 */
+.cnt-editor {
+  flex: none;
+  height: clamp(210px, calc(100vh - 470px), 520px);
+  overflow: hidden;
+}
+.cnt-pane { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+.cnt-text { flex: 1; height: 0; min-height: 0; overflow: auto; }
+
+.cnt-foot { flex: none; margin-top: 14px; }
+.cnt-foot .stat-grid { margin-top: 0; }
+
+/* ============================================================
+   输入区：行号 ┊ 高亮层 ┊ textarea 三层叠着
+   ------------------------------------------------------------
+   textarea 在最上面收输入，但 color 是 transparent ——
+   看得见的字其实是最下层那个 <pre> 画的，它按字符类型刷了底色。
+   三层必须共用同一套排版（字号 / 行高 / 内边距 / 换行规则），
+   差一个像素就会错位，所以下面这几个值都写成固定值、不跟着根字号走。
+   ============================================================ */
+.cnt-editor { display: flex; align-items: stretch; }
+
+/* 行号列。user-select: none —— 选不中、复制不会带出去。
+   行高写死成和非正文一样的 23.8px（14 × 1.7）：
+   不然 12px 的字号乘 1.7 得到 20.4，和正文一行差 3px，几行之后就全错开了。 */
+.cnt-gutter {
+  flex: none; width: 46px;
+  padding: 14px 9px 14px 0;
+  text-align: right;
+  font-size: 12.5px; line-height: var(--cnt-lh, 25.5px);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #6D28D9;          /* 和「行数」那张卡同一个紫，原来那点灰太淡了看不见 */
+  user-select: none; -webkit-user-select: none;
+  overflow: hidden;
+  background: var(--surface-3);
+  border: 1.5px solid var(--border);
+  border-right: 0;
+  border-radius: var(--r-sm) 0 0 var(--r-sm);
+}
+[data-theme="dark"] .cnt-gutter { color: #C4A9FB; }
+
+.cnt-pane {
+  position: relative;
+  flex: 1; min-width: 0;
   background: var(--surface-2);
   border: 1.5px solid var(--border);
-  border-radius: var(--r-sm);
-  outline: none;
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
   transition: border-color .18s, box-shadow .18s;
 }
-.cnt-text::placeholder { color: var(--text-3); }
-.cnt-text:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-tint); }
+.cnt-pane:focus-within { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-tint); }
 
+/* 底层：把文字连同底色一起画出来 */
+.cnt-hl {
+  position: absolute; inset: 0;
+  margin: 0;
+  padding: 14px 16px;
+  font: inherit; font-size: var(--cnt-fs, 15px); line-height: var(--cnt-lh, 25.5px);
+  /* 不折行、不走 word-break —— 必须和 textarea 完全一致，
+     差一点两层的换行位置就错开。长行溢出去靠 scrollLeft 同步。 */
+  white-space: pre;
+  color: var(--text);
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none; -webkit-user-select: none;
+}
+
+/* 上层：只负责接收输入和光标 */
+.cnt-text {
+  position: relative; z-index: 1;
+  display: block; width: 100%;
+  /* 高度完全交给外层 .cnt-editor 定，自己既不撑高也不设上限 */
+  min-height: 0;
+  padding: 14px 16px;
+  resize: none;
+  font: inherit; font-size: var(--cnt-fs, 15px); line-height: var(--cnt-lh, 25.5px);
+  color: transparent;
+  caret-color: var(--text);
+  background: transparent;
+  border: 0; outline: none;
+}
+.cnt-text::placeholder { color: var(--text-3); }
+.cnt-text::selection { background: rgba(77, 107, 254, .26); }
+
+/* ---------- 字符块 ----------
+   每一块做成圆角小标签，像一排网页按钮 —— 中文按单字切、英文数字按词切，
+   于是一句话是怎么被切开成 token 的，一眼就看得出来。
+   描边用 `box-shadow: inset`，不占布局位置 ——
+   要是改用 border 或 padding，字符的落点就会挪，和下面 textarea 里的原文错开。 */
+.cnt-hl span { border-radius: 4px; }
+
+/* 每一类的描边用自己背景色再深一档（提高同一条颜色的不透明度），
+   这样相邻两块之间有一条清楚的界线，不会糊成一片。
+   空格单独用黄色 —— 它最容易被看漏，灰色和标点太像了。 */
+.hl-cn { background: rgba(77, 107, 254, .24); box-shadow: inset 0 0 0 1px rgba(77, 107, 254, .58); }
+.hl-en { background: rgba(16, 185, 129, .24); box-shadow: inset 0 0 0 1px rgba(16, 185, 129, .58); }
+.hl-punc { background: rgba(148, 163, 184, .34); box-shadow: inset 0 0 0 1px rgba(148, 163, 184, .75); }
+.hl-cnp { background: rgba(245, 158, 11, .3); box-shadow: inset 0 0 0 1px rgba(245, 158, 11, .65); }
+.hl-space { background: rgba(234, 179, 8, .34); box-shadow: inset 0 0 0 1px rgba(234, 179, 8, .7); }
+.hl-nl { background: none; box-shadow: none; }
+
+[data-theme="dark"] .hl-cn { background: rgba(122, 148, 255, .32); box-shadow: inset 0 0 0 1px rgba(122, 148, 255, .7); }
+[data-theme="dark"] .hl-en { background: rgba(16, 185, 129, .32); box-shadow: inset 0 0 0 1px rgba(16, 185, 129, .7); }
+[data-theme="dark"] .hl-punc { background: rgba(148, 163, 184, .28); box-shadow: inset 0 0 0 1px rgba(148, 163, 184, .6); }
+[data-theme="dark"] .hl-cnp { background: rgba(245, 158, 11, .34); box-shadow: inset 0 0 0 1px rgba(245, 158, 11, .7); }
+[data-theme="dark"] .hl-space { background: rgba(234, 179, 8, .34); box-shadow: inset 0 0 0 1px rgba(234, 179, 8, .72); }
+
+/* ---------- 统计卡 ----------
+   每格下面那行说明用和高亮同一套颜色，
+   扫一眼就知道这个数字对应文本里的哪一类字符。 */
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(102px, 1fr));
@@ -1419,7 +1575,47 @@ main { padding-bottom: 40px; }
 }
 .stat span { font-size: 11.5px; color: var(--text-3); }
 
+/* 整张卡都染上对应的颜色，不只是下面那行小字 ——
+   小字太细，一屏扫过去根本注意不到。数字本身保持深色，保证读得清。 */
+.stat.is-all { background: rgba(245, 158, 11, .13); border-color: rgba(245, 158, 11, .34); }
+.stat.is-all span { color: #B45309; }
+
+.stat.is-nopunct { background: rgba(148, 163, 184, .16); border-color: rgba(148, 163, 184, .4); }
+.stat.is-nopunct span { color: #64748B; }
+
+.stat.is-cn { background: rgba(77, 107, 254, .13); border-color: rgba(77, 107, 254, .34); }
+.stat.is-cn span { color: #3B5BDB; }
+
+.stat.is-en { background: rgba(16, 185, 129, .13); border-color: rgba(16, 185, 129, .34); }
+.stat.is-en span { color: #0B8F63; }
+
+/* 「字符(含空格)」跟空格高亮用同一个黄 */
+.stat.is-space { background: rgba(234, 179, 8, .16); border-color: rgba(234, 179, 8, .45); }
+.stat.is-space span { color: #A16207; }
+
+.stat.is-line { background: rgba(139, 92, 246, .13); border-color: rgba(139, 92, 246, .34); }
+.stat.is-line span { color: #6D28D9; }
+
+[data-theme="dark"] .stat.is-all { background: rgba(245, 158, 11, .18); border-color: rgba(245, 158, 11, .4); }
+[data-theme="dark"] .stat.is-all span { color: #F0B26B; }
+[data-theme="dark"] .stat.is-nopunct { background: rgba(148, 163, 184, .16); border-color: rgba(148, 163, 184, .32); }
+[data-theme="dark"] .stat.is-nopunct span { color: #9AA5B8; }
+[data-theme="dark"] .stat.is-cn { background: rgba(77, 107, 254, .2); border-color: rgba(77, 107, 254, .42); }
+[data-theme="dark"] .stat.is-cn span { color: #93A8FF; }
+[data-theme="dark"] .stat.is-en { background: rgba(16, 185, 129, .18); border-color: rgba(16, 185, 129, .4); }
+[data-theme="dark"] .stat.is-en span { color: #5FE0B0; }
+[data-theme="dark"] .stat.is-space { background: rgba(148, 163, 184, .16); border-color: rgba(148, 163, 184, .32); }
+[data-theme="dark"] .stat.is-space span { color: #9AA5B8; }
+[data-theme="dark"] .stat.is-line { background: rgba(139, 92, 246, .2); border-color: rgba(139, 92, 246, .42); }
+[data-theme="dark"] .stat.is-line span { color: #C4A9FB; }
+
 .cnt-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+
+/* 这一页在 1920×1080 下会多出 3px 的滚动条，压一压正好一屏。
+   改的是这一页专属的量（输入框最小高度、按钮行上边距），
+   不动通用样式；加起来省 10px，留出 7px 余量。 */
+[data-tool-panel="counter"] .cnt-editor { height: clamp(200px, calc(100vh - 480px), 500px); }
+[data-tool-panel="counter"] .cnt-actions { margin-top: 10px; }
 
 .calc-col { display: flex; flex-direction: column; gap: 16px; }
 .sub-block {
@@ -1846,7 +2042,9 @@ body.modal-open { overflow: hidden; }
 }
 .about-item h4 {
   display: flex; align-items: center; gap: 8px;
-  margin-bottom: 8px;
+  /* margin-top 一定要写：h4 自带 1.33em（14px 下就是 18.6px）的上外边距，
+     只写 margin-bottom 的话它会原样留着 —— 每块说明上方凭空多出一大截空。 */
+  margin: 0 0 8px;
   font-size: 14px; font-weight: 700;
 }
 .about-item h4::before {

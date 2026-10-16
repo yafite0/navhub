@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    小工具页 —— 只放这个页面用到的样式（其余复用 style.css）
    ============================================================ */
 
@@ -26,9 +26,11 @@
 /* 这一页原来是 max-width: 1240px 居中，在宽屏上两侧要空掉 340px，
    跟其它页面对不上。现在不设限，跟着全站版心走（.wrap，两侧 50px）。 */
 .tw-spec-card { max-width: none; }
+/* 左边那块占三分之二，右边说明占三分之一。
+   原来右边写死 360px —— 屏幕一宽左列就跟着涨，右侧说明反而缩成一条。 */
 .spec-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
   gap: 24px;
   align-items: start;
 }
@@ -91,20 +93,57 @@
   border: 1px solid var(--border);
   font-size: 12.5px; line-height: 1.8; color: var(--text-3);
 }
-.spec-help > b { display: block; margin-bottom: 8px; font-size: 13.5px; color: var(--text); }
+/* ============================================================
+   说明里的「重点」——统一做成实心蓝小胶囊
+   ------------------------------------------------------------
+   说明文字本来就是一小片浅灰字，里面那些「手机为什么不行」
+   「.url」之类的关键信息，和正文一个颜色，扫两遍都找不着。
+   .spec-help > b 是整段的标题，.key 是行内的关键词（给了 <b class="key">）。
+   ============================================================ */
+.spec-help > b,
+.key {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12.5px; font-weight: 700; color: #fff;
+  background: var(--brand-grad);
+  box-shadow: 0 8px 18px -12px rgba(77, 107, 254, .95);
+}
+/* 整段标题给大一点、下面留点空 */
+.spec-help > b {
+  padding: 4px 12px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
 .spec-help p { margin: 0; }
 .spec-help p + p { margin-top: 8px; }
-.spec-help b { color: var(--text-2); font-weight: 600; }
-.spec-help code {
-  padding: 1.5px 6px; border-radius: 5px;
-  background: var(--surface-3);
+/* 收紧到正文里的 <b>：不这么写会连标题那个胶囊一起染色
+   （.spec-help b 和 .spec-help > b 特异性一样，谁在后面谁赢） */
+.spec-help p b { color: var(--text-2); font-weight: 600; }
+/* .key 的胶囊样式在上面，这里把它从「正文加粗」那条里摘出来 */
+.spec-help p b.key { color: #fff; font-weight: 700; }
+/* 文件名（.html / .url / dxdiag 这些）做成浅蓝小标签 ——
+   它们本来就只是灰底蓝字，混在说明里不显眼，而「到底该存哪种后缀」
+   恰恰是这段说明里最需要被记住的一句。 */
+.spec-help code, .sc-os code {
+  padding: 1.5px 7px; border-radius: 6px;
+  background: var(--brand-tint);
+  border: 1px solid var(--brand-tint-2);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 11.5px; color: var(--brand);
+  font-size: 11.5px; font-weight: 600; color: var(--brand);
   white-space: nowrap;
 }
 .spec-os { margin: 9px 0 0; padding-left: 17px; }
 .spec-os li { margin-top: 4px; }
-.spec-os b { color: var(--text-2); }
+/* Windows / macOS / Linux 三个平台名做成实心蓝小胶囊，
+   一列扫下来能直接定位到自己用的那个系统 */
+.spec-os b {
+  display: inline-block;
+  padding: 1px 9px;
+  border-radius: 999px;
+  font-size: 11.5px; font-weight: 700; color: #fff;
+  background: var(--brand);
+}
 
 /* 窄屏放不下两栏，说明块回到下方 */
 @media (max-width: 900px) {
@@ -121,13 +160,15 @@
 /* ---------- 驱动工具：右侧「显卡官网」列 ---------- */
 .spec-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 
+/* 上下内边距和标题下面那条间距各收一档 ——
+   「显卡官网」这小标题上下原本空得比它自己还高，看着散。 */
 .gpu-box {
-  padding: 13px 14px 14px;
+  padding: 10px 12px 11px;
   border-radius: var(--r-sm);
   background: var(--surface);
   border: 1px solid var(--border);
 }
-.gpu-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+.gpu-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
 .gpu-head h4 { font-size: 13.5px; font-weight: 700; color: var(--text); }
 .gpu-head span { font-size: 11.5px; color: var(--text-3); }
 .gpu-links { display: flex; flex-direction: column; gap: 7px; }
@@ -160,15 +201,22 @@
 /* ---------- 生成网页快捷方式 ----------
    三栏：生成的文件内容 | 表单 | 系统说明 —— 铺满 .wrap */
 .tw-sc-card { max-width: none; }
+/* 三块均分。原来第三列写死 320px，前两块各吃一半 —— 宽屏下右列被压得很窄，
+   里面的表格和说明一行只剩几个字。 */
 .sc-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 320px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px;
-  align-items: start;
+  align-items: stretch;
 }
 .sc-main { min-width: 0; }
 
-.sc-src { min-width: 0; }
+/* 左列：小标题 + 代码框竖着排，代码框吃掉剩下的高度。
+   这样它和中间那列一样高，空着的时候也是满的 ——
+   原来是 min-height 320，一填网址代码进来就窜高，整页跟着往下长。
+   min-height: 0 那一句不能少：grid item 默认 min-height: auto，
+   代码一长照样把这一格顶上去。 */
+.sc-src { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
 .sc-src-head {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px;
   margin-bottom: 10px;
@@ -183,8 +231,15 @@
 .sc-field { display: block; min-width: 0; }
 .sc-field > span {
   display: block; margin-bottom: 6px;
-  font-size: 12.5px; font-weight: 600; color: var(--text-2);
+  /* 原来是 --text-2，在一堆浅灰小字里几乎看不出来是个标签 */
+  font-size: 12.5px; font-weight: 700; color: var(--text);
 }
+/* 两个标签各给一个色 —— 都是近黑的时候，扫一眼分不清哪个是「网址」、
+   哪个是「快捷方式名字」，尤其填完一个想回头改另一个的时候。
+   顺带和左边那两个输入框的用途对上：网址是对外的、名字是给桌面看的。 */
+.sc-field:nth-of-type(1) > span { color: var(--brand); }
+.sc-field:nth-of-type(2) > span { color: #6D28D9; }
+[data-theme="dark"] .sc-field:nth-of-type(2) > span { color: #C4A9FB; }
 .sc-field > span em { font-style: normal; font-weight: 400; color: var(--text-3); }
 .sc-field input {
   width: 100%; height: 42px; padding: 0 13px;
@@ -246,20 +301,75 @@
 .sc-picker-name {
   flex: 1; min-width: 0; text-align: left;
   display: flex; align-items: baseline; gap: 9px;
-  font-size: 12.5px; color: var(--text-3);
+  /* 网址用品牌蓝：整行里最该被看清的就是它 */
+  font-size: 12.5px; font-weight: 500; color: var(--brand);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .sc-picker-name b { flex: none; font-size: 13.5px; font-weight: 600; color: var(--text); transition: color .18s; }
 .sc-picker-name > :last-child { overflow: hidden; text-overflow: ellipsis; }
 .sc-picker-item:hover .sc-picker-name b { color: var(--brand); }
 
+/* 「复制网址」——原来是个灰底灰字的小胶囊，和旁边那行网址一个色，
+   根本看不出是个能点的按钮。改成浅蓝底 + 蓝字，悬停再深一档。 */
 .sc-picker-copy {
-  flex: none; padding: 3px 10px; border-radius: 999px;
-  font-size: 11.5px; color: var(--text-3);
-  background: var(--surface); border: 1px solid var(--border);
+  flex: none; padding: 3px 11px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 600; color: var(--brand);
+  background: var(--brand-tint); border: 1px solid var(--brand-tint-2);
   transition: color .18s, background .18s, border-color .18s;
 }
-.sc-picker-copy:hover { color: var(--brand); border-color: var(--brand-soft); background: var(--brand-tint); }
+
+/* ---------- 按分类折叠的列表 ----------
+   每类一个 <details>，默认不 open。summary 自己做（去掉系统那个三角，
+   换成右边一个小箭头，展开时转过来）。 */
+.sc-pick-group { border-top: 1px solid var(--border); }
+.sc-pick-group > summary {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 13px;
+  list-style: none; cursor: pointer;
+  font-size: 13px; color: var(--text-2);
+  transition: background .18s, color .18s;
+}
+.sc-pick-group > summary::-webkit-details-marker { display: none; }
+.sc-pick-group > summary:hover { background: var(--brand-tint); color: var(--brand); }
+.sc-pick-group-ico { flex: none; font-size: 14px; line-height: 1; }
+.sc-pick-group > summary b {
+  flex: 1; min-width: 0;
+  font-size: 13px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sc-pick-group > summary em {
+  flex: none; font-style: normal;
+  font-size: 11.5px; color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+/* 箭头：用一个旋转的小折角画，展开时翻过来 */
+.sc-pick-group > summary::after {
+  content: ""; flex: none;
+  width: 6px; height: 6px; margin-left: 2px;
+  border-right: 1.8px solid currentColor;
+  border-bottom: 1.8px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform .18s;
+}
+.sc-pick-group[open] > summary::after { transform: rotate(45deg); }
+
+/* ---------- 两级分类 ----------
+   大类（常用软件 / AI 工具 / …）→ 小类（解压压缩 / 视频剪辑 / …）→ 站点。
+   每往里一层就往右缩进一点，并降一档字号，层级一眼看得出来。
+   这个口径和「其他网页」页完全一致：那边也就两级。 */
+.sc-pick-group.is-big > summary b { font-size: 13.5px; }
+.sc-pick-group.is-big > summary em { color: var(--text-2); }
+
+.sc-pick-group.is-cat { border-top: 0; }
+.sc-pick-group.is-cat > summary { padding: 8px 13px 8px 28px; }
+.sc-pick-group.is-cat > summary b {
+  font-size: 12.5px; font-weight: 600; color: var(--text-2);
+}
+.sc-pick-group.is-cat > summary em { font-size: 11px; }
+
+/* 站点行再缩一级 */
+.sc-pick-group.is-cat .sc-picker-item { padding-left: 34px; }
+.sc-picker-copy:hover { color: #fff; background: var(--brand); border-color: transparent; }
 
 .sc-picker-none, .sc-picker-more {
   padding: 12px 13px;
@@ -282,15 +392,27 @@
 .sc-type b { display: block; font-size: 13.5px; font-weight: 700; color: var(--text); }
 .sc-type small { display: block; margin-top: 3px; font-size: 12px; line-height: 1.6; color: var(--text-3); }
 
+/* 高度固定、撑满左列，内容多了在框里自己滚。
+   原来是 min-height 320 / max-height 560 —— 空的时候只有 320，
+   一填网址代码进来就窜到 560，整页跟着往下长。 */
+/* 高度由 js/shortcut.js 的 syncColumns() 写死（跟中间那列等高），
+   自己不设 —— flex: 1 撑满在这一层是不生效的：
+   grid 的行高按 item 的 max-content 算，代码一长就会把行顶上去。 */
 .sc-preview {
+  flex: 1; min-height: 0;
   margin: 0; padding: 14px 16px;
-  min-height: 320px;
-  max-height: 560px; overflow: auto;
+  overflow: auto;
   border-radius: var(--r-sm);
   border: 1px solid var(--border); background: var(--surface-2);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 11px; line-height: 1.7; color: var(--text-2);
   white-space: pre; tab-size: 2;
+}
+/* 空的时候只有一句提示，11px 的代码字号读着太小 —— 放大一档再加粗。
+   这是页面里唯一的「还什么都没做」信号，得让人一眼看见。 */
+.sc-preview.is-empty {
+  font-size: 15px; font-weight: 700;
+  color: var(--text-2);
 }
 
 .sc-help { margin: 0; }
@@ -324,6 +446,9 @@
 .sc-os th { font-weight: 600; color: var(--text-2); }
 .sc-os td { color: var(--text-2); }
 .sc-os td:first-child { color: var(--text); font-weight: 600; }
+/* 「用不了」单独标一下红 —— 表格里最需要一眼看到的就是这一格 */
+.sc-os td.is-no { color: #C2410C; font-weight: 600; }
+[data-theme="dark"] .sc-os td.is-no { color: #FB923C; }
 
 /* ---------- 格式用不了时的拦截弹窗 ---------- */
 .sc-mask {

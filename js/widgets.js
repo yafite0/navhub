@@ -1321,6 +1321,122 @@
       $('costSum').textContent = hasPrice ? money(cIn + cCache + cOut) : '—';
     }
 
+    var hl = $('cntHl');
+    var gutter = $('cntGutter');
+
+    function hlEsc(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    /* 一个字符属于哪一类。只用来上色，不参与统计 ——
+       统计那套（analyzeText）是另一码事，两者不共用，免得改一处影响另一处。 */
+    function charKind(ch) {
+      if (ch === '\n' || ch === '\r') return 'nl';
+      if (ch === ' ' || ch === '\t' || ch === '\u3000') return 'space';
+      if (/[\u4e00-\u9fff\u3400-\u4dbf]/.test(ch)) return 'cn';               /* 汉字 */
+      if (/[\u3000-\u303f\uff01-\uff60\u2018\u2019\u201c\u201d\u2026\u2014]/.test(ch)) return 'cnp'; /* 中文标点 */
+      if (/[A-Za-z0-9]/.test(ch)) return 'en';
+      return 'punc';
+    }
+
+    /* 把内容切成一个个「块」，每块单独刷底色 + 圆角描边。
+       切法：
+         中文（含中文标点）—— 一个字一块。整句合成一块的话，
+           一眼看不出这句话是怎么被切开成 token 的，这正是要解决的问题；
+         英文数字        —— 连续一串算一个词（Hello、138-0000 里的 138）；
+         空格制表        —— 连续一串算一块，这样能看出这里空了多宽；
+         其他标点        —— 一个一块。
+       相邻的英文/空格会合并，中文不合并。 */
+    var CHUNK_LIMIT = 4000;      // 切太碎会拖慢渲染，超过就退回按类型合并
+
+    function splitChunks(v) {
+      var out = [];
+      var buf = '', kind = '';
+
+      function push(k, s) { if (s) out.push({ k: k, s: s }); }
+      function flush() { push(kind, buf); buf = ''; }
+
+      var single = { cn: 1, cnp: 1, punc: 1, nl: 1 };
+      var simple = v.length > CHUNK_LIMIT;
+
+      for (var i = 0; i < v.length; i++) {
+        var ch = v.charAt(i);
+        var k = charKind(ch);
+
+        /* 文本特别长时不再一个字一块，退回「同类型合并」省点开销 */
+        if (!simple && single[k]) {
+          flush();
+          push(k, ch);
+          kind = '';
+        } else {
+          if (k !== kind) { flush(); kind = k; }
+          buf += ch;
+        }
+      }
+      flush();
+      return out;
+    }
+
+    function paintHighlight() {
+      if (!hl) return;
+      var v = text.value;
+      var chunks = splitChunks(v);
+      var html = '';
+
+      for (var i = 0; i < chunks.length; i++) {
+        html += '<span class="hl-' + chunks[i].k + '">' + hlEsc(chunks[i].s) + '</span>';
+      }
+
+      /* 末尾是换行时补一格空格：不补的话高亮层会比 textarea 矮一行，
+         一滚动就整体错位。 */
+      if (v.charAt(v.length - 1) === '\n') html += ' ';
+      hl.innerHTML = html;
+      hl.scrollTop = text.scrollTop;
+      hl.scrollLeft = text.scrollLeft;
+
+      /* 行号按「视觉行」编号 —— 长句折成几行就占几个号，
+         这样左边每一个数字都对着右边实实在在的一行。
+         数法：把整个高亮层圈进一个 Range，取它每一段的 top，
+         按行高换算成行号去重（同一个视觉行里有十几个 span，各自一个 rect）。 */
+      if (gutter) {
+        var n = visualLineCount();
+        var g = [];
+        for (var k2 = 1; k2 <= n; k2++) g.push(k2);
+        gutter.innerHTML = g.join('<br>');
+        gutter.scrollTop = text.scrollTop;
+      }
+    }
+
+    function visualLineCount() {
+      if (!hl || !hl.firstChild) return 1;
+
+      var range = document.createRange();
+      range.selectNodeContents(hl);
+      var rects = range.getClientRects();
+      if (!rects.length) return 1;
+
+      var lh = parseFloat(window.getComputedStyle(hl).lineHeight) || 25.5;
+      var base = rects[0].top;
+      var seen = {};
+      var n = 0;
+
+      for (var i = 0; i < rects.length; i++) {
+        var r = rects[i];
+        if (!r.height) continue;              /* 高度为 0 的是落单的换行符 */
+        var idx = Math.round((r.top - base) / lh);
+        if (!seen[idx]) { seen[idx] = 1; n++; }
+      }
+      return Math.max(1, n);
+    }
+
+    /* textarea 自己滚动时，另外两层跟着走。
+       横向也要同步：输入框现在 wrap="off"，长行不折、靠横向滚动看，
+       不同步的话高亮层会停在原地，字和底色就错开了。 */
+    text.addEventListener('scroll', function () {
+      if (hl) { hl.scrollTop = text.scrollTop; hl.scrollLeft = text.scrollLeft; }
+      if (gutter) gutter.scrollTop = text.scrollTop;
+    });
+
     function refresh() {
       var r = analyzeText(text.value);
       $('statAll').textContent = r.withPunct.toLocaleString();
@@ -1329,7 +1445,10 @@
       $('statWord').textContent = r.words.toLocaleString();
       $('statChar').textContent = r.chars.toLocaleString();
       $('statLine').textContent = r.lines.toLocaleString();
-      $('cntBadge').textContent = r.withPunct.toLocaleString() + ' 字';
+      /* 卡片角标已经删掉了，留个判断免得报错 */
+      if ($('cntBadge')) $('cntBadge').textContent = r.withPunct.toLocaleString() + ' 字';
+
+      paintHighlight();
 
       var tk = estimateTokens(text.value, currentModel());
       $('tkNum').textContent = tk.toLocaleString();

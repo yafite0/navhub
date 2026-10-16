@@ -489,8 +489,8 @@
     maybe();
     window.addEventListener('popstate', maybe);
 
-    var again = $('specAgain');
-    if (again) again.addEventListener('click', function () { run(); });
+    /* 「重新检测」按钮已经拿掉了（见 tools.html 里的说明）。
+       数据在 init 时跑一次 run() 就有了，这里不用再挂监听。 */
 
     var cp = $('specCopy');
     if (cp) {

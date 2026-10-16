@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    二维码生成页 —— 只放这个页面用到的样式（其余复用 style.css）
    ============================================================ */
 
@@ -19,7 +19,8 @@
 
 .qr-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  /* 三块均分：输入内容 / 二维码 / 说明。原来是两列 + 说明横在下面一整条 */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
   align-items: start;
 }
@@ -96,7 +97,70 @@ input[type="range"] {
   font-size: 12.5px; color: var(--text-3); text-align: center;
 }
 
-.qr-about { margin-top: 22px; padding: 22px 24px 24px; }
+/* 说明块现在在网格里当第三列，不再需要和上面拉开距离 */
+.qr-about { padding: 20px 22px 22px; }
+/* 窄列放不下两栏，四个说明竖着排 */
+.qr-about .about-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 12px; }
+
+/* 每块说明上方那块空白收掉（style.css 里同时修了 h4 的默认上外边距）。 */
+.qr-about .about-item { padding: 11px 15px 13px; }
+.qr-about .about-item h4 { margin: 0 0 6px; }
+
+/* ============================================================
+   内容类型：文字 / 网址、WiFi、名片
+   ============================================================ */
+.qr-kinds {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 12px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+.qr-kind {
+  flex: 1 1 auto;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 12.5px; font-weight: 600; color: var(--text-3);
+  transition: color .18s, background .18s, box-shadow .18s;
+}
+.qr-kind:hover { color: var(--brand); }
+.qr-kind.is-on {
+  color: #fff; background: var(--brand-grad);
+  box-shadow: 0 6px 14px -10px rgba(77, 107, 254, .95);
+}
+
+/* WiFi / 名片各自的表单（`.qr-field` 是这一页自己的字段样式，
+   没有复用 tools.css 里的 .sc-field —— 那一页才引了那个文件） */
+/* textarea 被 hidden 时别被下面的 display 规则顶回来 */
+.qr-text[hidden], .qr-chips[hidden] { display: none !important; }
+
+.qr-form { display: grid; gap: 10px; }
+.qr-form[hidden] { display: none; }
+.qr-field { display: block; min-width: 0; }
+.qr-field > span {
+  display: block; margin-bottom: 5px;
+  font-size: 12px; font-weight: 700; color: var(--text);
+}
+.qr-field input, .qr-field select {
+  width: 100%; height: 40px; padding: 0 12px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border); background: var(--surface);
+  font-size: 13.5px; color: var(--text);
+  transition: border-color .18s, box-shadow .18s;
+}
+.qr-field input::placeholder { color: var(--text-3); }
+.qr-field input:focus, .qr-field select:focus {
+  outline: none; border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-tint);
+}
+.qr-form-tip { font-size: 12px; line-height: 1.7; color: var(--text-3); }
+
+/* 三块的顺序：关于这个工具 → 要生成的内容 → 二维码。
+   它讲的是「这东西是怎么来的、安不安全」，放在最先看到的位置更合适。
+   用 order 换，不挪 DOM。 */
+.qr-grid > .qr-about { order: 1; }
+.qr-grid > .qr-panel:first-child { order: 2; }
+.qr-grid > .qr-preview-panel { order: 3; }
 .qr-about h2 {
   display: flex; align-items: center; gap: 10px;
   margin-bottom: 16px;

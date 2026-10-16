@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    二维码生成 —— 全部在本地完成，不发起任何网络请求
    ============================================================ */
 (function () {
@@ -11,7 +11,7 @@
   var EXPORT_SIZE = 1024;      // 导出 PNG 的边长
   var MARGIN = 2;              // 静区宽度（单位：模块）
 
-  var textEl, sizeEl, sizeValEl, levelEl, fgEl, bgEl, canvasEl, emptyEl, noteEl;
+  var textEl, levelEl, fgEl, bgEl, canvasEl, emptyEl, noteEl;
   var lastSvg = '';
   var lastQr = null;
 
@@ -113,6 +113,98 @@
     return cv;
   }
 
+  /* ============================================================
+     内容类型：文字 / 网址、WiFi、名片
+     ------------------------------------------------------------
+     WiFi 和名片都是二维码的标准格式，手机自带相机扫一下就能
+     连网 / 存联系人，不用装任何 App —— 比念一长串密码省事得多。
+     这边只负责把表单拼成对应的字符串写进 qrText，
+     下面 render() 那一套完全不用改。
+     ============================================================ */
+
+  /* WiFi 格式：WIFI:T:WPA;S:名字;P:密码;;
+     值里的 \ ; , : 都要转义 —— 密码带个分号不转义的话整串就崩了 */
+  function wifiEsc(s) {
+    return String(s || '').replace(/([\\;,:"])/g, '\\$1');
+  }
+
+  function buildWifi() {
+    var el = $('qrWifiSsid');
+    var ssid = el ? el.value.trim() : '';
+    if (!ssid) return '';
+    var tEl = $('qrWifiType');
+    var type = tEl ? tEl.value : 'WPA';
+    var pEl = $('qrWifiPass');
+    var pass = pEl ? pEl.value : '';
+    if (type === 'nopass') return 'WIFI:T:nopass;S:' + wifiEsc(ssid) + ';;';
+    return 'WIFI:T:' + type + ';S:' + wifiEsc(ssid) + ';P:' + wifiEsc(pass) + ';;';
+  }
+
+  /* 名片走 vCard 3.0 —— 比 4.0 兼容性好，Android / iOS 都认。
+     只有姓名必填，其余空着就不写那一行。 */
+  function buildVcard() {
+    var nEl = $('qrVName');
+    var name = nEl ? nEl.value.trim() : '';
+    if (!name) return '';
+    var lines = ['BEGIN:VCARD', 'VERSION:3.0', 'N:' + name, 'FN:' + name];
+
+    function add(key, id) {
+      var el = $(id);
+      var v = el ? el.value.trim() : '';
+      if (v) lines.push(key + ':' + v);
+    }
+    add('TEL', 'qrVTel');
+    add('EMAIL', 'qrVEmail');
+    add('ORG', 'qrVOrg');
+    add('URL', 'qrVUrl');
+
+    lines.push('END:VCARD');
+    return lines.join('\n');
+  }
+
+  function initKinds() {
+    var bar = $('qrKinds');
+    if (!bar) return;
+
+    var forms = { wifi: $('qrWifiForm'), vcard: $('qrVcardForm') };
+    var chips = $('qrTextChips');
+    var kind = 'text';
+
+    function sync() {
+      /* 文字 / 网址：露出输入框；WiFi 和名片：换成各自的表单 */
+      textEl.hidden = (kind !== 'text');
+      if (chips) chips.hidden = (kind !== 'text');
+      Object.keys(forms).forEach(function (k) {
+        if (forms[k]) forms[k].hidden = (k !== kind);
+      });
+
+      if (kind === 'text') return;
+
+      textEl.value = (kind === 'wifi') ? buildWifi() : buildVcard();
+      render();
+    }
+
+    Array.prototype.forEach.call(bar.children, function (btn) {
+      btn.addEventListener('click', function () {
+        kind = btn.getAttribute('data-kind') || 'text';
+        Array.prototype.forEach.call(bar.children, function (b) {
+          b.classList.toggle('is-on', b === btn);
+        });
+        sync();
+      });
+    });
+
+    /* 表单里改一个字就重画 —— 这几个字段都很短，不用防抖 */
+    ['qrWifiForm', 'qrVcardForm'].forEach(function (id) {
+      var f = $(id);
+      if (!f) return;
+      f.addEventListener('input', sync);
+      f.addEventListener('change', sync);
+    });
+
+    sync();
+  }
+
   function render() {
     if (!textEl || !canvasEl) return;
 
@@ -129,7 +221,9 @@
     if (emptyEl) emptyEl.hidden = true;
 
     var level = levelEl.value;
-    var size = parseInt(sizeEl.value, 10) || 300;
+    /* 尺寸滑块已经去掉了，预览固定按 300 画（导出走的是另一条路径，
+       本来就是固定 1024，和这里无关） */
+    var size = 300;
     var qr;
 
     try {
@@ -184,8 +278,6 @@
     initTheme();
 
     textEl = $('qrText');
-    sizeEl = $('qrSize');
-    sizeValEl = $('qrSizeVal');
     levelEl = $('qrLevel');
     fgEl = $('qrFg');
     bgEl = $('qrBg');
@@ -201,10 +293,10 @@
     textEl.addEventListener('input', renderSoon);
     levelEl.addEventListener('change', render);
 
-    sizeEl.addEventListener('input', function () {
-      sizeValEl.textContent = sizeEl.value;
-    });
-    sizeEl.addEventListener('change', render);
+    /* 内容类型切换（文字 / WiFi / 名片）—— 要放在 textEl 赋值之后，
+       它里面直接读写 textEl.value */
+    initKinds();
+
 
     fgEl.addEventListener('input', render);
     bgEl.addEventListener('input', render);
