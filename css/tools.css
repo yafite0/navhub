@@ -4,7 +4,10 @@
 
 .topbar-inner .top-btn { margin-left: auto; }
 
-.tw-main { padding-bottom: 40px; }
+/* 加了左栏之后这一页比之前高出 6px，1920×1080 下会多出一根滚动条。
+   收一档底部内边距刚好抵掉（主站那条 main 的 padding-bottom 是 22px，
+   这里本来就是单独覆盖的）。 */
+.tw-main { padding-bottom: 34px; }
 
 .tw-head { padding: 20px 0 18px; }
 .tw-head h1 {
@@ -18,6 +21,82 @@
 
 .tw-panel { display: none; }
 .tw-panel.is-active { display: block; }
+
+/* ============================================================
+   工具页：左边一条固定的工具清单，右边是工具本体
+   ------------------------------------------------------------
+   点左边任何一项，只换右边的内容，清单本身不动、也不刷新页面。
+   左栏 sticky：右边内容长的时候（比如新机预设），滚动也还能随时换工具。
+   窄屏放不下两列，就变成上面一排横的。
+   ============================================================ */
+.tw-layout {
+  display: grid;
+  grid-template-columns: 274px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.tw-nav {
+  position: sticky;
+  top: 88px;
+  padding: 10px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+
+.tw-nav-item {
+  display: flex; align-items: center; gap: 11px;
+  width: 100%; padding: 10px 12px;
+  border-radius: var(--r-sm);
+  text-align: left; color: var(--text-2);
+  transition: color .18s, background .18s;
+}
+.tw-nav-item:hover, .tw-nav-item.is-on { background: var(--brand-tint); }
+
+.tw-nav-ico {
+  flex: none; width: 32px; height: 32px;
+  display: grid; place-items: center;
+  border-radius: 9px;
+  font-size: 14px; font-weight: 700; color: var(--text-2);
+  background: var(--surface-2); border: 1px solid var(--border);
+  transition: color .18s, background .18s, border-color .18s;
+}
+.tw-nav-item:hover .tw-nav-ico,
+.tw-nav-item.is-on .tw-nav-ico {
+  color: #fff; background: var(--brand-grad); border-color: transparent;
+}
+
+.tw-nav-txt { min-width: 0; display: block; }
+.tw-nav-txt b { display: block; font-size: 13.5px; font-weight: 700; color: var(--text); }
+.tw-nav-item:hover .tw-nav-txt b,
+.tw-nav-item.is-on .tw-nav-txt b { color: var(--brand); }
+.tw-nav-txt em {
+  display: block; margin-top: 1px; font-style: normal;
+  font-size: 11.5px; color: var(--text-3);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.tw-stage { min-width: 0; }
+
+/* 「做张分享图」那一页原本是「按视口撑满」的整套 flex 布局：
+   .tw-main 是 flex 列、里面的面板 flex: 1。加了左栏之后中间多了一层
+   .tw-layout，这条链就断了 —— 面板拿不到高度，内部按比例撑成 5000 多像素。
+   这里让 .tw-layout 用 display: contents「消失」，子元素重新回到
+   .tw-main 的 flex 流里；左栏也收起来（这页本来就不是给用户的工具）。 */
+body[data-tool="share"] .tw-nav { display: none; }
+body[data-tool="share"] .tw-layout { display: contents; }
+body[data-tool="share"] .tw-stage {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+}
+body[data-tool="share"] .tw-stage > .tw-panel.is-active {
+  flex: 1; min-height: 0;
+}
+
+@media (max-width: 1080px) {
+  .tw-layout { grid-template-columns: 1fr; }
+  .tw-nav { position: static; flex-direction: row; flex-wrap: wrap; }
+  .tw-nav-item { flex: 1 1 220px; }
+}
 
 .tw-card { padding: 22px 24px 24px; }
 /* .tw-card-narrow 没有页面在用了，删掉 */

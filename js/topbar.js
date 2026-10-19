@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    全站统一的顶栏
    ------------------------------------------------------------
    每个页面只放一个空的 <header class="topbar"></header>，
@@ -51,6 +51,15 @@
             '</small>' +
           '</span>' +
         '</a>' +
+        /* 三个界面预设。放在 logo 右边 —— 左上角是最先看到的位置，
+           而且这三个按钮是「换整套界面」这种大动作，值得占这个位置。 */
+        '<nav class="skin-nav" aria-label="主导航">' +
+          '<a href="index.html" class="is-on">首页</a>' +
+          '<a href="sites.html">其他网页</a>' +
+          '<a href="tools.html">工具</a>' +
+          '<a href="translate.html">预设</a>' +
+        '</nav>' +
+
         '<div class="top-actions">' +
           '<button class="top-btn" id="aboutBtn" type="button">' + ICO.info + '<span>关于本站</span></button>' +
           '<a class="top-btn is-sponsor" href="https://afdian.com/a/L1295598306" target="_blank" rel="noopener noreferrer">' +
@@ -63,12 +72,32 @@
            撤掉之后右边这一堆得自己撑到最右 —— 原来那个 margin-left: auto
            挂在 .topnav 上，导航一走就没人推了，所以这里包一层 .top-right。 */
         '<div class="top-right">' +
+          /* 界面切换：做成和「设置」同级的一个独立图标按钮，
+             点开是一个独立面板，里面三张卡片垂直排列。 */
+          '<button id="skinOpen" class="icon-btn" type="button" title="切换界面" aria-label="切换界面" aria-expanded="false">' +
+            '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' +
+              '<rect x="3.5" y="4" width="17" height="5" rx="1.2"/><rect x="3.5" y="11.5" width="17" height="3" rx="1"/>' +
+              '<rect x="3.5" y="16.5" width="17" height="3.5" rx="1"/>' +
+            '</svg>' +
+          '</button>' +
+          /* 昼 / 夜：和界面按钮同级、同尺寸。只换配色，布局不动。 */
+          '<button id="modeBtn" class="icon-btn" type="button" title="切换白天 / 黑夜" aria-label="切换白天黑夜">' +
+            '<svg class="ico-day" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">' +
+              '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"/>' +
+            '</svg>' +
+            '<svg class="ico-night" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' +
+              '<path d="M20 14.4A8.4 8.4 0 1 1 9.6 4a6.8 6.8 0 0 0 10.4 10.4z"/>' +
+            '</svg>' +
+          '</button>' +
           '<div class="updated" id="updatedBox" hidden>' + ICO.clock + '<span id="updatedText"></span></div>' +
-          '<button id="themeBtn" class="icon-btn" type="button" title="切换深浅色" aria-label="切换深浅色">' + ICO.sun + ICO.moon + '</button>' +
           '<a class="icon-btn" href="tools.html?tool=share" title="做张分享图" aria-label="做张分享图">' + ICO.share + '</a>' +
           '<button id="setBtn" class="icon-btn" type="button" title="设置" aria-label="设置">' + ICO.gear + '</button>' +
         '</div>' +
       '</div>';
+
+    /* 界面选择面板单独挂到 body：它要 position: fixed 盖住整页，
+       放在 topbar 内部会被 header 的层叠上下文限制住 */
+    document.body.insertAdjacentHTML('beforeend', skinPanelHTML());
   }
 
   /* ---------- 最后更新时间 ----------
@@ -96,8 +125,14 @@
           : diff < day * 365 ? '一年内'
             : '一年前';
 
-    txt.textContent = '最后更新 ' + raw.slice(0, 10) + '（' + ago + '）';
+    var line = '最后更新 ' + raw.slice(0, 10) + '（' + ago + '）';
+    txt.textContent = line;
     box.hidden = false;
+
+    /* 关于弹窗里那个「最后更新」一起填 —— 顶栏那行已经隐藏了，
+       这一份才是用户看得到的。 */
+    var au = $('aboutUpdated');
+    if (au) au.textContent = line;
   }
 
   /* ---------- 主题 ---------- */
@@ -109,30 +144,169 @@
     }
     root.setAttribute('data-theme', t);
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', t === 'dark' ? '#0B0F1A' : '#4D6BFE');
+    /* 地址栏/状态栏的配色跟着皮肤走 */
+    var tc = { dark: '#07080A', c: '#F4F3EF', blue: '#4D6BFE' };
+    if (meta) meta.setAttribute('content', tc[t] || '#F4F3EF');
   }
+  /* 三个界面预设：图纸 / 工业 / 原版。
+     老版本只有 light / dark 两个值，localStorage 里可能还存着 'light'，
+     这里统一映射成 'c'，不然读出来的皮肤名并不存在。 */
+  /* 界面选择面板。三张卡片垂直排列，每张有预览占位 + 名称 + 介绍。
+     预览先做占位（灰块 + 几条线），等真做出来再换成缩略图。 */
+  function skinPanelHTML() {
+    var items = [
+      { id: 'blue', name: '经典色块', d: '品牌蓝 + 彩色卡片，信息密度最高，最常见的那种' },
+      { id: 'c', name: '简约档案', d: '米白纸面、编号、细线，字大留白多，看着不费劲' }
+      /* 「先进工业」暂时不开放选择 —— 那个界面还没做完，
+         半成品摆出来比没有更糟。样式文件（skin-b.css）留着，
+         做完之后把这一行加回来就行。 */
+    ];
+    var list = items.map(function (it) {
+      return '<button class="skin-card" type="button" data-skin="' + it.id + '">' +
+        '<span class="skin-thumb is-' + it.id + '" aria-hidden="true">' +
+          '<i></i><i></i><i></i>' +
+        '</span>' +
+        '<span class="skin-meta">' +
+          '<b>' + it.name + '</b>' +
+          '<em>' + it.d + '</em>' +
+        '</span>' +
+        '<span class="skin-pick" aria-hidden="true">' +
+          '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7.5"/></svg>' +
+        '</span>' +
+      '</button>';
+    }).join('');
+
+    return '<div class="skin-mask" id="skinMask" hidden>' +
+      '<div class="skin-panel" role="dialog" aria-modal="true" aria-labelledby="skinPanelTitle">' +
+        '<div class="skin-panel-head">' +
+          '<h4 id="skinPanelTitle">选择界面</h4>' +
+          '<p>两套界面对应不同的使用习惯，随时能换回。</p>' +
+        '</div>' +
+        '<div class="skin-list">' + list + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function normSkin(v) {
+    /* 「先进工业」暂时下架（那个界面还没做完）。
+       localStorage 里如果还留着 'dark'，一律回落到经典色块，
+       不然访问者会停在一个选不回来的界面上。 */
+    if (v === 'dark') return 'blue';
+    if (v === 'c') return 'c';         /* 简约档案 */
+    if (v === 'blue') return 'blue';   /* 经典色块 */
+    return 'blue';                     /* 默认、以及旧版本残留的 'light' */
+  }
+  /* ---------- 昼 / 夜 ---------- */
+  var MODE_KEY = 'navhub.mode';
+
+  function applyMode(m) {
+    document.documentElement.setAttribute('data-mode', m === 'dark' ? 'dark' : 'light');
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', m === 'dark' ? '#0A0C10' : '#F4F3EF');
+  }
+
+  function initMode() {
+    var saved = null;
+    try { saved = localStorage.getItem(MODE_KEY); } catch (e) { }
+    /* 没存过就跟随系统。系统也没有就当白天 —— 三套皮肤默认都是亮的 */
+    if (!saved) {
+      saved = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    applyMode(saved);
+
+    var btn = $('modeBtn');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var next = document.documentElement.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
+      applyMode(next);
+      try { localStorage.setItem(MODE_KEY, next); } catch (e) { }
+    });
+  }
+
+
 
   function initTheme() {
     var saved = null;
     try { saved = localStorage.getItem(THEME_KEY); } catch (e) { }
-    applyTheme(saved === 'dark' ? 'dark' : 'light', false);
+    applyTheme(normSkin(saved), false);
 
-    var btn = $('themeBtn');
-    if (!btn) return;
-    btn.addEventListener('click', function () {
-      var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(next, true);
-      try { localStorage.setItem(THEME_KEY, next); } catch (e) { }
-      syncThemeSeg();
+    var mask = $('skinMask');
+    var openBtn = $('skinOpen');
+    if (!mask || !openBtn) return;
+
+    /* 面板要盖住整页，挂在 topbar 里会被 header 的层叠上下文限制住 */
+    if (mask.parentNode !== document.body) document.body.appendChild(mask);
+
+    function openPanel() {
+      mask.hidden = false;
+      openBtn.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('skin-open');
+      syncSkinBtns();
+      var cur = mask.querySelector('.skin-card.is-on');
+      if (cur) cur.focus();
+    }
+    function closePanel() {
+      mask.hidden = true;
+      openBtn.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('skin-open');
+    }
+
+    openBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (mask.hidden) openPanel(); else closePanel();
     });
+
+    /* 点遮罩关掉，点面板内部不关 */
+    mask.addEventListener('click', function (e) {
+      if (e.target === mask) closePanel();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !mask.hidden) closePanel();
+    });
+
+    Array.prototype.forEach.call(mask.querySelectorAll('.skin-card'), function (b) {
+      b.addEventListener('click', function () {
+        var v = b.getAttribute('data-skin');
+        applyTheme(v, true);
+        try { localStorage.setItem(THEME_KEY, v); } catch (e) { }
+        syncSkinBtns();
+        closePanel();
+        toastSkin(SKIN_NAME[v] || v);
+      });
+    });
+
+    syncSkinBtns();
   }
 
-  function syncThemeSeg() {
-    var cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  var SKIN_NAME = { blue: '经典色块', c: '简约档案', dark: '先进工业' };
+
+  /* 换完给一句轻提示，不然点了不知道生效没 */
+  function toastSkin(name) {
+    var t = $('skinToast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'skinToast';
+      t.className = 'skin-toast';
+      document.body.appendChild(t);
+    }
+    t.textContent = '已切换到「' + name + '」';
+    t.classList.add('is-show');
+    clearTimeout(toastSkin._t);
+    toastSkin._t = setTimeout(function () { t.classList.remove('is-show'); }, 1800);
+  }
+
+  /* 当前皮肤那个按钮高亮 */
+  function syncSkinBtns() {
+    var cur = normSkin(document.documentElement.getAttribute('data-theme'));
+    Array.prototype.forEach.call(document.querySelectorAll('.skin-card'), function (b) {
+      b.classList.toggle('is-on', b.getAttribute('data-skin') === cur);
+    });
     Array.prototype.forEach.call(document.querySelectorAll('#setTheme button'), function (b) {
-      b.classList.toggle('is-on', b.getAttribute('data-theme-set') === cur);
+      b.classList.toggle('is-on', normSkin(b.getAttribute('data-theme-set')) === cur);
     });
   }
+
 
   /* ---------- 弹窗的通用开关 ---------- */
   function bindDialog(mask, closeFn) {
@@ -173,6 +347,10 @@
             '<a class="sponsor-btn" id="sponsorBtn" href="https://afdian.com/a/L1295598306" target="_blank" rel="noopener noreferrer">' +
               '<img src="assets/icons/afdian.png" alt="" /><span id="sponsorText">请我喝杯奶茶</span>' +
             '</a>' +
+            /* 「最后更新」从顶栏挪到这儿：顶栏那一行太挤，
+               而且这个信息本来就是「想知道站点多久没动过」才会看，
+               放在关于弹窗里更合适。 */
+            '<span class="about-updated" id="aboutUpdated"></span>' +
           '</div>' +
           '<p class="about-note" id="aboutNote"></p>' +
         '</div>' +
@@ -272,7 +450,7 @@
     var lastFocus = null;
     function open() {
       lastFocus = document.activeElement;
-      syncThemeSeg();
+      syncSkinBtns();
       var src = $('cityName'), dst = $('setCityName');
       if (src && dst) dst.textContent = src.textContent;
       mask.hidden = false;
@@ -297,7 +475,7 @@
         var t = b.getAttribute('data-theme-set') === 'dark' ? 'dark' : 'light';
         applyTheme(t, true);
         try { localStorage.setItem(THEME_KEY, t); } catch (err) { }
-        syncThemeSeg();
+        syncSkinBtns();
       });
     }
 
@@ -320,12 +498,38 @@
       });
     }
   }
+  /* ============================================================
+     主页那三个入口：整块都能点
+     ------------------------------------------------------------
+     卡片本身是 <section>，只有右边那个箭头是 <a>。
+     之前试过用伪元素铺一层盖住整卡，但在 flex 布局里被兄弟元素
+     盖住了，鼠标移上去有指针、点下去却没反应（只有箭头有效）。
+     这里直接挂点击，最稳。
+     ============================================================ */
+  function bindCardLinks() {
+    Array.prototype.forEach.call(document.querySelectorAll('.pw'), function (card) {
+      var link = card.querySelector('.pw-go');
+      if (!link || !link.getAttribute('href')) return;
+
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', function (e) {
+        /* 点到的本来就是那个 <a>，让它自己跳，别跳两次 */
+        if (e.target.closest && e.target.closest('a')) return;
+        window.location.href = link.getAttribute('href');
+      });
+    });
+  }
+
 
   function boot() {
     renderTopbar();
     initTheme();
+  initMode();    bindCardLinks();
     paintUpdated();
     renderAbout();
+    /* 关于弹窗是 renderAbout 才造出来的，里面那个「最后更新」
+       第一次填的时候还不存在，所以造完再填一次 */
+    paintUpdated();
     renderSettings();
   }
 

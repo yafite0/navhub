@@ -749,6 +749,13 @@
     var qs = String(q).split(/\s+/).filter(function (x) { return x; });
     if (!qs.length) return 0;
 
+    /* 名字的拼音（全拼 + 首字母）。
+       搜「爱」要能带出拼音域名带 ai 的站，搜「ai」也要能带出「爱奇艺」——
+       中文和字母之间只能靠这层转换搭桥。 */
+    var py = window.PinyinLite;
+    var namePy = py ? py.toPinyin(name) : '';
+    var nameIni = py ? py.toInitials(name) : '';
+
     var total = 0;
     for (var k = 0; k < qs.length; k++) {
       var t = qs[k];
@@ -767,6 +774,18 @@
       else if (cat.indexOf(t) > -1) n = 46;
       else if (desc.indexOf(t) > -1) n = 36;
       else if (url.indexOf(t) > -1) n = 26;
+      /* ---- 拼音匹配 ----
+         放在逐字命中前面：拼音是「真的对上了读音」，比碰巧含一个字更可信。 */
+      else if (namePy && namePy.indexOf(t) === 0) n = 58;
+      else if (nameIni && nameIni === t) n = 54;
+      else if (namePy && namePy.indexOf(t) > -1) n = 48;
+      else if (url && /[\u4e00-\u9fa5]/.test(t) && (function () {
+        /* 中文查询 → 拼音 → 去匹配拼音域名。
+           搜「爱」时 iqiyi / aiqiyi 这种才算命中。 */
+        var tp = py ? py.toPinyin(t) : '';
+        return tp && tp !== t && url.indexOf(tp) > -1;
+      })()) n = 26;
+
       else {
         /* 名称逐字命中，比如搜「盘」能带出「百度网盘」 */
         var hit = 0;
@@ -795,7 +814,9 @@
 
     /* 输入框的提示语：要说清「没收录的也能搜」这件事。
        很多人以为这只是个站内目录，看到没有对应条目就退出去了。 */
-    input.placeholder = '如果没有对应网站，也能进行纯净搜索！';
+    /* 原来的「如果没有对应网站，也能进行纯净搜索！」20 个字，
+       放大字号之后搜索框里放不下会被截断，精简成 8 个字。 */
+    input.placeholder = '输入网址或关键词';
 
     /* 框里空着就把「搜索」按钮灰掉、禁掉。
        亮着的蓝色按钮按下去什么也不会发生（go() 第一句就 return 了），
@@ -824,13 +845,23 @@
       var out = [];
 
       /* 还没输入内容时，先把精选分类里的站点列出来，方便直接点 */
+      /* 还没输入时，列几个「常用工具类的官网」（解压、剪辑、图像处理这些）——
+         不是本站自己的小工具：那些是「搜索到才能用」的东西，
+         顶到推荐位会让人以为这就是导航的全部内容。
+
+         全部标 noRank：用户一个字都没打，哪来的「匹配度高」？
+         第一候选那种深色底只应该在真的匹配上时出现。 */
       if (!q) {
-        ALL_SITES.filter(function (x) { return x.listed; }).slice(0, 8).forEach(function (x) {
+        var TOOLISH = /压缩|解压|剪辑|图像|处理|转换|工具/;
+        ALL_SITES.filter(function (x) {
+          return x.cat && TOOLISH.test(x.cat.name || '') && !x.bare;
+        }).slice(0, 6).forEach(function (x) {
           out.push({
             site: x.site,
             cat: x.cat,
-            listed: true,
-            url: x.site.url
+            listed: x.listed,
+            url: x.site.url,
+            noRank: true
           });
         });
         return out;
@@ -862,7 +893,9 @@
               cat: x.entry.cat,
               listed: x.entry.listed,
               bare: x.entry.bare,
-              url: x.entry.site.url
+              url: x.entry.site.url,
+              /* 带出相关度：列表里按它分三档亮度 */
+              score: x.n
             });
           });
       }
@@ -884,6 +917,47 @@
     }
     function show() { panel.hidden = false; fitPanel(); }
     window.addEventListener('resize', function () { if (!panel.hidden) fitPanel(); });
+  /* 把文本里命中查询词的部分包成 <mark>。
+     查询可能带空格（多关键词），逐个都要标出来。 */
+  function highlight(text, qRaw) {
+    var raw = String(text == null ? '' : text);
+    var qs = String(qRaw == null ? '' : qRaw).trim().toLowerCase()
+      .split(/\s+/).filter(function (x) { return x; });
+    if (!qs.length || !raw) return document.createTextNode(raw);
+
+    var lower = raw.toLowerCase();
+    /* 先把每个查询词在文本里的所有出现位置收集起来，再合并重叠区间 */
+    var spans = [];
+    qs.forEach(function (t) {
+      var i = lower.indexOf(t);
+      while (i > -1) {
+        spans.push([i, i + t.length]);
+        i = lower.indexOf(t, i + t.length);
+      }
+    });
+    if (!spans.length) return document.createTextNode(raw);
+
+    spans.sort(function (a, b) { return a[0] - b[0]; });
+    var merged = [spans[0]];
+    for (var k = 1; k < spans.length; k++) {
+      var last = merged[merged.length - 1];
+      if (spans[k][0] <= last[1]) last[1] = Math.max(last[1], spans[k][1]);
+      else merged.push(spans[k]);
+    }
+
+    var frag = document.createDocumentFragment();
+    var pos = 0;
+    merged.forEach(function (sp) {
+      if (sp[0] > pos) frag.appendChild(document.createTextNode(raw.slice(pos, sp[0])));
+      var m = document.createElement('mark');
+      m.textContent = raw.slice(sp[0], sp[1]);
+      frag.appendChild(m);
+      pos = sp[1];
+    });
+    if (pos < raw.length) frag.appendChild(document.createTextNode(raw.slice(pos)));
+    return frag;
+  }
+
 
     function renderList(q) {
       var results = search(q);
@@ -891,7 +965,28 @@
 
       if (!results.length) {
         panel.appendChild(el('div', 'search-empty',
-          '本站没有收录相关的站点 —— 按回车或点「搜索」，用搜索引擎搜「' + String(q == null ? '' : q).trim() + '」'));
+          '本站没有收录「' + String(q == null ? '' : q).trim() + '」相关站点 —— 按回车或点「搜索」去网上搜'));
+        /* 搜不到的时候顺手列几个常用工具类官网（解压、剪辑这些）——
+           全是白底，因为它们不是「匹配结果」，只是「顺便看看」。 */
+        panel.appendChild(el('div', 'search-empty', '常用工具类官网：'));
+        var picks = [];
+        ALL_SITES.filter(function (x) {
+          var n = (x.cat && x.cat.name) || '';
+          return /压缩|解压|剪辑|图像|处理|转换|工具/.test(n) && !x.bare;
+        }).slice(0, 3).forEach(function (x) {
+          var a = el('a', 'search-item');
+          a.href = x.site.url;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.dataset.rank = '3';
+          a.appendChild(buildIcon(x.site));
+          var txt = el('div', 'site-text');
+          txt.appendChild(el('div', 'si-name', x.site.name));
+          txt.appendChild(el('div', 'site-desc', x.site.short || x.site.desc || domainOf(x.site.url)));
+          a.appendChild(txt);
+          if (x.cat && x.cat.name) a.appendChild(el('span', 'si-cat', x.cat.name));
+          panel.appendChild(a);
+        });
         show();
         return;
       }
@@ -907,16 +1002,35 @@
         /* 第三档只保留网址，不配图标 */
         if (!bare) a.appendChild(buildIcon(r.site));
 
+        /* 三档亮度。第一档固定给排在最前面的那条 —— 用户要的是
+           「最可能是我想找的那个」比其他都亮，而不是按分数分段。
+           剩下两条按分数分：够得着 60 的算有点相关，其余偏灰。 */
+        /* noRank：空输入时的推荐，用户一个字都没打，谈不上「匹配度」，
+           一律白底 —— 给它深色底会让人以为这是「最相关的结果」。 */
+        var score = r.score || 0;
+        a.dataset.rank = r.noRank
+          ? '3'
+          : ((i === 0) ? '1' : (i <= 2 ? '2' : '3'));
+
         var txt = el('div', 'site-text');
         var nameEl = el('div', 'si-name');
-        nameEl.appendChild(document.createTextNode(r.site.name));
+        nameEl.appendChild(highlight(r.site.name, q));
+
+        /* 网址里命中的话，也把那段标出来（第三档主要靠这个被认出来） */
+        if (score && score < 60) a.dataset.matchedByUrl = '1';
         if (r.site.alias && r.site.alias.length) {
           nameEl.appendChild(el('span', 'name-alias', '（' + r.site.alias.slice(0, 2).join('、') + '）'));
         }
         txt.appendChild(nameEl);
         var sub = r.site.short || r.site.desc;
         txt.appendChild(el('div', 'site-desc', sub || domainOf(r.url)));
-        if (!bare) txt.appendChild(el('div', 'si-url', r.url));
+        if (!bare) {
+          /* 网址里命中的关键词也要标出来 —— 搜「ai」时，
+             「op**ai**.com」这种一眼就知道为什么被列出来 */
+          var urlEl = el('div', 'si-url');
+          urlEl.appendChild(highlight(r.url, q));
+          txt.appendChild(urlEl);
+        }
         a.appendChild(txt);
 
         if (bare) a.appendChild(el('span', 'si-cat', '仅网址'));

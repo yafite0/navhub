@@ -4,7 +4,65 @@
    ============================================================ */
 
 /* ---------- 变量 ---------- */
-:root {
+:root,
+[data-theme="c"] {
+  /* ===== 皮肤 C「图纸」=====
+     米白纸面 + 近黑墨色。不靠装饰和渐变，靠字重、细线、留白撑版面。
+     主色取近黑而不是彩色 —— 全页只有搜索结果那几处会用到它，
+     一出现就足够醒目，不需要再靠饱和色去抢。 */
+  --brand: #14161A;
+  --brand-strong: #000000;
+  --brand-soft: #3A4048;
+  --brand-tint: rgba(20, 22, 26, .055);
+  --brand-tint-2: rgba(20, 22, 26, .12);
+  --brand-grad: linear-gradient(135deg, #2E333A 0%, #14161A 100%);
+
+  --bg: #F4F3EF;
+  --bg-2: #EDEBE4;
+  --surface: #FCFCFA;
+  --surface-2: #F7F6F1;
+  --surface-3: #EFEEE7;
+  --border: #DCDAD2;
+  --border-strong: #C7C4B9;
+
+  --text: #14161A;
+  --text-2: #4E5359;
+  --text-3: #9AA0A8;
+
+  /* 首页三块大卡片。C 皮肤本来就没有「彩色大色块」，
+     所以这里全走米白—浅灰一档，三块的差别靠边框和排版，不靠颜色。
+     hero 那块是唯一有渐变的，也只是纸面到浅灰，不抢视线。 */
+  --hero-bg: linear-gradient(135deg, #EFEDE6 0%, #E5E2D9 62%, #DAD6CA 100%);
+  --hero-fg: #14161A;
+  --hero-rail-bg: linear-gradient(90deg, #DAD6CA 0%, #ABA79A 42%, #3A3F47 100%);
+  --card-a-bg: #F7F6F1;
+  --card-a-fg: #14161A;
+  --card-a-go: linear-gradient(90deg, #F7F6F1 0%, #C6C2B5 42%, #4E5359 100%);
+  --card-b-bg: #EFEEE7;
+  --card-b-fg: #14161A;
+  --card-b-go: linear-gradient(90deg, #EFEEE7 0%, #BDB9AD 42%, #3E4349 100%);
+
+  --shadow-xs: 0 1px 2px rgba(23, 32, 58, .05);
+  --shadow-sm: 0 2px 8px -2px rgba(23, 32, 58, .08), 0 1px 3px rgba(23, 32, 58, .04);
+  --shadow-md: 0 14px 30px -14px rgba(23, 32, 58, .18), 0 4px 10px -6px rgba(23, 32, 58, .08);
+  --shadow-brand: 0 16px 34px -16px rgba(77, 107, 254, .55);
+
+  /* 圆角统一收小：这两套皮肤都是「方、硬、靠线」，不是原来那种圆润的卡片风。
+     留 2~8px 是为了不至于像 Windows 98，但已经明显是方角了。 */
+  --r-xs: 2px;
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 10px;
+  --topbar-h: 78px;
+
+  /* 版心左右的留白。所有页面、顶栏、页脚都按这个数来 */
+  --gutter: 50px;
+}
+
+/* ===== 皮肤 blue「原版」=====
+   改造前那套：淡蓝灰底 + 品牌蓝。圆角也回到原来的 8/12/16/22，
+   不然它会被 c 皮肤那套方角规则带着走。 */
+[data-theme="blue"] {
   --brand: #4D6BFE;
   --brand-strong: #3A57D8;
   --brand-soft: #6D8BFF;
@@ -24,40 +82,59 @@
   --text-2: #5A6479;
   --text-3: #8D96AC;
 
-  --shadow-xs: 0 1px 2px rgba(23, 32, 58, .05);
-  --shadow-sm: 0 2px 8px -2px rgba(23, 32, 58, .08), 0 1px 3px rgba(23, 32, 58, .04);
-  --shadow-md: 0 14px 30px -14px rgba(23, 32, 58, .18), 0 4px 10px -6px rgba(23, 32, 58, .08);
-  --shadow-brand: 0 16px 34px -16px rgba(77, 107, 254, .55);
+  /* 首页三块大卡片：原版那个蓝渐变 + 紫 / 绿两块 */
+  --hero-bg: linear-gradient(135deg, #5C76FF 0%, #8AA2FF 62%, #A9BCFF 100%);
+  --hero-fg: #fff;
+  --hero-rail-bg: linear-gradient(90deg, #A9BCFF 0%, #6E86FF 42%, #2E48C8 100%);
+  --card-a-bg: #E7ECFF; --card-a-fg: #2C3A7E;
+  --card-a-go: linear-gradient(90deg, #E7ECFF 0%, #8B96CE 42%, #2C3A7E 100%);
+  --card-b-bg: #DBF2EB; --card-b-fg: #12514A;
+  --card-b-go: linear-gradient(90deg, #DBF2EB 0%, #5AAE96 42%, #12514A 100%);
 
   --r-xs: 8px;
   --r-sm: 12px;
   --r-md: 16px;
   --r-lg: 22px;
-  --topbar-h: 78px;
-
-  /* 版心左右的留白。所有页面、顶栏、页脚都按这个数来 */
-  --gutter: 50px;
 }
 
 [data-theme="dark"] {
-  --brand: #6D8BFF;
-  --brand-strong: #8AA2FF;
-  --brand-soft: #5A76E8;
-  --brand-tint: rgba(109, 139, 255, .13);
-  --brand-tint-2: rgba(109, 139, 255, .22);
-  --brand-grad: linear-gradient(135deg, #7E99FF 0%, #5B76F5 55%, #4157C9 100%);
+  /* ===== 皮肤「先进工业」· 白天 =====
+     浅灰纸面 + 琥珀橙。斜切、编号、大标题这些形状特征都保留，
+     只把底色从黑换成灰 —— 三套皮肤默认都是亮的，切换时不会突然黑屏。
+     橙底上不能用白字（对比度只有 2 左右），用 --brand 当底的地方
+     字色统一是近黑，见文件末尾那几条覆盖。 */
+  --brand: #E08A00;
+  --brand-strong: #C77800;
+  --brand-soft: #FFB020;
+  --brand-tint: rgba(224, 138, 0, .1);
+  --brand-tint-2: rgba(224, 138, 0, .22);
+  --brand-grad: linear-gradient(135deg, #FFB020 0%, #E08A00 55%, #C77800 100%);
 
-  --bg: #0B0F1A;
-  --bg-2: #101625;
-  --surface: #141A29;
-  --surface-2: #1A2133;
-  --surface-3: #202942;
-  --border: #26304A;
-  --border-strong: #333F5E;
+  --bg: #F2F1EC;
+  --bg-2: #EAE8E1;
+  --surface: #FBFAF7;
+  --surface-2: #F5F4EE;
+  --surface-3: #EDEBE3;
+  --border: #D9D6CC;
+  --border-strong: #C4C0B4;
 
-  --text: #E9EEFB;
-  --text-2: #A3AEC9;
-  --text-3: #727E9C;
+  --text: #17190F;
+  --text-2: #4E5147;
+  --text-3: #8F938A;
+
+  /* 首页三块大卡片。B 皮肤是黑底 + 橙，
+     hero 从深灰压到纯黑、右边那条「更多官网」一路压成实橙；
+     预设和工具两块用**橙 / 青**两种点缀区分开 ——
+     光靠深浅分不出谁是谁，必须给两个不同的色相。 */
+  --hero-bg: linear-gradient(135deg, #F7F6F1 0%, #EFEDE5 62%, #E6E3D9 100%);
+  --hero-fg: #17190F;
+  --hero-rail-bg: linear-gradient(90deg, #E6E3D9 0%, #E8C48A 42%, #E08A00 100%);
+  --card-a-bg: #FBFAF7;
+  --card-a-fg: #17190F;
+  --card-a-go: linear-gradient(90deg, #FBFAF7 0%, #F0D9B0 42%, #E08A00 100%);
+  --card-b-bg: #F7F6F0;
+  --card-b-fg: #17190F;
+  --card-b-go: linear-gradient(90deg, #F7F6F0 0%, #B8DED4 42%, #0E8C72 100%);
 
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, .4);
   --shadow-sm: 0 4px 12px -4px rgba(0, 0, 0, .5);
@@ -2207,12 +2284,12 @@ body.modal-open { overflow: hidden; }
   padding: var(--hero-pad-y) var(--hero-pad-x) 18px;
   border-radius: 22px;
   display: flex; flex-direction: column;
-  color: #fff;
+  color: var(--hero-fg, #fff);
   /* 底色比原来淡一档：右边那条「更多官网」是从板块色渐变到深色的，
      板块本身太饱和的话，按钮左半边直接融进底色、整条按钮就「消失」了。
      淡下去之后按钮立住了，同时它仍是三块里最显眼的一块 ——
      比起下面那两块浅紫 / 浅绿，这一整块蓝还是最抢眼的。 */
-  background: linear-gradient(135deg, #5C76FF 0%, #8AA2FF 62%, #A9BCFF 100%);
+  background: var(--hero-bg);
   box-shadow: 0 20px 48px -24px rgba(61, 90, 254, .62);
 }
 
@@ -2378,7 +2455,7 @@ body.modal-open { overflow: hidden; }
   font-size: 15px; font-weight: 700; color: #fff;
   /* 左端就是板块底色的那个蓝，往右一路压深 ——
      板块本身已经调淡了，这条才立得出来 */
-  background: linear-gradient(90deg, #A9BCFF 0%, #6E86FF 42%, #2E48C8 100%);
+  background: var(--hero-rail-bg);
   box-shadow: -10px 0 26px -12px rgba(11, 24, 74, .75);
   transition: filter .2s;
 }
@@ -2407,8 +2484,8 @@ body.modal-open { overflow: hidden; }
   overflow: hidden;           /* 按钮顶到卡片圆角上，靠它裁一下 */
   display: flex; flex-direction: column;
 }
-.pw-preset { background: #E7ECFF; color: #2C3A7E; }
-.pw-tool { background: #DBF2EB; color: #12514A; }
+.pw-preset { background: var(--card-a-bg); color: var(--card-a-fg); }
+.pw-tool { background: var(--card-b-bg); color: var(--card-b-fg); }
 
 .pw-head { display: flex; align-items: center; gap: 12px; }
 .pw-head h2 { margin: 0; font-size: 27px; font-weight: 800; letter-spacing: -.4px; }
@@ -2424,8 +2501,8 @@ body.modal-open { overflow: hidden; }
   font-size: 15px; font-weight: 700; color: #fff;
   transition: filter .2s;
 }
-.pw-preset .pw-go { background: linear-gradient(90deg, #E7ECFF 0%, #8B96CE 42%, #2C3A7E 100%); }
-.pw-tool .pw-go { background: linear-gradient(90deg, #DBF2EB 0%, #5AAE96 42%, #12514A 100%); }
+.pw-preset .pw-go { background: var(--card-a-go); }
+.pw-tool .pw-go { background: var(--card-b-go); }
 .pw-go:hover { filter: brightness(1.05); }
 .pw-sub { margin: 8px 0 0; font-size: 14px; opacity: .82; }
 /* 标签推到底部，两块高度不一样时也对得齐 */
@@ -2629,4 +2706,482 @@ body.modal-open { overflow: hidden; }
   .pw-chips { padding-top: 8px; }
   .pw-chip { padding: 5px 11px 5px 6px; font-size: 12px; }
   .pw-chip-ico { width: 21px; height: 21px; }
+}
+/* ============================================================
+   皮肤 B 的配套覆盖
+   ------------------------------------------------------------
+   橙色（#FFB020）亮度很高，白字压上去对比度只有 2 左右，读不清。
+   凡是「用 --brand 当底色」的地方，字色一律换成近黑。
+   ============================================================ */
+[data-theme="dark"] .mini-btn.is-brand,
+[data-theme="dark"] .mini-btn.is-brand:hover,
+[data-theme="dark"] .primary-btn,
+[data-theme="dark"] .search-go,
+[data-theme="dark"] .pw-go,
+[data-theme="dark"] .as-card-btn.is-solid {
+  color: #120C00;
+  font-weight: 800;
+}
+
+[data-theme="dark"] .key,
+[data-theme="dark"] .spec-help > b,
+[data-theme="dark"] .spec-os b {
+  color: #120C00;
+}
+
+/* ============================================================
+   皮肤 C 的配套覆盖（hero 块里的白字）
+   ------------------------------------------------------------
+   hero 那块原本是深蓝底，里面所有字都是白的或半透明白。
+   皮肤 C 底下是米白，这些字全糊了。这里按层次重新给色：
+   主文字用 --hero-fg（近黑），次要信息用同色低透明度。
+   ============================================================ */
+html:not([data-theme="dark"]) .hb-title,
+html:not([data-theme="dark"]) .hb-hi,
+html:not([data-theme="dark"]) .hb-time { color: var(--hero-fg); }
+
+html:not([data-theme="dark"]) .hb-date,
+html:not([data-theme="dark"]) .hb-sub,
+html:not([data-theme="dark"]) .apps-label { color: rgba(20, 22, 26, .6); }
+
+html:not([data-theme="dark"]) .wx {
+  background: rgba(20, 22, 26, .05);
+  border-color: rgba(20, 22, 26, .12);
+}
+html:not([data-theme="dark"]) .wx-now b small,
+html:not([data-theme="dark"]) .wx-now em,
+html:not([data-theme="dark"]) .wx-meta { color: rgba(20, 22, 26, .62); }
+
+html:not([data-theme="dark"]) .hero-block .city-btn {
+  color: var(--hero-fg);
+  background: rgba(20, 22, 26, .07);
+  border-color: rgba(20, 22, 26, .18);
+}
+html:not([data-theme="dark"]) .hero-block .city-btn:hover {
+  color: var(--hero-fg);
+  background: rgba(20, 22, 26, .13);
+  border-color: rgba(20, 22, 26, .3);
+}
+
+/* 搜索框本身在浅底上要立住：给它白底 + 一档阴影 */
+html:not([data-theme="dark"]) .search {
+  background: #fff;
+  box-shadow: 0 2px 10px -6px rgba(20, 22, 26, .35);
+}
+
+/* ============================================================
+   ③ 官网 —— 和预设 / 工具同级的第三个入口
+   ------------------------------------------------------------
+   这一块用的是 <ul> 而不是 chips：官网那边本来就是「按分类逛」，
+   列几条分类比列几个站名更贴合它的用法。
+   ============================================================ */
+.pw-sites { order: 3; }          /* DOM 里插在中间，视觉上排到最后 */
+.pw-list {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.pw-list li {
+  position: relative;
+  padding-left: 15px;
+  font-size: 13px;
+  opacity: .82;
+}
+.pw-list li::before {
+  content: "";
+  position: absolute; left: 0; top: .62em;
+  width: 5px; height: 1px;
+  background: currentColor;
+  opacity: .5;
+}
+
+/* ============================================================
+   左上角那三个界面预设按钮（图纸 / 工业 / 原版）
+   ------------------------------------------------------------
+   放在 logo 右边：这是「换整套界面」的大动作，值得占最先看到的位置。
+   当前选中的那个用实心填起来。
+   ============================================================ */
+.skin-switch {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 20px;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+.skin-btn {
+  padding: 4px 13px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: color .18s, background .18s;
+}
+.skin-btn:hover { color: var(--brand); }
+.skin-btn.is-on {
+  color: #fff;
+  background: var(--brand-grad);
+  box-shadow: 0 4px 12px -8px rgba(0, 0, 0, .6);
+}
+/* 浅色 / 图纸皮肤下，选中态的字用底色的反色更稳 */
+html:not([data-theme="dark"]) .skin-btn.is-on { color: #fff; }
+
+@media (max-width: 860px) {
+  .skin-switch { margin-left: 8px; }
+  .skin-btn { padding: 4px 9px; font-size: 11px; letter-spacing: .5px; }
+}
+
+/* ============================================================
+   顶栏导航 + 皮肤切换按钮
+   ------------------------------------------------------------
+   三套皮肤共用这一套位置和尺寸：
+     logo ┊ 导航 ┊ …… ┊ [皮肤按钮] 设置
+   导航固定贴在 logo 右边；皮肤按钮在右上角，和设置那类同级。
+   各皮肤只允许改「颜色」，不许改字号 / 间距 / 顺序，
+   否则切换皮肤时导航会横向跳动。
+   ============================================================ */
+.skin-nav {
+  display: flex;
+  align-items: baseline;
+  gap: 26px;
+  margin-left: 28px;
+}
+.skin-nav a {
+  font-size: 12.5px;
+  letter-spacing: 1.4px;
+  color: var(--text-3);
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  transition: color .2s, border-color .2s;
+  white-space: nowrap;
+}
+.skin-nav a:hover { color: var(--text); }
+.skin-nav a.is-on {
+  color: var(--text);
+  border-bottom-color: var(--text);
+  font-weight: 600;
+}
+
+.skin-switch {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-right: 10px;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+.skin-btn {
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: color .18s, background .18s;
+}
+.skin-btn:hover { color: var(--brand); }
+.skin-btn.is-on { color: #fff; background: var(--brand-grad); }
+
+/* ============================================================
+   界面选择面板
+   ------------------------------------------------------------
+   顶栏那个独立图标按钮点开就是它。
+   面板固定 420px 宽、高度由内容决定 —— 不铺满屏幕，
+   三张卡片垂直排列，每张左边是预览占位、右边是名称和介绍。
+   ============================================================ */
+.skin-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 92px 20px 40px;
+  background: rgba(10, 14, 24, .42);
+  backdrop-filter: blur(3px);
+  animation: skinFade .18s ease both;
+}
+.skin-mask[hidden] { display: none; }
+@keyframes skinFade { from { opacity: 0; } to { opacity: 1; } }
+
+.skin-panel {
+  width: 420px;
+  max-width: 100%;
+  padding: 22px 22px 18px;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 28px 70px -28px rgba(10, 14, 24, .5);
+  animation: skinUp .22s cubic-bezier(.22, .68, .28, 1) both;
+}
+@keyframes skinUp {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.skin-panel-head { margin-bottom: 16px; }
+.skin-panel-head h4 {
+  font-size: 16px; font-weight: 800; letter-spacing: .5px;
+  color: var(--text);
+}
+.skin-panel-head p {
+  margin-top: 5px;
+  font-size: 12.5px; line-height: 1.7; color: var(--text-3);
+}
+
+/* ---------- 三张卡片：垂直排列，每张是个按钮 ---------- */
+.skin-list { display: flex; flex-direction: column; gap: 8px; }
+
+.skin-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 11px 13px;
+  border-radius: var(--r-md);
+  text-align: left;
+  background: var(--surface-2);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: border-color .18s, background .18s;
+}
+.skin-card:hover { border-color: var(--brand-soft); background: var(--surface); }
+.skin-card.is-on { border-color: var(--brand); background: var(--brand-tint); }
+
+/* 预览占位：一个 68×48 的小方框，里面三条线示意布局 */
+.skin-thumb {
+  flex: none;
+  width: 68px; height: 48px;
+  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 7px 8px;
+  overflow: hidden;
+}
+.skin-thumb i {
+  display: block; height: 3px; border-radius: 2px;
+  background: var(--border-strong);
+}
+.skin-thumb i:nth-child(1) { width: 42%; height: 5px; }
+.skin-thumb i:nth-child(2) { width: 88%; }
+.skin-thumb i:nth-child(3) { width: 66%; }
+
+/* 三种皮肤的缩略图先做「占位差异」：
+   经典色块偏蓝、简约档案纯灰、先进工业偏橙深色 */
+.skin-thumb.is-blue i { background: #B9C6EE; }
+.skin-thumb.is-blue { background: #EEF2FD; border-color: #C9D4F5; }
+.skin-thumb.is-blue i:nth-child(1) { background: #7E96E8; }
+
+.skin-thumb.is-c i { background: #D6D3CA; }
+.skin-thumb.is-c { background: #FAF9F5; border-color: #D5D2C9; }
+.skin-thumb.is-c i:nth-child(1) { background: #8A8780; }
+
+.skin-thumb.is-dark i { background: #4A4034; }
+.skin-thumb.is-dark { background: #14161A; border-color: #2C3037; }
+.skin-thumb.is-dark i:nth-child(1) { background: #FFB020; }
+
+.skin-meta { flex: 1; min-width: 0; }
+.skin-meta b {
+  display: block;
+  font-size: 14px; font-weight: 700; letter-spacing: .3px;
+  color: var(--text);
+}
+.skin-meta em {
+  display: block; margin-top: 3px;
+  font-style: normal;
+  font-size: 12px; line-height: 1.6; color: var(--text-3);
+}
+
+/* 选中那个勾 */
+.skin-pick {
+  flex: none;
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-strong);
+  color: transparent;
+  transition: border-color .18s, background .18s, color .18s;
+}
+.skin-card.is-on .skin-pick {
+  border-color: transparent;
+  background: var(--brand);
+  color: #fff;
+}
+
+/* ---------- 换完的轻提示 ---------- */
+.skin-toast {
+  position: fixed;
+  left: 50%; bottom: 40px;
+  transform: translate(-50%, 12px);
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--surface);
+  font-size: 12.5px; letter-spacing: .5px;
+  z-index: 95;
+  opacity: 0;
+  transition: opacity .22s, transform .22s;
+  pointer-events: none;
+}
+.skin-toast.is-show { opacity: 1; transform: translate(-50%, 0); }
+
+body.skin-open { overflow: hidden; }
+
+/* ============================================================
+   顶栏右侧的排列顺序
+   ------------------------------------------------------------
+   规定：「最后更新」永远排最前，之后所有按钮（界面切换、分享、设置……）
+   一律往它右边加。用 order 表达这个约定 ——
+   以后新增按钮不用再想插在 DOM 哪个位置，order 默认 1 就自动排到右边。
+   ============================================================ */
+.top-right > .updated { order: 0; }
+.top-right > *:not(.updated) { order: 1; }
+
+/* 界面切换按钮：紧跟在「最后更新」右边，间距交给 .top-right 的 gap */
+.skin-switch { margin-left: 0; margin-right: 0; }
+
+/* ============================================================
+   昼 / 夜（data-mode）
+   ------------------------------------------------------------
+   和「皮肤」（data-theme）是两个正交的维度：
+     皮肤  决定布局、形状、字号       ← blue / c / dark
+     明暗  决定配色                   ← light / dark
+   所以切昼夜时布局一分一毫都不动，只有颜色变。
+
+   三套皮肤默认都是 light。夜里的基础色板三套共用一份，
+   强调色（--brand）各调各的 —— c 皮肤白天的品牌色是近黑，
+   到夜里必须换成浅色，不然按钮上是黑底黑字。
+   ============================================================ */
+
+html[data-mode="dark"] {
+  --bg: #0A0C10;
+  --bg-2: #101318;
+  --surface: #14171C;
+  --surface-2: #1A1E24;
+  --surface-3: #21262D;
+  --border: #2A2F37;
+  --border-strong: #3A4049;
+
+  --text: #F2F2F0;
+  --text-2: #A2A8B2;
+  --text-3: #626871;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, .4);
+  --shadow-sm: 0 4px 12px -4px rgba(0, 0, 0, .5);
+  --shadow-md: 0 18px 36px -18px rgba(0, 0, 0, .75);
+}
+
+/* 夜里的强调色：每套皮肤各调一档，保证在深底上看得清 */
+html[data-theme="blue"][data-mode="dark"] {
+  --brand: #7E99FF;
+  --brand-strong: #9BB0FF;
+  --brand-soft: #5A76E8;
+  --brand-tint: rgba(126, 153, 255, .14);
+  --brand-tint-2: rgba(126, 153, 255, .24);
+  --brand-grad: linear-gradient(135deg, #8AA2FF 0%, #6D8BFF 55%, #4D6BFE 100%);
+}
+html[data-theme="c"][data-mode="dark"] {
+  --brand: #F2F2F0;
+  --brand-strong: #FFFFFF;
+  --brand-soft: #C9CCC7;
+  --brand-tint: rgba(242, 242, 240, .08);
+  --brand-tint-2: rgba(242, 242, 240, .16);
+  --brand-grad: linear-gradient(135deg, #FFFFFF 0%, #F2F2F0 100%);
+}
+html[data-theme="dark"][data-mode="dark"] {
+  --brand: #FFB020;
+  --brand-strong: #FFC857;
+  --brand-soft: #E08A00;
+  --brand-tint: rgba(255, 176, 32, .14);
+  --brand-tint-2: rgba(255, 176, 32, .26);
+  --brand-grad: linear-gradient(135deg, #FFC857 0%, #FFB020 55%, #EF9A00 100%);
+}
+
+/* 夜里的首屏色块也跟着压深 */
+html[data-theme="blue"][data-mode="dark"] {
+  --hero-bg: linear-gradient(135deg, #2A3A6E 0%, #1D2A52 62%, #141C36 100%);
+  --hero-fg: #F2F5FF;
+  --hero-rail-bg: linear-gradient(90deg, #141C36 0%, #3D5AFE 42%, #6D8BFF 100%);
+  --card-a-bg: #1D2440; --card-a-fg: #C7D2FF;
+  --card-a-go: linear-gradient(90deg, #1D2440 0%, #3A4A80 42%, #7E99FF 100%);
+  --card-b-bg: #122A26; --card-b-fg: #9BE8D4;
+  --card-b-go: linear-gradient(90deg, #122A26 0%, #1E5C4E 42%, #4CE0C8 100%);
+}
+html[data-theme="c"][data-mode="dark"] {
+  --hero-bg: linear-gradient(135deg, #1C1F24 0%, #14171B 62%, #0E1013 100%);
+  --hero-fg: #F2F2F0;
+  --hero-rail-bg: linear-gradient(90deg, #0E1013 0%, #3A3F47 42%, #B9BDB6 100%);
+  --card-a-bg: #1A1D22; --card-a-fg: #F2F2F0;
+  --card-a-go: linear-gradient(90deg, #1A1D22 0%, #33383F 42%, #B9BDB6 100%);
+  --card-b-bg: #171A1E; --card-b-fg: #F2F2F0;
+  --card-b-go: linear-gradient(90deg, #171A1E 0%, #2E3339 42%, #A8ACA5 100%);
+}
+html[data-theme="dark"][data-mode="dark"] {
+  --bg: #07080A;
+  --bg-2: #0B0D10;
+  --surface: #101215;
+  --surface-2: #16191E;
+  --surface-3: #1D2127;
+  --border: #262A31;
+  --border-strong: #333944;
+  --hero-bg: linear-gradient(135deg, #1C2129 0%, #12151A 62%, #0A0C0F 100%);
+  --hero-fg: #F2F2F0;
+  --hero-rail-bg: linear-gradient(90deg, #2B3038 0%, #6B5217 42%, #FFB020 100%);
+  --card-a-bg: #16191E; --card-a-fg: #F2F2F0;
+  --card-a-go: linear-gradient(90deg, #16191E 0%, #6B5217 42%, #FFB020 100%);
+  --card-b-bg: #14171B; --card-b-fg: #F2F2F0;
+  --card-b-go: linear-gradient(90deg, #14171B 0%, #17544A 42%, #4CE0C8 100%);
+}
+
+/* 夜里 c 皮肤的「红点睛」要提亮，深底上原来的 #D6401E 太闷 */
+html[data-theme="c"][data-mode="dark"] .hb-hello::before,
+html[data-theme="c"][data-mode="dark"] .pw:hover .pw-go { color: #FF7A52; }
+
+/* 皮肤按钮：夜里也要看得清 */
+html[data-mode="dark"] .skin-btn.is-on { color: #10130F; }
+html[data-theme="c"][data-mode="dark"] .skin-btn.is-on { color: #10130F; }
+
+/* ---------- 昼 / 夜按钮的两个图标 ----------
+   白天显示太阳、夜里显示月亮。属性选择器比 :has() 稳，旧浏览器也认。 */
+#modeBtn .ico-night { display: none; }
+html[data-mode="dark"] #modeBtn .ico-day { display: none; }
+html[data-mode="dark"] #modeBtn .ico-night { display: block; }
+
+/* ---------- 关于弹窗里的「最后更新」 ----------
+   从顶栏挪过来的，放在两个按钮右边。 */
+.about-updated {
+  margin-left: auto;
+  align-self: center;
+  font-size: 12.5px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+/* ---- 手机端顶栏太挤 ----
+   「关于本站」「赞助」两个带字按钮加上四个图标按钮，
+   500 宽下最右边那个被挤出屏幕。窄屏把它们收起来，
+   功能在「设置」里都能找到。 */
+@media (max-width: 900px) {
+  .top-actions { display: none; }
+  .topbar-inner { gap: 12px; }
+  .top-right { gap: 8px; }
+  .skin-nav { gap: 16px; margin-left: 14px; }
+  .skin-nav a { font-size: 11.5px; letter-spacing: 1px; }
+  .icon-btn { width: 34px; height: 34px; }
 }

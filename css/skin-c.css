@@ -1,0 +1,917 @@
+/* ============================================================
+   皮肤「简约档案」· 主页布局（桌面端）
+   ------------------------------------------------------------
+   面向老年用户：字大、留白多、层级靠编号和细线表达。
+
+   这个文件只写桌面端（> 900px）。手机端全部在 css/mobile.css，
+   两端彻底分开，改哪端就开哪个文件。
+
+   历史：之前这个文件堆到了 1400 行 —— 每修一个问题就往下追加一段
+   覆盖，最后互相打架（同一个元素能被 10 条规则同时提到，谁赢要靠
+   数特异性）。这里整个重写，只保留最终生效的那一份。
+   ============================================================ */
+
+/* ---------- 0. 原版皮肤下把这页加的东西藏掉 ---------- */
+.home-foot { display: none; }
+.skin-nav { display: none; }
+[data-theme="blue"] .pw-sites { display: none; }
+[data-theme="blue"] .skin-nav { display: none; }
+[data-theme="blue"] .home-foot { display: none; }
+
+/* ============================================================
+   一、顶栏
+   ============================================================ */
+html[data-theme="c"] .topbar {
+  border-bottom: 1px solid var(--border-strong);
+  background: var(--bg);
+  min-height: 0;
+  padding: 22px 0;
+}
+html[data-theme="c"] .topbar-inner { align-items: center; }
+
+/* 「启航」那个字样撤掉，导航直接贴着左边 */
+html[data-theme="c"] .brand-text,
+html[data-theme="c"] .brand-mark { display: none; }
+
+html[data-theme="c"] .skin-nav {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-left: 0;
+}
+html[data-theme="c"] .skin-nav a {
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: var(--text-3);
+  text-decoration: none;
+  padding-bottom: 3px;
+  border-bottom: 1px solid transparent;
+  transition: color .2s, border-color .2s;
+}
+html[data-theme="c"] .skin-nav a:hover { color: var(--text); }
+html[data-theme="c"] .skin-nav a.is-on {
+  color: var(--text);
+  font-weight: 700;
+  border-bottom-color: var(--text);
+}
+
+/* 顶栏的「赞助」不显示（它属于我们自己用的东西） */
+html[data-theme="c"] .top-btn.is-sponsor { display: none; }
+html[data-theme="c"] .icon-btn { width: 44px; height: 44px; }
+html[data-theme="c"] .top-btn { height: 42px; font-size: 14px; padding: 0 16px; }
+
+/* 顶栏不再显示「最后更新」（已移到关于本站弹窗） */
+.updated { display: none; }
+
+/* ============================================================
+   二、主体骨架
+   ------------------------------------------------------------
+   #top 是一个 flex 列：上半 hero（标题 + 搜索 + 天气）、
+   下半 pw-row（三个入口），两者按内容 / 剩余空间分。
+   ============================================================ */
+html[data-theme="c"] #top {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 78px);
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+html[data-theme="c"] main#top { padding-bottom: 0; }
+
+html[data-theme="c"] .hero-block {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 44px 0 30px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  min-height: 0;
+  position: relative;
+}
+html[data-theme="c"] .hero-block .glow { display: none; }
+html[data-theme="c"] .hb-hold { display: none; }
+
+/* .hb-row 装「标题区 + 搜索区」，天气是它的兄弟 */
+html[data-theme="c"] .hb-row {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+/* ============================================================
+   三、标题区：启航 / 日期 / 时间，右对齐贴住搜索框
+   ============================================================ */
+html[data-theme="c"] .hb-hi {
+  flex: 1 1 auto;
+  min-width: 300px;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 0;
+  border: 0;
+  position: static;
+}
+html[data-theme="c"] .hb-hi > * { text-align: right; }
+
+/* 「你好 👋」那行不要了，序号也从标题上撤掉 */
+html[data-theme="c"] .hb-hello { display: none; }
+
+html[data-theme="c"] .hb-h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 0;              /* 原文案藏掉，用伪元素显示「启航」 */
+  line-height: 1;
+  color: var(--text);
+}
+html[data-theme="c"] .hb-h1::before {
+  content: "启航";
+  font-size: 74px;
+  font-weight: 800;
+  letter-spacing: 12px;
+  line-height: 1;
+}
+
+html[data-theme="c"] .hb-date {
+  display: block;
+  margin: 14px 0 0;
+  font-size: 26px;
+  line-height: 1.5;
+  letter-spacing: .5px;
+  color: var(--text-2);
+}
+
+html[data-theme="c"] .hb-clock {
+  display: block;
+  margin: 4px 0 0;
+  font-size: 74px;
+  line-height: 1.1;
+  letter-spacing: 2px;
+}
+html[data-theme="c"] .hb-clock .clock {
+  font-size: inherit;
+  font-weight: 800;
+  letter-spacing: inherit;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 标题右边那串英文副名不要 */
+html[data-theme="c"] .hb-hi::after { content: none; display: none; }
+
+/* ============================================================
+   四、搜索：固定宽度，不随屏幕变宽
+   ============================================================ */
+html[data-theme="c"] .hb-center {
+  flex: 0 0 520px;
+  width: 520px;
+  max-width: 520px;
+  min-width: 0;
+  margin: 26px 0 0;
+  padding: 0;
+  text-align: left;
+}
+html[data-theme="c"] .hb-title,
+html[data-theme="c"] .hb-sub { display: none; }
+
+html[data-theme="c"] .hero-block .search-wrap {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+html[data-theme="c"] .search {
+  width: 100%;
+  min-height: 58px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1.5px solid var(--text);
+  border-radius: 0;
+  box-shadow: none;
+  padding-bottom: 10px;
+}
+html[data-theme="c"] .search:focus-within {
+  border-bottom-color: #D6401E;
+  box-shadow: none;
+}
+html[data-theme="c"] .search input {
+  font-size: 21px;
+  color: var(--text);
+  background: transparent;
+  min-width: 0;
+}
+html[data-theme="c"] .search input::placeholder { font-size: 17px; color: var(--text-3); }
+html[data-theme="c"] .search-kbd { display: none; }
+html[data-theme="c"] .search-go {
+  flex: 0 0 auto;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 5px;
+  padding: 0 14px 0 22px;
+  color: var(--text);
+  background: transparent;
+  border: 2px solid var(--text);
+  border-radius: 2px;
+  white-space: nowrap;
+  transition: background .18s, color .18s;
+}
+html[data-theme="c"] .search-go:hover { background: var(--text); color: var(--surface); }
+
+/* ============================================================
+   五、天气：横排，填满右侧那一格
+   ============================================================ */
+html[data-theme="c"] .hb-side {
+  position: static;
+  flex: 1 1 auto;
+  min-width: 300px;
+  max-width: none;
+  top: auto; right: auto; bottom: auto;
+  transform: none;
+  margin: 26px 0 0;
+  display: flex;
+  align-items: center;
+}
+html[data-theme="c"] .hb-side .apps-more { display: none; }
+
+html[data-theme="c"] .wx {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  background: var(--surface);
+  transform: none;
+}
+html[data-theme="c"] .wx-ico { font-size: 34px; flex: none; }
+html[data-theme="c"] .wx-now { flex: none; }
+html[data-theme="c"] .wx-now b { font-size: 40px; }
+html[data-theme="c"] .wx-now b small { font-size: 17px; }
+html[data-theme="c"] .wx-now em { font-size: 14px; }
+html[data-theme="c"] .wx-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+  line-height: 1.6;
+  flex: none;
+}
+html[data-theme="c"] .wx-meta b { font-size: 15px; }
+html[data-theme="c"] .city-btn {
+  margin-left: auto;
+  flex: none;
+  font-size: 15px;
+  padding: 6px 14px;
+}
+
+/* ============================================================
+   六、三个入口：编号列表，整块可点
+   ============================================================ */
+html[data-theme="c"] .pw-row {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+html[data-theme="c"] .pw {
+  flex: 1 1 0;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0;
+  padding: 0 26px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-top: 1px solid var(--border-strong);
+  border-bottom: 1px solid var(--border-strong);
+  border-radius: 6px;
+  box-shadow: none;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color .2s, background .2s;
+}
+html[data-theme="c"] .pw:last-child { border-bottom: 1px solid var(--border-strong); }
+html[data-theme="c"] .pw:hover {
+  background: var(--surface-2);
+  border-color: var(--text);
+}
+
+/* 顺序：官网 → 工具 → 预设 */
+html[data-theme="c"] .pw-sites { order: 1; }
+html[data-theme="c"] .pw-tool { order: 2; }
+html[data-theme="c"] .pw-preset { order: 3; }
+
+html[data-theme="c"] .pw-head {
+  display: flex;
+  align-items: baseline;
+  flex: none;
+  position: static;
+  padding: 0;
+}
+html[data-theme="c"] .pw-head::before {
+  position: static;
+  flex: none;
+  width: 58px;
+  font-size: 15px;
+  letter-spacing: 1.4px;
+  color: var(--text-3);
+}
+html[data-theme="c"] .pw-sites .pw-head::before { content: "01"; }
+html[data-theme="c"] .pw-tool .pw-head::before { content: "02"; }
+html[data-theme="c"] .pw-preset .pw-head::before { content: "03"; }
+
+html[data-theme="c"] .pw-head h2 {
+  flex: none;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 5px;
+  color: var(--text);
+}
+html[data-theme="c"] .pw-head::after { content: none; display: none; }
+
+html[data-theme="c"] .pw-sub {
+  flex: 1;
+  min-width: 0;
+  margin: 0 0 0 30px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--text-2);
+  opacity: 1;
+}
+
+html[data-theme="c"] .pw-chips,
+html[data-theme="c"] .pw-list { display: none; }
+
+html[data-theme="c"] .pw-go {
+  position: static;
+  flex: none;
+  width: auto;
+  margin-left: 20px;
+  writing-mode: horizontal-tb;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 0;
+  letter-spacing: 0;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transition: color .2s, transform .2s;
+}
+html[data-theme="c"] .pw-go::after { content: "→"; font-size: 22px; }
+/* 覆盖层铺满整张卡：点哪里都等于点箭头那个链接 */
+html[data-theme="c"] .pw-go::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+html[data-theme="c"] .pw:hover .pw-go { color: #D6401E; transform: translateX(4px); }
+
+/* ============================================================
+   七、搜索候选：三档背景色
+   ============================================================ */
+html[data-theme="c"] .search-panel {
+  left: 0;
+  right: auto;
+  width: 760px;
+  max-width: calc(100vw - 64px);
+  max-height: 440px;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 18px 40px -22px rgba(20, 22, 26, .55);
+}
+html[data-theme="c"] .search-item {
+  padding: 12px 14px;
+  border-radius: 3px;
+}
+html[data-theme="c"] .search-item[data-rank="1"] {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+}
+html[data-theme="c"] .search-item[data-rank="1"] .si-name {
+  color: var(--text);
+  font-weight: 700;
+  font-size: 16px;
+}
+html[data-theme="c"] .search-item[data-rank="2"] {
+  background: rgba(20, 22, 26, .03);
+}
+html[data-theme="c"] .search-item[data-rank="2"] .si-name {
+  color: var(--text-2);
+  font-weight: 600;
+  font-size: 15px;
+}
+html[data-theme="c"] .search-item[data-rank="3"] {
+  background: rgba(20, 22, 26, .07);
+}
+html[data-theme="c"] .search-item[data-rank="3"] .si-name {
+  color: var(--text-2);
+  font-weight: 600;
+  font-size: 14.5px;
+}
+html[data-theme="c"] .search-item[data-rank="3"] .si-url,
+html[data-theme="c"] .search-item[data-rank="3"] .site-desc { color: var(--text-3); }
+
+html[data-theme="c"] .search-item mark {
+  background: rgba(214, 64, 30, .18);
+  color: inherit;
+  font-weight: 800;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+html[data-theme="c"] .search-item[data-rank="1"] mark {
+  background: rgba(214, 64, 30, .28);
+  color: #B33512;
+}
+html[data-theme="c"] .search-item:hover {
+  background: #FFFFFF;
+  box-shadow: 0 2px 10px -6px rgba(20, 22, 26, .4);
+}
+
+/* ============================================================
+   八、页脚
+   ============================================================ */
+html[data-theme="c"] .home-foot { display: none; }
+
+/* ---------- 补：猜你需要 / 收藏网址 整块隐藏 ----------
+   重写时漏了这两条，那一排 chip 会铺出来盖住标题。 */
+html[data-theme="c"] .apps,
+html[data-theme="c"] .apps-fav { display: none; }
+
+/* ---------- 补：背景那两层光晕 ----------
+   它们在 body 上，不在 .hero-block 里，之前只藏了后者。
+   简约档案是纯米白纸面，不该有渐变底色。 */
+html[data-theme="c"] .glow,
+html[data-theme="c"] body::before,
+html[data-theme="c"] body::after { display: none !important; }
+html[data-theme="c"] body { background: var(--bg); }
+
+/* ---- 补：候选面板被搜索框容器裁掉了 ----
+   .search-wrap 只有 520 宽（搜索框的宽度），面板虽是 absolute + width: 760，
+   但被容器的裁剪范围切到 580。另外 fitPanel() 用 JS 写了 max-height，
+   把这个值也压小了。 */
+html[data-theme="c"] .hero-block .search-wrap { overflow: visible !important; }
+html[data-theme="c"] .hb-center { overflow: visible !important; }
+html[data-theme="c"] .search-panel {
+  width: 760px !important;
+  max-width: calc(100vw - 64px) !important;
+  max-height: 440px !important;
+  overflow-y: auto;
+}
+
+/* ============================================================
+   桌面端 v15
+   ------------------------------------------------------------
+   1. 启航/日期/时间 改成左对齐，左边距和下面三个入口一致
+   2. 三段各占 1/3：标题 ┊ 搜索 ┊ 天气，大小一样
+      搜索框在自己那格里左右各留 50px
+   3. 搜索提示和按钮字号再 +20%
+   4. 三个入口的箭头放大
+   ============================================================ */
+
+/* ---------- 1. 标题区左对齐 ---------- */
+html[data-theme="c"] .hb-hi {
+  flex: 1 1 0;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+html[data-theme="c"] .hb-hi > * { text-align: left; }
+
+/* ---------- 2. 三段各 1/3 ---------- */
+html[data-theme="c"] .hb-center {
+  flex: 1 1 0;
+  width: auto;
+  max-width: none;
+  min-width: 0;
+  padding: 0 50px;          /* 搜索框左右的 50px 留白 */
+  margin-top: 26px;
+  box-sizing: border-box;
+}
+html[data-theme="c"] .hb-side {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+  margin-top: 26px;
+  align-items: stretch;     /* 天气块拉到和标题区一样高 */
+}
+html[data-theme="c"] .wx {
+  height: 100%;
+  align-items: center;
+}
+
+/* ---------- 3. 字号再 +20% ---------- */
+/* 原来是 21 / 22 / 17，各乘 1.2 */
+html[data-theme="c"] .search input { font-size: 25px; }
+html[data-theme="c"] .search input::placeholder { font-size: 20px; }
+html[data-theme="c"] .search-go {
+  font-size: 26px;
+  letter-spacing: 6px;
+  padding: 0 16px 0 26px;
+}
+html[data-theme="c"] .search { min-height: 64px; }
+
+/* ---------- 4. 箭头放大 ---------- */
+/* 22 → 30，同时把卡片左右内边距放宽一点，别让箭头贴边 */
+html[data-theme="c"] .pw-go::after { font-size: 30px; }
+html[data-theme="c"] .pw { padding: 0 30px; }
+
+/* ---------- 5. 候选框和搜索框同宽 ---------- */
+html[data-theme="c"] .search-panel {
+  width: 100% !important;
+  max-width: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  box-sizing: border-box;
+}
+
+
+/* ---- 修正：三段比例不对 ----
+   .hb-row 里装着「标题 + 搜索」两段，它和 .hb-side 是兄弟。
+   两个都设 flex: 1 的话，天气只拿到 1/2 的一半 = 1/6，
+   实测只有 130 宽，天气内容被裁掉。
+   这里让 .hb-row 占 2 份、天气占 1 份 —— 里面再各占一半，
+   正好三段各 1/3。 */
+html[data-theme="c"] .hb-row { flex: 2 1 0 !important; }
+html[data-theme="c"] .hb-side { flex: 1 1 0 !important; min-width: 0; }
+
+/* 天气块拉到整格宽、和标题区等高 */
+html[data-theme="c"] .hb-side { align-items: stretch; }
+html[data-theme="c"] .wx {
+  width: 100% !important;
+  height: 100% !important;
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   桌面端 v16
+   ------------------------------------------------------------
+   按你画的三块：
+     标题  ≈ 205 宽
+     搜索  ≈ 635 宽   ← 蓝框，搜索框要撑满这块
+     天气  ≈ 205 宽   ← 和标题块一样大
+   比例是 1 : 3 : 1，不是均分。
+   ============================================================ */
+
+/* .hb-row 装「标题 + 搜索」，和天气是兄弟。
+   让它占 4 份、天气占 1 份；里面再按 1 : 3 分。 */
+html[data-theme="c"] .hb-row { flex: 4 1 0 !important; }
+html[data-theme="c"] .hb-side { flex: 1 1 0 !important; min-width: 0; max-width: none; }
+
+html[data-theme="c"] .hb-hi { flex: 1 1 0 !important; min-width: 0; }
+html[data-theme="c"] .hb-center {
+  flex: 3 1 0 !important;
+  width: auto;
+  max-width: none;
+  min-width: 0;
+  padding: 0 !important;        /* 撑满整格，不再留 50px */
+  margin-top: 26px;
+  box-sizing: border-box;
+}
+
+/* 搜索框撑满那一格 */
+html[data-theme="c"] .hero-block .search-wrap {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+}
+html[data-theme="c"] .search { width: 100% !important; }
+
+/* 天气块和标题块等高（都跟 hero 顶部对齐） */
+html[data-theme="c"] .hb-side { align-items: stretch; }
+html[data-theme="c"] .wx {
+  width: 100% !important;
+  height: 100% !important;
+  box-sizing: border-box;
+  padding: 10px 14px;
+}
+/* 天气内部收一档，205 宽才放得下 */
+html[data-theme="c"] .wx { gap: 10px; }
+html[data-theme="c"] .wx-ico { font-size: 24px; }
+html[data-theme="c"] .wx-now b { font-size: 30px; }
+html[data-theme="c"] .wx-now b small { font-size: 13px; }
+html[data-theme="c"] .wx-now em { font-size: 11.5px; }
+html[data-theme="c"] .wx-meta { font-size: 11.5px; gap: 0; line-height: 1.5; }
+html[data-theme="c"] .wx-meta b { font-size: 12.5px; }
+html[data-theme="c"] .city-btn { font-size: 12px; padding: 4px 10px; }
+
+/* ---------- 搜索描述和按钮：强制放大 ----------
+   上次写了 25 / 26px 但没生效（被 style.css 里更靠后的规则压住了），
+   这次用 !important 顶掉。 */
+html[data-theme="c"] .search input {
+  font-size: 26px !important;
+  height: auto !important;
+}
+html[data-theme="c"] .search input::placeholder {
+  font-size: 21px !important;
+}
+html[data-theme="c"] .search-go {
+  font-size: 27px !important;
+  letter-spacing: 6px !important;
+  padding: 0 18px 0 28px !important;
+}
+html[data-theme="c"] .search { min-height: 68px !important; }
+
+
+/* ============================================================
+   桌面端 v17
+   ------------------------------------------------------------
+   1. 天气块拉高到和标题区等高（红框高度），字号放大
+   2. 候选改用米黄色系：深米黄 → 浅米黄 → 白（无关联）
+   ============================================================ */
+
+/* ---------- 1. 天气块等高 ---------- */
+/* hero-block 原来是 align-items: flex-start，三个子项各按内容高。
+   改成 stretch，三块都会拉到同一行高（= 最高的标题区）。 */
+html[data-theme="c"] .hero-block { align-items: stretch !important; }
+
+html[data-theme="c"] .hb-hi,
+html[data-theme="c"] .hb-center,
+html[data-theme="c"] .hb-side { align-self: stretch; }
+
+/* 搜索区内容顶端对齐（不然会被拉成竖排居中） */
+html[data-theme="c"] .hb-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+html[data-theme="c"] .hb-center .search-wrap { margin-top: auto; margin-bottom: auto; }
+
+/* 天气块吃满整格高度，内容垂直居中 */
+html[data-theme="c"] .hb-side {
+  display: flex;
+  align-items: stretch;
+  margin-top: 26px;
+}
+html[data-theme="c"] .wx {
+  height: 100% !important;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+}
+
+/* 字号放大：原来温度 30、次要信息 11.5，太小 */
+html[data-theme="c"] .wx-ico { font-size: 30px !important; }
+html[data-theme="c"] .wx-now b { font-size: 38px !important; }
+html[data-theme="c"] .wx-now b small { font-size: 15px !important; }
+html[data-theme="c"] .wx-now em { font-size: 13px !important; }
+html[data-theme="c"] .wx-meta {
+  font-size: 13px !important;
+  line-height: 1.65 !important;
+  gap: 1px !important;
+}
+html[data-theme="c"] .wx-meta b { font-size: 14px !important; }
+html[data-theme="c"] .city-btn { font-size: 13.5px !important; padding: 5px 12px !important; }
+
+/* ---------- 2. 候选配色：米黄系，不用灰 ---------- */
+/* 第一候选：深米黄（明显「就这个」） */
+html[data-theme="c"] .search-item[data-rank="1"] {
+  background: #F2E4C4 !important;
+  border: 1px solid #E0CBA0 !important;
+}
+/* 次要候选：浅米黄 */
+html[data-theme="c"] .search-item[data-rank="2"] {
+  background: #FAF3E2 !important;
+  border: 1px solid transparent;
+}
+/* 无关联：白底 / 无背景 */
+html[data-theme="c"] .search-item[data-rank="3"] {
+  background: #FFFFFF !important;
+  border: 1px solid transparent;
+}
+
+/* 字色跟着走：深米黄上用近黑，浅底上用稍浅的 */
+html[data-theme="c"] .search-item[data-rank="1"] .si-name {
+  color: #3A2E14 !important;
+  font-weight: 800 !important;
+  font-size: 16.5px !important;
+}
+html[data-theme="c"] .search-item[data-rank="1"] .si-url,
+html[data-theme="c"] .search-item[data-rank="1"] .site-desc { color: #6B5A33 !important; }
+
+html[data-theme="c"] .search-item[data-rank="2"] .si-name {
+  color: var(--text) !important;
+  font-weight: 600 !important;
+}
+html[data-theme="c"] .search-item[data-rank="3"] .si-name {
+  color: var(--text-2) !important;
+  font-weight: 500 !important;
+}
+
+/* 高亮：深米黄底上用深橙，浅底上用浅橙 */
+html[data-theme="c"] .search-item[data-rank="1"] mark {
+  background: #E8C88A !important;
+  color: #7A3A0E !important;
+}
+html[data-theme="c"] .search-item[data-rank="2"] mark,
+html[data-theme="c"] .search-item[data-rank="3"] mark {
+  background: #F3DCC0 !important;
+  color: #8A4416 !important;
+}
+
+/* 面板底色：白，和候选的米黄拉开 */
+html[data-theme="c"] .search-panel { background: #FFFFFF !important; }
+html[data-theme="c"] .search-item:hover { background: #F7EFDC !important; }
+
+
+/* ---- 天气块：内容允许换行 ----
+   宽度 190（1/5 格）放不下「图标 + 温度 + 最高最低湿度 + 城市」一行，
+   「最高 18°」被裁到框外。让它可以折成两行，字号保持不变。 */
+html[data-theme="c"] .wx {
+  flex-wrap: wrap;
+  align-content: center;
+  row-gap: 6px;
+}
+html[data-theme="c"] .wx-meta { flex: 1 1 auto; min-width: 0; }
+html[data-theme="c"] .city-btn { margin-left: auto; }
+
+
+/* ============================================================
+   桌面端 v19
+   ------------------------------------------------------------
+   1. 候选区放大到 600 × 500
+   2. 天气块：城市选择移到上方，腾出空间后其他文字放大
+   ============================================================ */
+
+/* ---------- 1. 候选区放大 ---------- */
+html[data-theme="c"] .search-panel {
+  width: 600px !important;
+  max-width: calc(100vw - 80px) !important;
+  max-height: 460px !important;
+  padding: 8px !important;
+}
+/* 条目本身也放宽：名称、描述、网址三行的行距拉开 */
+html[data-theme="c"] .search-item {
+  padding: 13px 16px !important;
+  gap: 14px;
+}
+html[data-theme="c"] .search-item .si-name { font-size: 16px; }
+html[data-theme="c"] .search-item .site-desc { font-size: 13.5px; margin-top: 3px; }
+html[data-theme="c"] .search-item .si-url { font-size: 12.5px; margin-top: 3px; }
+
+/* ---------- 2. 天气：城市移到上方 ---------- */
+/* 原来城市按钮挤在右下角，和「湿度」抢位置。
+   挪到第一行独占一行，下面一行再放图标 + 温度 + 最高最低。 */
+html[data-theme="c"] .wx {
+  flex-wrap: wrap !important;
+  align-content: flex-start !important;
+  align-items: center !important;
+  row-gap: 10px;
+  padding: 14px 18px !important;
+}
+
+html[data-theme="c"] .city-btn {
+  order: -1;
+  flex: 0 0 100% !important;
+  width: 100%;
+  margin: 0 !important;
+  justify-content: space-between;
+  font-size: 15px !important;
+  padding: 7px 14px !important;
+}
+
+/* 腾出空间之后，其余文字整体放大一档 */
+html[data-theme="c"] .wx-ico { font-size: 36px !important; }
+html[data-theme="c"] .wx-now b { font-size: 44px !important; }
+html[data-theme="c"] .wx-now b small { font-size: 17px !important; }
+html[data-theme="c"] .wx-now em { font-size: 15px !important; }
+html[data-theme="c"] .wx-meta {
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+  gap: 2px !important;
+}
+html[data-theme="c"] .wx-meta b { font-size: 16px !important; }
+
+
+/* ============================================================
+   桌面端 v20
+   ------------------------------------------------------------
+   1. 候选框：600 宽（诊断确认已生效，这次把高度也定准 295）
+   2. 搜索框下方预留「收藏网址」的位置
+   ============================================================ */
+
+/* ---------- 1. 候选框定准 ---------- */
+html[data-theme="c"] .search-panel {
+  width: 600px !important;
+  height: 295px !important;
+  max-width: calc(100vw - 80px) !important;
+  max-height: 295px !important;
+  overflow-y: auto;
+}
+
+/* ---------- 2. 搜索框下方预留收藏网址 ---------- */
+/* .hb-center 已经是 flex 列：搜索框在上，下面这块 ::after 吃掉剩余高度，
+   正好是图里那块红框。以后往这里塞收藏网址的卡片就行。 */
+html[data-theme="c"] .hb-center::after {
+  content: "";
+  display: block;
+  flex: 1 1 0;
+  min-height: 90px;
+  margin-top: 14px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 4px;
+  opacity: .5;
+}
+
+
+/* ---- 预留区定成固定 90px ----
+   上一版写 flex: 1 让它吃掉剩余高度，结果撑到 200px，
+   把下面三个入口压成了 45px 的窄条。改成固定高度。 */
+html[data-theme="c"] .hb-center::after {
+  flex: none;
+  height: 90px;
+  min-height: 0;
+}
+/* hero 区的上下留白也收一档，给入口区让出空间 */
+html[data-theme="c"] .hero-block { padding: 34px 0 22px; }
+
+
+/* ============================================================
+   桌面端 v22
+   ------------------------------------------------------------
+   候选框：600 × 340（按红框区域）
+   根因：之前写过 `left: 0; right: 0`，这会把 width 废掉 ——
+   元素左右都贴边，宽度就由父级决定，`width: 600` 完全不生效。
+   ============================================================ */
+html[data-theme="c"] .search-panel {
+  left: 0 !important;
+  right: auto !important;      /* ← 关键：不贴右边，width 才管用 */
+  width: 600px !important;
+  height: 340px !important;
+  max-width: calc(100vw - 80px) !important;
+  max-height: 340px !important;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+
+/* ============================================================
+   桌面端 v23 · 候选框
+   ------------------------------------------------------------
+   要求：
+     宽度 = 搜索框宽度（不要写死像素）
+     高度 = 能盖住「预设」那块的介绍文字
+   ------------------------------------------------------------
+   #searchPanel 的父级是 .search-wrap（它自己是 position: relative），
+   所以 width: 100% 就等于搜索框的宽度，不用算像素。
+   高度写死 340 —— 从搜索框底边往下，正好压到预设那行的说明上。
+   ============================================================ */
+html[data-theme="c"] .search-panel {
+  left: 0 !important;
+  right: auto !important;
+  width: 100% !important;        /* 跟着搜索框走 */
+  max-width: 100% !important;
+  height: 340px !important;
+  max-height: 340px !important;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* 面板里的条目放宽：搜索框 575 宽，条目内边距别太小 */
+html[data-theme="c"] .search-item { padding: 12px 14px !important; }
+
+
+/* ============================================================
+   候选框高度：改成按视口高度百分比
+   ------------------------------------------------------------
+   之前写死 340px —— 屏幕一矮就超出、一高又太短。
+   按两张参考图量：红框高度都约占视口的 57~58%，
+   所以这里统一用 58vh（并保留一个 320px 下限，屏幕特别矮时不至于只剩一条）。
+   ============================================================ */
+html[data-theme="c"] .search-panel {
+  height: 58vh !important;
+  max-height: 58vh !important;
+  min-height: 320px;
+  overflow-y: auto;
+}
+
+/* ---- 候选悬停：2px 黑色描边 ----
+   用 outline 而不是 border：border 会改变盒子尺寸，鼠标扫过时
+   整行会跳一下；outline 不占空间，配合负偏移画在边框内侧。 */
+html[data-theme="c"] .search-item:hover {
+  outline: 2px solid #14161A;
+  outline-offset: -2px;
+  background: #F7EFDC !important;
+}

@@ -7,10 +7,20 @@
 <meta name="description" content="小工具：单位换算与汇率、字数统计。全部在你自己的浏览器里运行，数据不会上传。" />
 <meta name="theme-color" content="#4D6BFE" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-<link rel="stylesheet" href="css/style.css?v=20261016w" />
-<link rel="stylesheet" href="css/tools.css?v=20261016w" />
-<link rel="stylesheet" href="css/presets.css?v=20261016w" />
-<link rel="stylesheet" href="css/share.css?v=20261016w" />
+<link rel="stylesheet" href="css/style.css?v=20261022c" />
+
+
+<link rel="stylesheet" href="css/tools.css?v=20261022c" />
+
+
+<link rel="stylesheet" href="css/presets.css?v=20261022c" />
+
+
+<link rel="stylesheet" href="css/share.css?v=20261022c" />
+<link rel="stylesheet" href="css/skin-b.css?v=20261022c" />
+<link rel="stylesheet" href="css/skin-c.css?v=20261022c" />
+
+
 </head>
 <body>
 <div class="bg-decor" aria-hidden="true">
@@ -35,6 +45,38 @@
   </section>
 
   <!-- 单位换算 + 汇率换算（同一个界面） -->
+  <!-- 左栏：固定的工具清单。点哪一项都只换右边，列表本身不动，
+       也不刷新页面（地址栏会跟着改，所以收藏 / 分享某个工具的链接照样能直达）。 -->
+  <div class="tw-layout">
+    <nav class="card tw-nav" id="twNav">
+      <button class="tw-nav-item" type="button" data-go="unit">
+        <span class="tw-nav-ico">⇄</span>
+        <span class="tw-nav-txt"><b>单位 / 汇率换算</b><em>八大类单位、57 种货币</em></span>
+      </button>
+      <button class="tw-nav-item" type="button" data-go="counter">
+        <span class="tw-nav-ico">字</span>
+        <span class="tw-nav-txt"><b>字数统计</b><em>字数、token 与费用预估</em></span>
+      </button>
+      <button class="tw-nav-item" type="button" data-go="specs">
+        <span class="tw-nav-ico">⚙</span>
+        <span class="tw-nav-txt"><b>驱动工具</b><em>看显卡型号、找官网驱动</em></span>
+      </button>
+      <button class="tw-nav-item" type="button" data-go="shortcut">
+        <span class="tw-nav-ico">⌘</span>
+        <span class="tw-nav-txt"><b>生成桌面快捷方式</b><em>把常用网址放到桌面</em></span>
+      </button>
+      <button class="tw-nav-item" type="button" data-go="newpc">
+        <span class="tw-nav-ico">✦</span>
+        <span class="tw-nav-txt"><b>新机预设</b><em>换电脑后先装这些</em></span>
+      </button>
+      <!-- 「做张分享图」不在这个列表里：它是给我们自己宣传本站用的，
+           不是给用户的工具（首页那个入口上一轮也撤了）。
+           需要时直接开 tools.html?tool=share，那一页会隐藏左栏、占满整屏。 -->
+    </nav>
+
+    <!-- 右栏：工具本体。点左栏只会切换这里的 is-active -->
+    <div class="tw-stage" id="twStage">
+
   <section class="tw-panel" data-tool-panel="unit">
     <div class="card tw-card">
       <!-- 两个换算区上下叠着放，中间那个按钮点一下换上下位置。
@@ -494,6 +536,8 @@
       </div>
     </div>
   </section>
+    </div>
+  </div>
 </main>
 
 <!-- 所选格式在当前系统上用不了时的拦截弹窗。
@@ -521,15 +565,15 @@
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/data.js?v=20261016w"></script>
-<script src="js/seek.js?v=20261016w"></script>
-<script src="js/widgets.js?v=20261016w"></script>
-<script src="js/tools.js?v=20261016w"></script>
-<script src="js/specs.js?v=20261016w"></script>
-<script src="js/shortcut.js?v=20261016w"></script>
-<script src="js/presets.js?v=20261016w"></script>
-<script src="assets/js/qrcode.min.js?v=20261016w"></script>
-<script src="js/share.js?v=20261016w"></script>
-<script src="js/topbar.js?v=20261016w"></script>
+<script src="js/data.js?v=20261022c"></script>
+<script src="js/seek.js?v=20261022c"></script>
+<script src="js/widgets.js?v=20261022c"></script>
+<script src="js/tools.js?v=20261022c"></script>
+<script src="js/specs.js?v=20261022c"></script>
+<script src="js/shortcut.js?v=20261022c"></script>
+<script src="js/presets.js?v=20261022c"></script>
+<script src="assets/js/qrcode.min.js?v=20261022c"></script>
+<script src="js/share.js?v=20261022c"></script>
+<script src="js/topbar.js?v=20261022c"></script>
 </body>
 </html>

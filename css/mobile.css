@@ -1,0 +1,562 @@
+/* ============================================================
+   手机端布局（独立文件）
+   ------------------------------------------------------------
+   这里只放 max-width: 900px 下的规则，桌面端一行都不写。
+   以前这些块散在 skin-c.css 各处，和桌面规则互相覆盖，
+   改一次要来回翻；现在两端彻底分开，改哪端就开哪个文件。
+
+   引入方式见 index.html：
+     <link rel="stylesheet" href="css/mobile.css" media="(max-width: 900px)">
+   用 media 属性而不是 JS 判断 —— 浏览器自己按屏宽选样式表，
+   不需要任何脚本，用户也不会被「要不要切换版本」这种提示打扰。
+   ============================================================ */
+
+/* ============================================================
+   一、顶栏
+   ============================================================ */
+.topbar { padding: 12px 0; }
+.top-actions { display: none; }          /* 关于本站 / 赞助：窄屏太挤 */
+.topbar-inner { gap: 10px; }
+
+.skin-nav { gap: 13px; margin-left: 12px; }
+.skin-nav a { font-size: 12.5px; letter-spacing: 0; padding-bottom: 2px; }
+
+.top-right { gap: 5px; }
+.icon-btn { width: 36px; height: 36px; }
+
+/* ============================================================
+   二、标题区：启航 → 日期 → 时间，竖着排，段间不留空
+   ============================================================ */
+/* 用 block 而不是 flex：flex 的 basis / wrap / justify 三条属性
+   在窄屏下互相干扰，之前反复出现「高度算成 0」和「挤成一行」。 */
+.hb-hi {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  max-width: none !important;
+  padding: 0 !important;                 /* 原来底部有 12~14px，就是那道空行 */
+  flex: none !important;
+}
+.hb-hi > * {
+  display: block !important;
+  width: auto !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  text-align: left !important;
+}
+
+.hb-hello { display: none !important; }   /* 「你好 👋」这行窄屏不要 */
+
+.hb-h1::before {
+  font-size: 36px !important;
+  letter-spacing: 4px !important;
+  line-height: 1.2 !important;
+}
+
+.hb-date {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  margin: 6px 0 0 !important;
+}
+
+/* 时间加大到 40px —— 手机上一眼能看见现在几点 */
+.hb-clock,
+.hb-clock .clock {
+  font-size: 40px !important;
+  font-weight: 800 !important;
+  line-height: 1.15 !important;
+  letter-spacing: 0 !important;
+  margin: 2px 0 0 !important;
+}
+
+/* ============================================================
+   三、搜索：吃满整宽，紧跟时间下面
+   ============================================================ */
+.hero-block {
+  flex: none !important;
+  flex-direction: column !important;
+  align-items: stretch;
+  gap: 0;
+  padding: 6px 0 0;
+}
+
+.hb-row {
+  flex: none;
+  flex-direction: column !important;
+  align-items: stretch;
+  gap: 0;
+}
+
+.hb-center {
+  flex: none !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 10px 0 0 !important;           /* 原来 22px，那半截空白就在这 */
+  overflow: visible;
+}
+
+.hero-block .search-wrap,
+.search {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+}
+
+.search input { font-size: 17px !important; max-width: 100%; }
+.search input::placeholder { font-size: 15px !important; }
+.search-go {
+  font-size: 17px !important;
+  letter-spacing: 3px !important;
+  padding: 0 10px 0 14px !important;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* 候选框在窄屏贴着搜索框、等宽 */
+.search-panel {
+  width: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  max-height: 62vh !important;
+}
+
+/* ============================================================
+   四、天气：直接用电脑端那套横排
+   ------------------------------------------------------------
+   原站在窄屏会把 .wx 压成一个小方块（只剩图标 + 温度 + 城市），
+   占了一整行却几乎没信息。这里恢复成横排：
+   图标 ┊ 温度+天气 ┊ 最高最低湿度 ┊ 城市
+   ============================================================ */
+.hb-side {
+  position: static !important;
+  flex: none !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 12px 0 0 !important;
+  transform: none !important;
+  overflow: visible;
+}
+
+.wx {
+  width: 100% !important;
+  box-sizing: border-box;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start;
+  gap: 14px !important;
+  padding: 12px 16px !important;
+  transform: none !important;
+}
+
+.wx-ico { display: block !important; font-size: 30px !important; flex: none; }
+
+.wx-now { display: block !important; flex: none; }
+.wx-now b { font-size: 34px !important; }
+.wx-now b small { font-size: 13px !important; }
+.wx-now em { font-size: 12.5px !important; }
+
+.wx-meta {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  font-size: 12.5px !important;
+  flex: none;
+}
+.wx-meta b { font-size: 13.5px !important; }
+
+.city-btn {
+  margin-left: auto !important;          /* 城市推到最右 */
+  font-size: 14px !important;
+  padding: 5px 12px !important;
+  flex: none;
+}
+
+/* ============================================================
+   五、三个入口：按内容排，不锁视口高
+   ============================================================ */
+#top {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  padding-bottom: 24px !important;
+}
+
+.pw-row {
+  flex: none !important;
+  min-height: 0;
+  margin-top: 22px !important;
+  gap: 10px;
+}
+
+.pw {
+  flex: none !important;
+  position: relative;
+  display: block;
+  min-height: 92px;
+  padding: 16px 46px 16px 16px !important;
+  box-sizing: border-box;
+}
+
+.pw-head { display: flex; align-items: baseline; flex-wrap: wrap; }
+.pw-head::before { width: 34px !important; font-size: 12px !important; }
+.pw-head h2 { font-size: 23px !important; letter-spacing: 2px !important; }
+.pw-sub {
+  margin: 6px 0 0 !important;
+  padding-left: 34px !important;
+  font-size: 13.5px !important;
+  width: 100%;
+}
+.pw-go {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0 !important;
+}
+.pw-go::after { font-size: 18px !important; }
+.pw:hover .pw-go { transform: translateY(-50%) translateX(3px); }
+
+/* ============================================================
+   六、页脚：窄屏整块不要（纯装饰，占地方）
+   ============================================================ */
+.home-foot { display: none !important; }
+
+/* ============================================================
+   手机端修补 v2
+   ------------------------------------------------------------
+   1. 候选框和搜索框一样宽
+   2. 三个入口把上下空间填满
+   3. 箭头改用 flex 居中（原来 absolute + translateY(-50%)，
+      实测偏上 13px，只有 hover 那条 transform 才对）
+   ============================================================ */
+
+/* 1. 候选框：跟搜索框同宽 */
+.search-panel {
+  width: 100% !important;
+  max-width: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+}
+
+/* 2. 三个入口：让按钮区吃掉剩下的高度，三个均分 */
+#top {
+  min-height: 100vh !important;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 18px !important;
+}
+.hero-block { flex: 0 0 auto !important; }
+
+.pw-row {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  margin-top: 16px !important;
+  gap: 12px;
+}
+.pw {
+  flex: 1 1 0 !important;
+  min-height: 88px;
+  /* 用 flex 排，箭头靠 align-items 居中 —— 不再绝对定位 */
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: center;
+  row-gap: 4px;
+  padding: 14px 16px !important;
+}
+
+/* 顺序：编号+标题 → 箭头 → 描述（描述独占一行） */
+.pw-head { order: 1; flex: 1 1 auto; min-width: 0; }
+.pw-go {
+  order: 2;
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  transform: none !important;
+  margin: 0 0 0 auto !important;
+  flex: none;
+  display: flex;
+  align-items: center;
+}
+.pw:hover .pw-go { transform: none !important; }
+.pw-sub {
+  order: 3;
+  flex: 1 1 100%;
+  margin: 2px 0 0 !important;
+  padding-left: 34px !important;
+}
+
+.pw-go::after { font-size: 20px !important; }
+
+
+/* ============================================================
+   手机端修补 v3（推翻上一版的 flex 排法）
+   ------------------------------------------------------------
+   上一版把 .pw 改成 flex + wrap + order，结果三块变成矮条、
+   箭头挤到标题右边、还出现了横向滚动条。
+   回到 block 布局，箭头用 absolute + 固定负边距居中 ——
+   比 transform: translateY(-50%) 可靠（那一条实测会偏 13px）。
+   ============================================================ */
+
+/* 1. 候选框和搜索框同宽 */
+.search-panel {
+  width: 100% !important;
+  max-width: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+}
+
+/* 2. 主体撑满一屏，按钮区吃掉剩余高度 */
+#top {
+  min-height: 100vh !important;
+  height: auto !important;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 16px !important;
+}
+.hero-block { flex: 0 0 auto !important; }
+
+.pw-row {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  margin-top: 16px !important;
+  gap: 12px !important;
+}
+
+/* 3. 三个入口：block 布局 + 箭头绝对定位居中 */
+.pw {
+  flex: 1 1 0 !important;
+  min-height: 92px;
+  position: relative !important;
+  display: block !important;
+  padding: 16px 48px 16px 16px !important;
+  box-sizing: border-box;
+}
+
+.pw-head {
+  display: flex !important;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0;
+}
+.pw-head::before { width: 34px !important; font-size: 12px !important; }
+.pw-head h2 { font-size: 22px !important; letter-spacing: 2px !important; }
+
+.pw-sub {
+  display: block !important;
+  margin: 6px 0 0 !important;
+  padding-left: 34px !important;
+  font-size: 13.5px !important;
+  width: 100%;
+}
+
+/* 箭头：absolute + margin-top 负值（箭头自身高约 24px，上移一半就居中） */
+.pw-go {
+  position: absolute !important;
+  right: 16px !important;
+  top: 50% !important;
+  left: auto !important;
+  margin: -12px 0 0 0 !important;
+  transform: none !important;
+  display: block;
+  line-height: 24px;
+}
+.pw-go::after { font-size: 20px !important; line-height: 24px; }
+.pw:hover .pw-go { transform: none !important; }
+.pw:hover .pw-go::after { color: #D6401E; }
+
+
+/* ============================================================
+   手机端最终覆盖（推翻前面两段实验）
+   ------------------------------------------------------------
+   前两版试过「#top 撑满 100vh + .pw flex: 1」，结果按钮被压成
+   40px 高的矮条、文字只剩一半，还多出横向滚动条。
+   这一版回到最朴素的写法：内容多高就多高，不再强行拉伸。
+   ============================================================ */
+
+/* 主体：不再锁高度，也不再 flex 列 */
+#top {
+  display: block !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding-bottom: 20px !important;
+  overflow: visible !important;
+}
+
+.pw-row {
+  display: flex !important;
+  flex-direction: column;
+  gap: 12px !important;
+  margin-top: 20px !important;
+  padding: 0 !important;
+}
+
+/* 三个入口：block + 相对定位，箭头绝对居中 */
+.pw {
+  display: block !important;
+  position: relative !important;
+  flex: none !important;
+  min-height: 96px;
+  height: auto;
+  padding: 16px 50px 16px 16px !important;
+  box-sizing: border-box;
+}
+
+.pw-head {
+  display: flex !important;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.pw-head::before { width: 34px !important; font-size: 12px !important; }
+.pw-head h2 { font-size: 22px !important; letter-spacing: 2px !important; }
+
+.pw-sub {
+  display: block !important;
+  margin: 6px 0 0 !important;
+  padding-left: 34px !important;
+  font-size: 13.5px !important;
+  width: 100%;
+}
+
+/* 箭头：top 50% + 固定负边距（箭头行高 22px，上移 11px 正中） */
+.pw-go {
+  position: absolute !important;
+  right: 16px !important;
+  left: auto !important;
+  top: 50% !important;
+  margin: -11px 0 0 0 !important;
+  transform: none !important;
+  display: block !important;
+  line-height: 22px !important;
+  font-size: 0 !important;
+}
+.pw-go::after {
+  font-size: 20px !important;
+  line-height: 22px !important;
+  display: inline-block;
+}
+.pw:hover .pw-go { transform: none !important; }
+.pw:hover .pw-go::after { color: #D6401E; }
+
+/* 候选框跟搜索框同宽 */
+.search-panel {
+  width: 100% !important;
+  max-width: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  box-sizing: border-box;
+}
+
+
+/* ---- 手机端：搜索框加高 ----
+   原来只有 58px 高，红框范围（约 110px）里上下空着。 */
+@media (max-width: 900px) {
+  .hb-center { margin: 14px 0 0 !important; }
+  .search { min-height: 76px !important; }
+  .search input { font-size: 19px !important; }
+  .search input::placeholder { font-size: 17px !important; }
+  .search-go { font-size: 19px !important; letter-spacing: 4px !important; padding: 0 12px 0 18px !important; }
+}
+
+/* ---- 手机端搜索按钮过宽 ----
+   字号放大后它占掉了搜索行的一半（实测 225px），
+   把内边距和字距收一档，并锁死 flex 不参与拉伸。 */
+@media (max-width: 900px) {
+  .search-go {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    font-size: 18px !important;
+    letter-spacing: 2px !important;
+    padding: 0 10px 0 14px !important;
+  }
+}
+
+/* ============================================================
+   手机端：天气的地区选择改回右下角
+   ------------------------------------------------------------
+   桌面端把城市按钮挪到了上方（那边有空间）。手机端空间本来就紧，
+   挪上去反而多占一整行 —— 这一端保持原来「右下角」的排法。
+   ============================================================ */
+.wx {
+  flex-wrap: nowrap !important;
+  align-content: normal !important;
+  align-items: center !important;
+  row-gap: 0 !important;
+}
+.city-btn {
+  order: 0 !important;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  margin: 0 0 0 auto !important;
+  padding: 4px 10px !important;
+  font-size: 12px !important;
+}
+.wx-ico { font-size: 26px !important; }
+.wx-now b { font-size: 30px !important; }
+.wx-now b small { font-size: 12px !important; }
+.wx-now em { font-size: 11.5px !important; }
+.wx-meta { font-size: 11.5px !important; line-height: 1.5 !important; gap: 0 !important; }
+.wx-meta b { font-size: 12.5px !important; }
+
+/* 手机端不做「收藏网址」的预留位 —— 那是桌面端的排布 */
+.hb-center::after { content: none !important; display: none !important; }
+
+/* ---- 手机端城市按钮：收回右下角 ----
+   上面写了 flex: 0 0 auto 但它还是占整行（flex-basis 被桌面那条
+   flex: 0 0 100% 顶住了）。这里用 width + max-width 双保险卡死。 */
+.city-btn {
+  flex: 0 1 auto !important;
+  flex-basis: auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 42% !important;
+  margin: 0 0 0 auto !important;
+  order: 0 !important;
+  align-self: center !important;
+}
+.wx {
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+}
+.wx-meta { flex: 1 1 auto; min-width: 0; }
+
+/* ---- 手机端：把「收藏网址」的预留位加回来 ----
+   上一版我误删了。恢复成桌面端那种虚线占位，高度略小（手机屏幕窄）。 */
+.hb-center::after {
+  content: "" !important;
+  display: block !important;
+  flex: none;
+  width: 100%;
+  height: 56px;
+  margin: 12px 0 0;
+  border: 1px dashed var(--border-strong);
+  border-radius: 4px;
+  opacity: .55;
+  box-sizing: border-box;
+}
+
+/* ---- 修横向溢出 ----
+   预留区写 width: 100% 之后多出一条横向滚动条，
+   改成 auto（block 元素本来就会撑满父级），再把左右外边距归零。 */
+.hb-center::after {
+  width: auto !important;
+  max-width: 100%;
+  margin: 12px 0 0 !important;
+}
+
+/* ---- 手机端候选框高度：同样按视口百分比 ---- */
+.search-panel {
+  height: 58vh !important;
+  max-height: 58vh !important;
+  min-height: 260px;
+  overflow-y: auto;
+}
+
+/* ---- 手机端候选悬停：同样 2px 黑色描边 ---- */
+.search-item:hover,
+.search-item:active {
+  outline: 2px solid #14161A;
+  outline-offset: -2px;
+}

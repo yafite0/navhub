@@ -103,24 +103,54 @@
 
     if (!want || !document.querySelector('[data-tool-panel="' + want + '"]')) want = 'unit';
 
-    Array.prototype.forEach.call(panels, function (p) {
-      p.classList.toggle('is-active', p.getAttribute('data-tool-panel') === want);
-    });
+    var nav = $('twNav');
 
-    /* 把当前工具名挂到 body 上：个别工具（分享）要按视口高度撑满，
-       用属性选择器比 :has() 稳，旧一点的浏览器也认。 */
-    document.body.setAttribute('data-tool', want);
+    /* 切到某个工具：只换右栏、左栏高亮，不重排整页 */
+    function apply(key) {
+      Array.prototype.forEach.call(panels, function (p) {
+        p.classList.toggle('is-active', p.getAttribute('data-tool-panel') === key);
+      });
 
-    var meta = TOOL_META[want];
-    if (meta) {
-      if ($('twTitle')) $('twTitle').textContent = meta.t;
-      /* 有些工具页没有说明（比如单位换算），这时把 <p> 整个藏掉 ——
-         留个空段落会占掉一行的高度 */
-      var desc = $('twDesc');
-      if (desc) {
-        desc.textContent = meta.d || '';
-        desc.hidden = !meta.d;
+      /* 把当前工具名挂到 body 上：个别工具（分享）要按视口高度撑满，
+         用属性选择器比 :has() 稳，旧一点的浏览器也认。 */
+      document.body.setAttribute('data-tool', key);
+
+      if (nav) {
+        Array.prototype.forEach.call(nav.querySelectorAll('[data-go]'), function (b) {
+          b.classList.toggle('is-on', b.getAttribute('data-go') === key);
+          b.setAttribute('aria-current', b.getAttribute('data-go') === key ? 'page' : 'false');
+        });
       }
+
+      var meta = TOOL_META[key];
+      if (meta) {
+        if ($('twTitle')) $('twTitle').textContent = meta.t;
+        /* 有些工具页没有说明（比如单位换算），这时把 <p> 整个藏掉 ——
+           留个空段落会占掉一行的高度 */
+        var desc = $('twDesc');
+        if (desc) {
+          desc.textContent = meta.d || '';
+          desc.hidden = !meta.d;
+        }
+      }
+    }
+
+    apply(want);
+
+    /* 左栏点一下就换 —— 不刷新页面（列表本身不动），
+       只把地址栏的 ?tool= 改掉，这样刷新 / 分享还能直达同一个工具。
+       用 replaceState 而不是 pushState：不想为了切工具往历史里塞一堆记录，
+       按浏览器「后退」应该回上一个页面，不是上一个工具。 */
+    if (nav) {
+      Array.prototype.forEach.call(nav.querySelectorAll('[data-go]'), function (btn) {
+        btn.addEventListener('click', function () {
+          var key = btn.getAttribute('data-go');
+          if (key === want) return;
+          want = key;
+          apply(key);
+          try { history.replaceState(null, '', '?tool=' + key); } catch (e) { }
+        });
+      });
     }
   }
 

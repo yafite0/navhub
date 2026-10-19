@@ -7,7 +7,12 @@
 <meta name="description" content="常用网站导航页：常用直达、分类浏览、快速搜索，还有天气、便签待办和单位换算小工具。" />
 <meta name="theme-color" content="#4D6BFE" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-<link rel="stylesheet" href="css/style.css?v=20261016w" />
+<link rel="stylesheet" href="css/style.css?v=20261022c" />
+<link rel="stylesheet" href="css/skin-b.css?v=20261022c" />
+<link rel="stylesheet" href="css/skin-c.css?v=20261022c" />
+<link rel="stylesheet" href="css/mobile.css?v=20261022c" media="(max-width: 900px)" />
+
+
 </head>
 <body>
 <div class="bg-decor" aria-hidden="true">
@@ -53,7 +58,7 @@
               <svg class="search-icon" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
                 <circle cx="11" cy="11" r="6.4"/><path d="M16 16l4.2 4.2"/>
               </svg>
-              <input id="searchInput" type="text" enterkeyhint="search" placeholder="如果没有对应网站，也能进行纯净搜索！" aria-label="搜索网站，或输入网址和问题" />
+              <input id="searchInput" type="text" enterkeyhint="search" placeholder="输入网址或关键词" aria-label="搜索网站，或输入网址和问题" />
               <button type="button" class="search-clear" id="searchClear" hidden aria-label="清空">×</button>
               <kbd class="search-kbd">/</kbd>
               <button type="submit" class="search-go" id="searchGo" disabled>搜索</button>
@@ -121,6 +126,22 @@
         <p class="pw-sub">专业提示词，把网页 AI 变成专业工具</p>
         <div class="pw-chips" id="presetChips"></div>
         <a class="pw-go" href="translate.html">更多提示词</a>
+      </section>
+
+      <!-- ③ 官网：和上面两块同一级的第三个入口。
+           之前「更多官网」是右角那条竖按钮，和这两块不是一个分量；
+           两套皮肤里都要求三个入口并列，这里补上第三块。 -->
+      <section class="pw pw-sites">
+        <div class="pw-head">
+          <h2>官网</h2>
+        </div>
+        <p class="pw-sub">常用官网，按分类浏览</p>
+        <ul class="pw-list">
+          <li>常用软件 · AI 工具</li>
+          <li>游戏 · 在线翻译</li>
+          <li>每个都标了国内 / 国外</li>
+        </ul>
+        <a class="pw-go" href="sites.html">更多官网</a>
       </section>
 
       <section class="pw pw-tool">
@@ -196,6 +217,15 @@
       </section>
     </div>
   </div>
+
+  <!-- 页脚：照设计图加的一行小字。
+       只在「工业 / 图纸」两套皮肤下显示，原版下整块 display:none ——
+       原版布局要求一个字都不变，所以它不能出现。 -->
+  <footer class="home-foot" id="homeFoot">
+    <span class="hf-left">NAVHUB / LOCAL-FIRST</span>
+    <span class="hf-mid">100 SITES</span>
+    <span class="hf-right">NO TRACKING · NO UPLOAD</span>
+  </footer>
 
 </main>
 
@@ -327,10 +357,11 @@
 </div>
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/data.js?v=20261016w"></script>
-<script src="js/seek.js?v=20261016w"></script>
-<script src="js/app.js?v=20261016w"></script>
-<script src="js/widgets.js?v=20261016w"></script>
-<script src="js/topbar.js?v=20261016w"></script>
+<script src="js/data.js?v=20261022c"></script>
+<script src="js/seek.js?v=20261022c"></script>
+<script src="js/pinyin.js?v=20261022c"></script>
+<script src="js/app.js?v=20261022c"></script>
+<script src="js/widgets.js?v=20261022c"></script>
+<script src="js/topbar.js?v=20261022c"></script>
 </body>
 </html>
