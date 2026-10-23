@@ -910,12 +910,58 @@
        这里按「面板顶边 → 搜索块底边」算出还剩多少地方，超出就在面板里滚 ——
        保证它永远不越出搜索块，也就不可能挡住那两块。 */
     function fitPanel() {
+      var top = panel.getBoundingClientRect().top;
+
+      /* 简约档案 + 宽屏：fixed 定位，按视口实算
+         （fixed 是为了躲开 #top 的 overflow: hidden ——
+          absolute 时超出 #top 底边的部分会被裁掉，屏幕越矮裁得越狠） */
+      var theme = document.documentElement.getAttribute('data-theme');
+      var narrow = window.matchMedia('(max-width: 600px)').matches;
+
+      var wrap = document.querySelector('.hero-block .search-wrap');
+
+      /* 调试痕迹：把这次判断的三个依据记在 dataset 上。
+         诊断页(diag.html)会读它 —— 这样能确认「执行那一刻」条件是什么，
+         而不是事后从外部推测。 */
+      panel.dataset.fitTheme = String(theme);
+      panel.dataset.fitNarrow = String(narrow);
+      panel.dataset.fitWrap = String(!!wrap);
+      panel.dataset.fitAt = String(Date.now()).slice(-6);
+
+      if (theme === 'c' && !narrow && wrap) {
+        panel.dataset.fitBranch = 'new';
+        var wr = wrap.getBoundingClientRect();
+        var pt = wr.bottom + 10;                    /* 接在搜索框底下 */
+        var ph = window.innerHeight - pt - 24;      /* 到视口底部，留 24px */
+
+        /* fixed 的基准是视口，所以直接用 rect 的视口坐标即可 */
+        panel.style.position = 'fixed';
+        panel.style.left = Math.round(wr.left) + 'px';
+        panel.style.right = 'auto';
+        panel.style.top = Math.round(pt) + 'px';
+        panel.style.width = Math.round(wr.width) + 'px';
+        panel.style.height = Math.max(120, Math.round(ph)) + "px";
+        panel.style.maxHeight = '';
+        return;
+      }
+
+      /* 其他情况（原版 / 工业 / 手机）：恢复 absolute，走原来的算法 */
+      panel.dataset.fitBranch = 'old';
+      panel.style.position = '';
+      panel.style.left = '';
+      panel.style.right = '';
+      panel.style.top = '';
+      panel.style.width = '';
+
       var block = document.querySelector('.hero-block');
       if (!block) return;
-      var room = block.getBoundingClientRect().bottom - panel.getBoundingClientRect().top - 14;
+      var room = block.getBoundingClientRect().bottom - top - 14;
       panel.style.maxHeight = Math.max(150, Math.round(room)) + 'px';
+      panel.style.height = '';
     }
     function show() { panel.hidden = false; fitPanel(); }
+    /* 皮肤或明暗切换后布局会变，面板要是开着就重新量一次 */
+    window.addEventListener('navhub:themechange', function () { if (!panel.hidden) fitPanel(); });
     window.addEventListener('resize', function () { if (!panel.hidden) fitPanel(); });
   /* 把文本里命中查询词的部分包成 <mark>。
      查询可能带空格（多关键词），逐个都要标出来。 */

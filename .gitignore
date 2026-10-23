@@ -25,3 +25,12 @@ lab.html
 css/lab.css
 js/lab.js
 
+
+# 项目制作要求（给 AI 看的施工规范），只在本机流转，不进仓库
+PROJECT-REQUIREMENTS.txt
+
+# 踩坑记录（给自己看的经验库），不进仓库
+PITFALLS.txt
+
+# 临时诊断页
+diag.html

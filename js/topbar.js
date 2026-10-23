@@ -147,7 +147,13 @@
     /* 地址栏/状态栏的配色跟着皮肤走 */
     var tc = { dark: '#07080A', c: '#F4F3EF', blue: '#4D6BFE' };
     if (meta) meta.setAttribute('content', tc[t] || '#F4F3EF');
-  }
+
+    /* 通知其他模块布局可能变了。搜索候选框的高度是按视口实算的，
+       换了皮肤之后要是面板正开着，得重新量一次。 */
+    try {
+      window.dispatchEvent(new CustomEvent('navhub:themechange', { detail: { skin: t } }));
+    } catch (e) { }
+    }
   /* 三个界面预设：图纸 / 工业 / 原版。
      老版本只有 light / dark 两个值，localStorage 里可能还存着 'light'，
      这里统一映射成 'c'，不然读出来的皮肤名并不存在。 */
