@@ -3185,3 +3185,276 @@ html[data-mode="dark"] #modeBtn .ico-night { display: block; }
   .skin-nav a { font-size: 11.5px; letter-spacing: 1px; }
   .icon-btn { width: 34px; height: 34px; }
 }
+
+
+/* ============================================================
+   收藏命名对话框（全局组件，三套皮肤共用变量）
+   ============================================================ */
+.fd-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(20, 22, 26, .42);
+  box-sizing: border-box;
+}
+
+.fd-box {
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  padding: 22px 24px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: 8px;
+  box-shadow: 0 24px 60px -28px rgba(0, 0, 0, .5);
+}
+
+.fd-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: .5px;
+}
+
+.fd-hint {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-3);
+}
+
+.fd-input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 14px;
+  padding: 10px 12px;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--surface-2, var(--surface));
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: 4px;
+  outline: none;
+  transition: border-color .18s;
+}
+.fd-input:focus { border-color: var(--brand); }
+
+.fd-count {
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: var(--text-3);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.fd-sug {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.fd-sug-label {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.fd-sug-btn {
+  padding: 4px 10px;
+  font-size: 12.5px;
+  color: var(--text-2);
+  background: transparent;
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color .18s, color .18s;
+}
+.fd-sug-btn:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+.fd-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.fd-btn {
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-2);
+  background: transparent;
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all .18s;
+}
+.fd-btn:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+.fd-btn.is-primary {
+  color: var(--surface);
+  background: var(--text);
+  border-color: var(--text);
+}
+.fd-btn.is-primary:hover {
+  color: var(--surface);
+  opacity: .88;
+}
+
+.fd-btn.is-danger {
+  color: #D6401E;
+  border-color: rgba(214, 64, 30, .45);
+}
+.fd-btn.is-danger:hover {
+  color: #fff;
+  background: #D6401E;
+  border-color: #D6401E;
+}
+
+
+
+/* ============================================================
+   风险网址警告弹窗
+   ------------------------------------------------------------
+   拦截式：不点「继续前往」就不会跳转。
+   红色是「继续」（有风险的动作），绿色是「取消」（安全的那边，也是默认焦点）。
+   ============================================================ */
+.rk-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(20, 22, 26, .48);
+  box-sizing: border-box;
+}
+
+.rk-box {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  box-sizing: border-box;
+  padding: 24px 26px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: 8px;
+  box-shadow: 0 28px 70px -30px rgba(0, 0, 0, .55);
+}
+
+/* 右上角关闭：关掉 = 不访问 */
+.rk-x {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--text-3);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color .18s, background .18s;
+}
+.rk-x:hover { color: var(--text); background: var(--surface-2, rgba(0,0,0,.05)); }
+
+.rk-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  color: #D6401E;
+  padding-right: 32px;
+}
+
+/* 标题前那个感叹号圆标 */
+.rk-title::before {
+  content: "!";
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  background: #D6401E;
+  border-radius: 50%;
+}
+
+.rk-body {
+  margin-top: 14px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text-2);
+}
+.rk-body p { margin: 0 0 10px; }
+.rk-body p:last-of-type { margin-bottom: 12px; }
+
+.rk-url {
+  display: block;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: Consolas, ui-monospace, monospace;
+  color: var(--text);
+  background: var(--surface-2, rgba(0, 0, 0, .04));
+  border: 1px solid var(--border, rgba(0, 0, 0, .1));
+  border-radius: 4px;
+  word-break: break-all;
+}
+
+.rk-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.rk-btn {
+  padding: 10px 20px;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all .18s;
+}
+
+/* 绿色：取消访问（安全的一边） */
+.rk-btn.is-safe {
+  color: #fff;
+  background: #17864B;
+  border: 1px solid #17864B;
+}
+.rk-btn.is-safe:hover { background: #12703E; border-color: #12703E; }
+
+/* 红色：继续前往（有风险的动作） */
+.rk-btn.is-risk {
+  color: #fff;
+  background: #D6401E;
+  border: 1px solid #D6401E;
+}
+.rk-btn.is-risk:hover { background: #BC3719; border-color: #BC3719; }
+
+.rk-btn:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+

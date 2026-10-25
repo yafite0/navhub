@@ -211,6 +211,17 @@
     actions.appendChild(go);
     card.appendChild(actions);
 
+    /* 右上角的收藏星标（js/favs.js）。
+       原来那个角落放着「（7z）国外」两个标签，现在标签挪到站名后面了，
+       这块空出来正好当收藏按钮。 */
+    if (window.mountFav) {
+      /* 给收藏对话框备几个「常用名」：站点名 / 别名 / 域名 */
+      var sugs = [s.name];
+      if (s.alias && s.alias.length) sugs = sugs.concat(s.alias);
+      sugs.push(domainOf(s.url));
+      window.mountFav(card, s.url, s.name, sugs);
+    }
+
     return card;
   }
 

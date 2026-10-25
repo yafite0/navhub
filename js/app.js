@@ -916,20 +916,13 @@
          （fixed 是为了躲开 #top 的 overflow: hidden ——
           absolute 时超出 #top 底边的部分会被裁掉，屏幕越矮裁得越狠） */
       var theme = document.documentElement.getAttribute('data-theme');
-      var narrow = window.matchMedia('(max-width: 600px)').matches;
 
       var wrap = document.querySelector('.hero-block .search-wrap');
 
-      /* 调试痕迹：把这次判断的三个依据记在 dataset 上。
-         诊断页(diag.html)会读它 —— 这样能确认「执行那一刻」条件是什么，
-         而不是事后从外部推测。 */
-      panel.dataset.fitTheme = String(theme);
-      panel.dataset.fitNarrow = String(narrow);
-      panel.dataset.fitWrap = String(!!wrap);
-      panel.dataset.fitAt = String(Date.now()).slice(-6);
 
-      if (theme === 'c' && !narrow && wrap) {
-        panel.dataset.fitBranch = 'new';
+      /* 手机端也走同一套算法 —— 候选项要能一直铺到屏幕底部。
+         原来窄屏走的是「hero 底边」那条老路，只剩两条能看见。 */
+      if (theme === 'c' && wrap) {
         var wr = wrap.getBoundingClientRect();
         var pt = wr.bottom + 10;                    /* 接在搜索框底下 */
         var ph = window.innerHeight - pt - 24;      /* 到视口底部，留 24px */
@@ -946,7 +939,6 @@
       }
 
       /* 其他情况（原版 / 工业 / 手机）：恢复 absolute，走原来的算法 */
-      panel.dataset.fitBranch = 'old';
       panel.style.position = '';
       panel.style.left = '';
       panel.style.right = '';
@@ -1109,15 +1101,80 @@
 
        以前这里会「有结果就打开第一条」，和「点条目就是前往官网」撞在一起，
        同一个动作两套结果，说不清点了会发生什么。 */
+    /* ---------- 执行搜索 ---------- */
+
+    /* 交给搜索引擎 */
+    function searchNow(raw) {
+      var engines = window.Seek ? Seek.engines() : [];
+      if (!engines.length) return;
+      openSite(Seek.engineHref(engines[0], raw));
+    }
+
+    /* 探测一个地址是否能连上。
+       判定方式和局限见文件顶部注释 —— 只能区分「域名在不在」，
+       区分不了「这个页面存不存在」，但对「该不该跳过去」够用了。 */
+    function probe(url) {
+      return new Promise(function (resolve) {
+        var settled = false;
+        var timer = setTimeout(function () {
+          if (!settled) { settled = true; resolve(false); }
+        }, 2500);
+
+        fetch(url, { method: 'HEAD', mode: 'no-cors', cache: 'no-store' })
+          .then(function () {
+            if (!settled) { settled = true; clearTimeout(timer); resolve(true); }
+          })
+          .catch(function () {
+            if (!settled) { settled = true; clearTimeout(timer); resolve(false); }
+          });
+      });
+    }
+
+    /* 把输入拼成候选网址，逐个探测，返回第一个通的（没有就 null） */
+    function tryUrl(raw) {
+      var list = [];
+
+      if (/^https?:\/\//i.test(raw)) {
+        list = [raw];
+      } else if (raw.indexOf('.') > -1 && !/\s/.test(raw)) {
+        /* 像 yafite0.github.io/navhub/ 这种，只差一个协议 */
+        list = ['https://' + raw];
+      } else if (/^[a-z0-9-]+$/i.test(raw)) {
+        /* 单个词，补最常见的后缀。只试 .com —— 试五个要等十几秒 */
+        list = ['https://' + raw + '.com'];
+      } else {
+        return Promise.resolve(null);
+      }
+
+      return list.reduce(function (p, u) {
+        return p.then(function (hit) {
+          if (hit) return hit;
+          return probe(u).then(function (ok) { return ok ? u : null; });
+        });
+      }, Promise.resolve(null));
+    }
+
     function go() {
       var raw = input.value.trim();
       if (!raw) return;
-
-      var engines = window.Seek ? Seek.engines() : [];
-      if (!engines.length) return;
-
-      openSite(Seek.engineHref(engines[0], raw));
       close();
+
+      /* 有中文就一定是想搜东西，不当网址 */
+      if (/[\u4e00-\u9fa5]/.test(raw)) { searchNow(raw); return; }
+
+      /* 没有中文：先当网址试一下，打不开再搜 */
+      tryUrl(raw).then(function (hit) {
+        if (!hit) { searchNow(raw); return; }
+
+        /* 后缀在风险名单里就先拦一下，让用户自己决定要不要继续。
+           只在「确实要跳转」这一刻检查 —— 探测失败退化成搜索时不打扰。 */
+        var tld = window.riskyTld ? window.riskyTld(hit) : '';
+        if (!tld || !window.warnRisky) { openSite(hit); return; }
+
+        window.warnRisky(hit, tld).then(function (goOn) {
+          if (goOn) openSite(hit);
+        });
+      });
     }
 
     input.addEventListener('keydown', function (e) {

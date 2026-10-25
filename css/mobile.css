@@ -580,3 +580,125 @@ html[data-theme="c"] .pw-sub {
   text-align: left;
 }
 
+
+
+/* ============================================================
+   手机端收尾 v2
+   ============================================================ */
+
+/* ---------- 一、去掉收藏栏下面那条空的虚线框 ----------
+   .hb-center::after 原来是「收藏网址预留位」画的虚线占位。
+   桌面端已经换成真实收藏栏了，手机端这两条还在，会多出一条空框。 */
+html[data-theme="c"] .hb-center::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* ---------- 二、收藏框：提示缩小，高度留三行 ---------- */
+html[data-theme="c"] .fav-bar {
+  min-height: 0;
+  max-height: 132px;        /* 约三行胶囊 */
+  overflow: hidden;
+  padding: 10px 12px;
+  margin: 10px 0 0;
+}
+
+/* 提示从 28px 收到 16px —— 28 在手机上一句占四行，把收藏位置全占了 */
+html[data-theme="c"] .fav-empty {
+  font-size: 16px;
+  line-height: 1.65;
+  font-weight: 600;
+  padding: 0 4px;
+}
+
+/* 手机是竖排，按钮不用缩在框里 —— 放到收藏框正下方，占满一行 */
+html[data-theme="c"] .fav-more {
+  position: static;
+  width: 100%;
+  margin: 8px 0 0;
+  padding: 11px 0;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+/* 展开后不限制高度 */
+html[data-theme="c"] .fav-bar.is-open {
+  max-height: none;
+  overflow: visible;
+}
+
+/* ---------- 三、顶栏：只留首页，放大到 200%，加「关于本站」图标 ---------- */
+/* 隐藏首页以外的导航项 */
+html[data-theme="c"] .skin-nav a:not(:first-child) { display: none; }
+
+/* 首页放大一倍（13 → 26） */
+html[data-theme="c"] .skin-nav {
+  gap: 0;
+  margin-left: 0;
+  flex: 0 0 auto;
+}
+html[data-theme="c"] .skin-nav a {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding-bottom: 4px;
+}
+
+/* 「关于本站」恢复显示，但只留一个圆形图标，文字藏掉。
+   位置正好在「首页」和右边那组按钮之间。 */
+html[data-theme="c"] .top-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 0 10px;
+  flex: 0 0 auto;
+}
+
+html[data-theme="c"] .top-actions .top-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 0;                 /* 藏掉「关于本站」四个字 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: transparent;
+  flex: 0 0 auto;
+}
+
+/* 用 ⓘ 当图标，比塞 SVG 省事，也不挑字体 */
+html[data-theme="c"] .top-actions .top-btn::before {
+  content: "\24D8";
+  font-size: 19px;
+  line-height: 1;
+  font-weight: 400;
+  color: var(--text-2);
+}
+
+/* 赞助按钮继续保持隐藏 */
+html[data-theme="c"] .top-actions .top-btn.is-sponsor { display: none; }
+
+/* ---------- 四、搜索候选框：允许一直填到屏幕底部 ---------- */
+html[data-theme="c"] .search-panel {
+  max-height: none !important;
+  min-height: 220px;
+}
+
+
+/* ---- 收藏框：三行胶囊的高度 ----
+   一行 34px（图标 22 + 上下内边距 12），三行 + 两个行间距 16 + 容器内边距 20 = 138。 */
+html[data-theme="c"] .fav-bar { max-height: 142px; }
+
+/* ---- 修正：只留「首页」的规则没生效 ----
+   实测 .skin-nav 还是 223 宽（该是 100 出头），说明隐藏项还占着位置。
+   换成 nth-child(n+2) 并加 !important —— 这一条必须赢，
+   否则首页放大到 26px 之后整条顶栏会溢出屏幕。 */
+html[data-theme="c"] .skin-nav a:nth-child(n+2) {
+  display: none !important;
+}
+html[data-theme="c"] .skin-nav {
+  gap: 0 !important;
+  margin-left: 0 !important;
+}
