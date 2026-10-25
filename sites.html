@@ -6,13 +6,13 @@
 <meta name="description" content="启航 · 全部网站，按用途分类列出收录的所有官方站点，支持实时筛选。" />
 <title>其他网页 · 启航</title>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-<link rel="stylesheet" href="css/style.css?v=20261025f" />
+<link rel="stylesheet" href="css/style.css?v=20261025y" />
 
 
-<link rel="stylesheet" href="css/sites.css?v=20261025f" />
-<link rel="stylesheet" href="css/skin-b.css?v=20261025f" />
-<link rel="stylesheet" href="css/skin-c.css?v=20261025f" />
-  <link rel="stylesheet" href="css/mobile.css?v=20261025g" media="(max-width: 600px)" />
+<link rel="stylesheet" href="css/sites.css?v=20261025y" />
+<link rel="stylesheet" href="css/skin-b.css?v=20261025y" />
+<link rel="stylesheet" href="css/skin-c.css?v=20261025y" />
+  <link rel="stylesheet" href="css/mobile.css?v=20261025y" media="(max-width: 600px)" />
 
 
 </head>
@@ -29,12 +29,18 @@
     <div class="page-head">
       <div class="page-head-text">
         <h1>其他网页</h1>
+        <!-- 问号圆按钮：贴着标题右侧，点开「关于国外站点」那段说明 -->
+        <button class="as-help" id="asHelp" type="button" aria-label="关于国外站点" title="关于国外站点">?</button>
       </div>
 
-      <a class="back-home" href="index.html">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6l-6 6 6 6"/></svg>
-        <span>返回主页</span>
-      </a>
+      <div class="page-head-actions">
+        <a class="back-home" href="index.html">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6l-6 6 6 6"/></svg>
+          <span>返回主页</span>
+        </a>
+        <!-- 分类按钮：和「返回主页」同一行，靠右，宽度约是它的两倍 -->
+        <button class="as-cat-open" id="asFilterOpen" type="button" aria-expanded="false">筛选器</button>
+      </div>
     </div>
   </section>
 
@@ -43,10 +49,16 @@
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
         <circle cx="11" cy="11" r="6.4"/><path d="M16 16l4.2 4.2"/>
       </svg>
-      <input id="asFilter" type="text" autocomplete="off" enterkeyhint="search" placeholder="输入名字筛选本站站点；按回车则把输入内容交给搜索引擎" aria-label="筛选本站站点，或按回车用搜索引擎搜索" />
+      <input id="asFilter" type="text" autocomplete="off" enterkeyhint="search" placeholder="快速模糊搜索" aria-label="快速模糊搜索本站站点，或按回车用搜索引擎搜索" />
       <button class="as-clear" id="asClear" type="button" hidden aria-label="清空">×</button>
     </div>
+    <button class="as-go" id="asGo" type="button">搜索</button>
   </div>
+
+  <!-- 已选的分类标签。点叉叉取消筛选 -->
+  <div class="as-chips" id="asChips" hidden></div>
+  <!-- 已选的标签（和上面的分类标签并存） -->
+  <div class="as-chips as-chips-tag" id="asTagChips" hidden></div>
 
   <div class="as-layout">
     <aside class="as-side" id="asSide"></aside>
@@ -157,12 +169,15 @@
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/data.js?v=20261025f"></script>
-<script src="js/seek.js?v=20261025f"></script>
-<script src="js/risky.js?v=20261025f"></script>
-<script src="js/favs.js?v=20261025f"></script>
-<script src="js/app.js?v=20261025f"></script>
-<script src="js/sites.js?v=20261025f"></script>
-<script src="js/topbar.js?v=20261025f"></script>
+<script src="js/data.js?v=20261025y"></script>
+<script src="js/seek.js?v=20261025y"></script>
+<script src="js/risky.js?v=20261025y"></script>
+<script src="js/favs.js?v=20261025y"></script>
+<script src="js/app.js?v=20261025y"></script>
+<script src="js/tags.js?v=20261025y"></script>
+  <script src="js/filter.js?v=20261025y"></script>
+  <script src="js/sites-mobile.js?v=20261025y"></script>
+<script src="js/sites.js?v=20261025y"></script>
+<script src="js/topbar.js?v=20261025y"></script>
 </body>
 </html>

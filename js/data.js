@@ -39,7 +39,7 @@ window.NAV_CONFIG = {
   tip: '启航 · 精选网站导航',
   defaultCity: '北京',
   /* 网页最后更新时间（静态、手动维护）：格式 YYYY-MM-DD HH:MM，精确到分钟 */
-  lastUpdated: '2026-10-15 22:05',
+  lastUpdated: '2026-10-25 20:13',
   notice: '内容在持续补充中 —— 每个分类只放真正值得收藏的官方站点',
 
   /* ---------- 搜索用的引擎 ----------
@@ -373,8 +373,7 @@ window.NAV_CONFIG = {
       id: 'software',
       name: '常用软件',
       icon: '🧰',
-      desc: '装机绕不开的那几类 —— 解压、剪视频、修图，只放官网下载入口'
-    },
+          },
     {
       id: 'ai',
       name: 'AI 工具',

@@ -702,3 +702,118 @@ html[data-theme="c"] .skin-nav {
   gap: 0 !important;
   margin-left: 0 !important;
 }
+
+
+/* ============================================================
+   手机端紧急修复：三个入口的描述被挤出屏幕
+   ------------------------------------------------------------
+   桌面端把 .pw-sub 放大到了 34px（配 70px 的标题），
+   手机端几轮改下来只覆盖了 width / text-align，一直没覆盖 font-size ——
+   于是 34px 直接继承下来，一行只放得下两个字，剩下的全被裁掉。
+   ============================================================ */
+html[data-theme="c"] .pw-sub {
+  display: block;
+  width: auto;              /* 不撑满，下划线的长度才跟文字一致 */
+  max-width: 100%;
+  flex: none;
+  margin: 6px 0 0;
+  padding: 0 0 5px 30px;
+  font-size: 13px;
+  line-height: 1.5;
+  letter-spacing: 0;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+}
+
+/* 标题别继承桌面的 70px */
+html[data-theme="c"] .pw-head h2 {
+  font-size: 20px;
+  letter-spacing: 2px;
+  line-height: 1.2;
+}
+html[data-theme="c"] .pw-head::before {
+  width: 30px;
+  font-size: 11.5px;
+}
+
+/* 卡片按内容排，不强制均分 —— 字小了均分反而留太多空 */
+html[data-theme="c"] .pw {
+  flex: 0 0 auto;
+  min-height: 88px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12px 42px 12px 14px;
+}
+
+
+/* ---- 卡片改回均分填充 ----
+   上一版为了不裁字改成了 flex: 0 0 auto，结果三张卡下面空了一大块。
+   字现在缩小到 13px 了，均分不会再挤，改回 flex: 1。 */
+html[data-theme="c"] .pw {
+  flex: 1 1 0;
+  min-height: 88px;
+}
+
+
+/* ============================================================
+   手机端「其他网页」：顶栏换两个开关，分类和说明默认折叠
+   ------------------------------------------------------------
+   这一页在手机上，左栏分类树 + 「关于国外站点」会把首屏占满，
+   站点列表要滚好久才露出来。改成两个按钮控制显隐。
+   ============================================================ */
+
+/* ---------- 一、开关按钮 ---------- */
+html[data-theme="c"] .mob-toggle {
+  flex: 0 0 auto;
+  height: 34px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  white-space: nowrap;
+  color: var(--text-2);
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color .18s, background .18s, border-color .18s;
+}
+
+html[data-theme="c"] .mob-toggle.is-on {
+  color: var(--surface);
+  background: var(--text);
+  border-color: var(--text);
+}
+
+/* ---------- 二、两块默认折叠 ---------- */
+html[data-theme="c"] .as-side,
+html[data-theme="c"] .as-global-note {
+  display: none !important;
+}
+
+html[data-theme="c"] .as-side.is-mob-open,
+html[data-theme="c"] .as-global-note.is-mob-open {
+  display: block !important;
+  margin-bottom: 14px;
+}
+
+/* 展开态别把整个屏幕占死 —— 分类树很长，给它一个滚动上限 */
+html[data-theme="c"] .as-side.is-mob-open {
+  max-height: 52vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+/* ---------- 三、手机端不再显示类别标题 ----------
+   分类已经收进顶栏那个「分类」按钮里了，内容区再挂一层
+   「常用软件 21 个 / 解压压缩 4 个」的标题就重复了。
+   直接让站点卡片平铺，翻起来更快。 */
+html[data-theme="c"] .as-group-head,
+html[data-theme="c"] .as-cat-head { display: none !important; }
+
+/* 组和组之间的空隙也收掉，不然会留一条没来由的空白 */
+html[data-theme="c"] .as-cat { margin-bottom: 0 !important; }
+html[data-theme="c"] .as-grid { gap: 12px; }

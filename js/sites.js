@@ -241,7 +241,17 @@
     return grid;
   }
 
+  /* 记住最近一次的筛选参数。取消标签时直接重跑，
+     不用用户再点一遍分类 —— 不然清掉一个标签，列表就跳回全部了。 */
+  var lastArgs = { kw: '', grp: null, cat: null };
+
+  window.applyTagFilter = function () {
+    render(lastArgs.kw, lastArgs.grp, lastArgs.cat);
+  };
+
   function render(keyword, onlyGroup, onlyCat) {
+
+    lastArgs = { kw: keyword, grp: onlyGroup, cat: onlyCat };
     var key = String(keyword || '').trim().toLowerCase();
     var box = $('asGroups');
     if (!box) return;
@@ -252,6 +262,15 @@
       if (onlyGroup && grp.id !== onlyGroup) return;
 
       function hit(s, catTitle) {
+        /* 标签交集：勾了几个就要求几个全部命中。
+           和下面的关键词筛选是「与」的关系，两者同时生效。 */
+        if (window.activeTags && window.activeTags.length) {
+          var mine = window.NAV_TAGS ? window.NAV_TAGS.of(s.name) : [];
+          for (var ti = 0; ti < window.activeTags.length; ti++) {
+            if (mine.indexOf(window.activeTags[ti]) < 0) return false;
+          }
+        }
+
         if (!key) return true;
         /* 别名也参与筛选，输「PS」「酒馆」都能筛到 */
         var alias = (s.alias || []).join(' ');
@@ -369,6 +388,89 @@
       if ($('asClear')) $('asClear').hidden = true;
 
       render('', groupId, catId);
+
+      /* 手机端点完分类要把面板收起来，不然筛选结果被盖在下面看不见 */
+      var sideEl = document.getElementById('asSide');
+      var catBtn = document.getElementById('asCatOpen');
+      if (sideEl && sideEl.classList.contains('is-open')) {
+        sideEl.classList.remove('is-open');
+        if (catBtn) {
+          catBtn.classList.remove('is-on');
+          catBtn.setAttribute('aria-expanded', 'false');
+          catBtn.textContent = '分类';
+        }
+      }
+
+      renderChips(node, groupId, catId);
+    }
+
+    /* ---------- 已选分类的标签 ----------
+       筛选之后在搜索框下面挂一枚标签，点叉叉回到「全部网站」。 */
+    /* ---------- 已选标签 ----------
+       选中的是小类时挂两枚：大类 + 小类，各自能单独移除；
+       选中的是大类本身（下面没有小类，或小类跟大类同名）时只挂一枚。 */
+    function renderChips(activeNode, groupId, catId) {
+      var box = document.getElementById('asChips');
+      if (!box) return;
+
+      box.innerHTML = '';
+
+      if (!activeNode || activeNode.classList.contains('as-side-all')) {
+        box.hidden = true;
+        return;
+      }
+
+      /* 按钮里是「名字 + 数字」，只取名字那部分 */
+      function nameOf(node) {
+        var t = '';
+        Array.prototype.forEach.call(node.children, function (c) {
+          if (c.tagName === 'SPAN' && !/^\d+$/.test(c.textContent.trim())) t = c.textContent.trim();
+        });
+        if (!t) t = node.textContent.replace(/\d+/g, '').trim();
+        return t;
+      }
+
+      function makeChip(label, onClick) {
+        var chip = document.createElement('span');
+        chip.className = 'as-chip';
+        var txt = document.createElement('span');
+        txt.textContent = label;
+        chip.appendChild(txt);
+        var x = document.createElement('button');
+        x.type = 'button';
+        x.className = 'as-chip-x';
+        x.setAttribute('aria-label', '移除这个标签');
+        x.textContent = '\u00d7';
+        x.addEventListener('click', onClick);
+        chip.appendChild(x);
+        return chip;
+      }
+
+      var groupNode = groupId
+        ? document.querySelector('.as-side-btn[data-grp="' + groupId + '"]')
+        : null;
+      var subLabel = nameOf(activeNode);
+      var groupLabel = groupNode ? nameOf(groupNode) : '';
+
+      function backToAll() {
+        var allBtn = document.querySelector('.as-side-all');
+        if (allBtn) allBtn.click();
+      }
+
+      /* 小类和它的父类同名时（比如「在线翻译」下面也只有一个同名的子类），
+         只挂一枚，不要出现两个一模一样的标签 */
+      if (catId && groupLabel && groupLabel !== subLabel) {
+        box.appendChild(makeChip(groupLabel, function () {
+          /* 只去掉大类，继续按小类筛 */
+          render('', null, catId);
+          renderChips(activeNode, null, catId);
+        }));
+        box.appendChild(makeChip(subLabel, backToAll));
+      } else {
+        box.appendChild(makeChip(subLabel, backToAll));
+      }
+
+      box.hidden = false;
     }
 
     var all = el('button', 'as-side-all is-active');

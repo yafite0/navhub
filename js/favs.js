@@ -75,9 +75,9 @@
   var PATH_STAR = 'M12 3.6l2.66 5.4 5.96.87-4.31 4.2 1.02 5.94L12 17.2l-5.33 2.81 1.02-5.94-4.31-4.2 5.96-.87z';
 
   function starSvg(filled) {
-    return '<svg viewBox="0 0 24 24" width="19" height="19" ' +
+    return '<svg viewBox="0 0 24 24" width="14" height="14" ' +
       (filled ? 'fill="currentColor"' : 'fill="none"') +
-      ' stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true">' +
+      ' stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true">' +
       '<path d="' + PATH_STAR + '"/></svg>';
   }
 
@@ -199,9 +199,10 @@
 
     function paint() {
       var on = has(url);
-      b.innerHTML = starSvg(on);
+      /* 星星 + 文字。手机上悬停提示不可用，只能靠字样说明当前状态 */
+      b.innerHTML = starSvg(on) + '<span class="fav-btn-txt">' + (on ? '已收藏' : '未收藏') + '</span>';
       b.classList.toggle('is-on', on);
-      b.setAttribute('aria-label', on ? '取消收藏' : '收藏');
+      b.setAttribute('aria-label', on ? '已收藏，点击可改名或删除' : '未收藏，点击收藏到主页');
       b.title = on ? '已收藏（点击可改名或删除）' : '收藏到主页';
     }
 
@@ -247,7 +248,13 @@
     });
 
     paint();
-    card.appendChild(b);
+
+    /* 挂进卡片顶部那一行，靠 flex 排到最右。
+       原来用绝对定位，但卡片的 position: relative 在某些情况下不生效，
+       按钮会相对更外层的容器定位，直接跑出卡片边界。 */
+    var top = card.querySelector('.as-card-top');
+    if (top) top.appendChild(b);
+    else card.appendChild(b);
   };
 
   /* ============================================================

@@ -414,3 +414,782 @@
 /* 简约档案下黄色压深一档，米白底上纯黄会发飘 */
 html[data-theme="c"] .fav-btn.is-on { color: #E8A400; }
 
+
+
+/* ============================================================
+   「其他网页」页头重排
+   ------------------------------------------------------------
+   标题 + 问号圆按钮  ┊  返回主页 + 分类按钮
+   ============================================================ */
+
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-head-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* 问号：圆形，贴着「其他网页」右边 */
+.as-help {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-strong, var(--border));
+  background: transparent;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all .18s;
+}
+.as-help:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+.as-help.is-on {
+  color: var(--surface);
+  background: var(--text);
+  border-color: var(--text);
+}
+
+.page-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 分类按钮：靠右，宽度约是「返回主页」的两倍 */
+.as-cat-open {
+  flex: 0 0 auto;
+  min-width: 160px;
+  height: 42px;
+  padding: 0 20px;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1.5px solid var(--text);
+  border-radius: var(--r-md, 8px);
+  cursor: pointer;
+  transition: all .18s;
+}
+.as-cat-open:hover {
+  color: var(--surface);
+  background: var(--text);
+}
+.as-cat-open.is-on {
+  color: var(--surface);
+  background: var(--text);
+}
+
+/* ---------- 搜索行：输入框 + 搜索按钮 ---------- */
+.as-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.as-bar .as-search { flex: 1 1 auto; min-width: 0; }
+
+.as-go {
+  flex: 0 0 auto;
+  height: 44px;
+  padding: 0 22px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--surface);
+  background: var(--text);
+  border: 1.5px solid var(--text);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity .18s;
+}
+.as-go:hover { opacity: .85; }
+
+/* ---------- 已选分类的标签 ---------- */
+.as-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 0;
+}
+
+.as-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--surface);
+  background: var(--text);
+  border-radius: 999px;
+}
+
+.as-chip-x {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--surface);
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: .75;
+  transition: opacity .15s, background .15s;
+}
+.as-chip-x:hover { opacity: 1; background: rgba(255, 255, 255, .22); }
+
+/* ---------- 分类面板：手机端点「分类」才展开 ---------- */
+.as-side.is-open { display: block !important; }
+.as-global-note.is-open { display: block !important; }
+
+@media (max-width: 700px) {
+  .page-head { align-items: flex-start; }
+  .page-head-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+  /* 返回主页保持原宽，分类按钮吃掉剩下的，靠右 */
+  .as-cat-open {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-left: auto;
+    max-width: 220px;
+  }
+  .as-help { width: 28px; height: 28px; font-size: 15px; }
+  .as-go { padding: 0 16px; font-size: 14px; letter-spacing: 1px; }
+}
+
+
+/* ============================================================
+   收藏按钮：加「未收藏 / 已收藏」字样 + 黑色描边
+   ============================================================ */
+.fav-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 10px;
+  border: 1.5px solid var(--text);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .18s, border-color .18s, color .18s, transform .18s;
+}
+.fav-btn:hover { transform: translateY(-1px); }
+
+/* 已收藏：整块变黄 */
+.fav-btn.is-on {
+  background: #F5B301;
+  border-color: #F5B301;
+  color: #3A2E14;
+}
+.fav-btn.is-on:hover { background: #E8A400; border-color: #E8A400; }
+
+.fav-btn svg { flex: 0 0 auto; width: 14px; height: 14px; }
+
+
+/* ---- 修正 1：收藏按钮超出卡片右边 ----
+   按钮从 30×30 的纯图标改成了「星 + 未收藏」的胶囊，宽了 50 多像素，
+   而卡片右上角只给它留了 10px 的边距，于是「未收藏」的「藏」字跑出边界。
+   这里把右边距和对外的让位都放大。 */
+.as-card { position: relative; }
+.as-card-top { padding-right: 96px; }
+.fav-btn { right: 12px; top: 10px; font-size: 11px; padding: 0 8px; gap: 4px; }
+
+/* ---- 修正 2：分类按钮宽度 ----
+   之前用 flex: 1 + max-width，结果把剩余空间全吃掉了（实测 390px，
+   是「返回主页」的三倍多）。改成固定 200px，正好两倍左右。 */
+.as-cat-open {
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+  flex: 0 0 200px;
+}
+
+@media (max-width: 700px) {
+  .as-cat-open {
+    width: 178px;
+    min-width: 178px;
+    max-width: 178px;
+    flex: 0 0 178px;
+    margin-left: auto;
+  }
+}
+
+
+/* ---- 收藏按钮改成流式排版 ----
+   挂进 .as-card-top 之后不再绝对定位，靠 margin-left: auto 顶到最右，
+   这样永远不会跑出卡片。标题那截仍然是 flex: 1，会自然让位。 */
+.fav-btn {
+  position: static;
+  flex: 0 0 auto;
+  margin-left: 10px;
+  height: 24px;
+  padding: 0 9px;
+  font-size: 11px;
+}
+.as-card-top { padding-right: 0; }
+
+/* ---- 收藏按钮宽度被压扁 ----
+   flex: 0 0 auto 理论上不缩，但实测按钮只有 56px（内容要 69px），
+   文字被挤出去了。这里直接写死宽度并说明不换行。 */
+.fav-btn {
+  flex: none;
+  width: max-content;
+  min-width: 66px;
+  box-sizing: border-box;
+  overflow: visible;
+  white-space: nowrap;
+}
+
+/* ---- 已收藏时文字要压得住黄底 ----
+   黄底上原来的深棕色号偏浅，11px 小字看着像糊成一片。加深并加粗。 */
+.fav-btn.is-on {
+  color: #3D2E00;
+  font-weight: 800;
+}
+.fav-btn.is-on svg { stroke-width: 2.2; }
+
+
+/* ============================================================
+   分类浮层
+   ------------------------------------------------------------
+   点「分类」把左栏那棵树弹出来。桌面端左栏本来就在，但那个按钮
+   也得有反应 —— 所以两端统一用浮层，选完自动收起。
+   ============================================================ */
+.as-side.is-modal {
+  display: block !important;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(72vh, 640px);
+  z-index: 9990;
+  padding: 16px;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: 10px;
+  box-shadow: 0 28px 70px -30px rgba(0, 0, 0, .5);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ============================================================
+   「关于国外站点」弹窗
+   ============================================================ */
+.hp-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 9995;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(20, 22, 26, .46);
+  box-sizing: border-box;
+}
+
+.hp-box {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 26px 28px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: 10px;
+  box-shadow: 0 28px 70px -30px rgba(0, 0, 0, .55);
+}
+
+.hp-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--text-3);
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: color .18s, background .18s;
+}
+.hp-x:hover { color: var(--text); background: var(--surface-2, rgba(0,0,0,.05)); }
+
+.hp-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  color: var(--text);
+  padding-right: 36px;
+}
+
+.hp-body {
+  margin-top: 14px;
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: var(--text-2);
+}
+.hp-body p { margin: 0 0 12px; }
+.hp-body p:last-child { margin-bottom: 0; }
+
+.hp-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+/* 绿色「我知道了」 */
+.hp-ok {
+  padding: 11px 26px;
+  font-size: 15.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #fff;
+  background: #17864B;
+  border: 1px solid #17864B;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .18s, border-color .18s;
+}
+.hp-ok:hover { background: #12703E; border-color: #12703E; }
+.hp-ok:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+
+/* ============================================================
+   已收藏：改成黑底白字，星星也描黑边
+   ------------------------------------------------------------
+   原来黄底 + 黄星，两个颜色太接近，「已收藏」三个字糊在一起。
+   ============================================================ */
+/* 未收藏：白底 + 黑字 + 黑描边的空心星 */
+.fav-btn { color: var(--text); }
+.fav-btn svg { stroke: currentColor; stroke-width: 2; }
+
+/* 已收藏：整块黑底，字和星都是白的 */
+.fav-btn.is-on {
+  background: #14161A;
+  border-color: #14161A;
+  color: #fff;
+  font-weight: 800;
+}
+.fav-btn.is-on:hover { background: #2A2D33; border-color: #2A2D33; }
+.fav-btn.is-on svg { stroke: #fff; stroke-width: 2.2; }
+
+
+
+/* ============================================================
+   收藏按钮配色修正
+   ------------------------------------------------------------
+   上一版做成「黑底黄字」—— 方向反了。
+   要的是：按钮还是黄的，字和描边是黑的。
+   ============================================================ */
+
+/* 未收藏：白底 + 黑描边 + 黑字 + 空心黑边星 */
+.fav-btn {
+  background: var(--surface);
+  border: 1.5px solid var(--text);
+  color: var(--text);
+  font-weight: 700;
+}
+.fav-btn:hover { background: var(--surface-2, #F5F3EE); }
+.fav-btn svg { stroke: #14161A; stroke-width: 2; fill: none; }
+
+/* 已收藏：黄底 + 黑字 + 黑色实心星 */
+.fav-btn.is-on {
+  background: #F5B301;
+  border-color: #E0A400;
+  color: #14161A;
+  font-weight: 800;
+}
+.fav-btn.is-on:hover { background: #E8A400; border-color: #D69A00; }
+.fav-btn.is-on svg {
+  stroke: #14161A;
+  stroke-width: 2;
+  fill: #14161A;
+}
+
+
+
+/* ============================================================
+   固定头 + 独立滚动的列表
+   ------------------------------------------------------------
+   以前整页一起滚，「返回主页」和搜索框会跟着滚出去 ——
+   翻到下面想回主页还得先滚回顶部。
+   现在把页面锁成一屏：标题和搜索固定在上面，
+   只有下面的官网列表在自己那一格里滚。
+   ============================================================ */
+
+body:has(.as-layout) {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 标题区、搜索区、分类标签：固定不滚 */
+body:has(.as-layout) .as-head,
+body:has(.as-layout) .as-bar,
+body:has(.as-layout) .as-chips {
+  flex: 0 0 auto;
+}
+
+/* 主体：吃掉剩下的高度 */
+body:has(.as-layout) .as-layout {
+  flex: 1 1 0;
+  min-height: 0;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+/* 左栏和列表各自滚，互不影响 */
+body:has(.as-layout) .as-side,
+body:has(.as-layout) .as-main {
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 左栏原来是 sticky，在滚动容器里 sticky 会失效，直接取消 */
+body:has(.as-layout) .as-side {
+  position: static;
+}
+
+/* 列表底部留一点空，滚到最后一个卡片不会贴着边缘 */
+body:has(.as-layout) .as-main {
+  padding-bottom: 20px;
+  box-sizing: border-box;
+}
+
+
+
+/* ---- 修正：分类浮层被「取消 sticky」那条规则压住了 ----
+   我为了做滚动框写了
+     body:has(.as-layout) .as-side { position: static; }
+   它的特异性 (0,2,2) 高于 .as-side.is-modal (0,2,0)，
+   于是浮层弹出来时 position 一直是 static ——
+   类名加上了、display 也变 block 了，但位置没变，看起来就像「没反应」。
+
+   加 :not(.is-modal) 把浮层排除掉。
+   ------------------------------------------------ */
+body:has(.as-layout) .as-side:not(.is-modal) {
+  position: static;
+}
+
+.as-side.is-modal {
+  position: fixed !important;
+}
+
+
+
+/* ---- 锁死整页高度：整页不滚，只有列表滚 ----
+   实测文档高还是 18111（100 个站点的总高），说明 body 的
+   display: flex 没生效 —— 别的地方给了 body 别的布局。
+   这里全部标成 !important，把高度锁在一屏内。 */
+body:has(.as-layout) {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+}
+
+body:has(.as-layout) .as-layout {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: hidden !important;
+}
+
+body:has(.as-layout) .as-main,
+body:has(.as-layout) .as-side {
+  min-height: 0 !important;
+  overflow-y: auto !important;
+}
+
+
+/* ---- 补中间那层 main ----
+   body 的 flex 生效了（height 749、overflow hidden），
+   但 .as-layout 还是 7041 高 —— 因为它不是 body 的直接子，
+   中间被 <main> 包着。main 没设 flex，就按内容撑开了。
+   最后结果：整条填充链 body → main → .as-layout 逐层补全。 */
+body:has(.as-layout) main {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+
+/* ============================================================
+   1. 已收藏配色
+   ------------------------------------------------------------
+   要的是：按钮黄底（调浅）＋ 黑字 ＋ 星星黑描边、内部黄。
+   字要在上层 —— 之前星和字挨得近，视觉上糊住了。
+   ============================================================ */
+.fav-btn.is-on {
+  background: #FFD666;          /* 比 #F5B301 浅一档，字才压得住 */
+  border-color: #E8B93A;
+  color: #14161A;
+  font-weight: 800;
+}
+.fav-btn.is-on:hover { background: #FFCE4D; border-color: #DCA82C; }
+
+/* 星：内部黄、描边黑 */
+.fav-btn.is-on svg {
+  fill: #F5B301;
+  stroke: #14161A;
+  stroke-width: 2;
+}
+
+/* 文字压在最上层 */
+.fav-btn.is-on .fav-btn-txt {
+  position: relative;
+  z-index: 1;
+  color: #14161A;
+}
+
+/* ============================================================
+   2. 浮层弹出来时，左栏那一列不该再占位
+   ------------------------------------------------------------
+   .as-layout 是 grid「224px 1fr」。左栏改成 fixed 之后虽然离开了文档流，
+   但 grid 那 224px 的列还在 —— 于是列表被挤成单列，看着像「错位」。
+   ============================================================ */
+.as-layout:has(> .as-side.is-modal) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.as-layout:has(> .as-side.is-modal) > .as-main {
+  grid-column: 1 / -1;
+}
+
+
+
+/* ============================================================
+   标签筛选器弹窗
+   ------------------------------------------------------------
+   四组标签，多选，取交集。
+   标签按钮平时是白底细边，选中变深色底 —— 一眼能看出勾了几个。
+   ============================================================ */
+.flt-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 9996;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(20, 22, 26, .46);
+  box-sizing: border-box;
+}
+
+.flt-box {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  max-height: 84vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 24px 26px 0;
+  background: var(--surface);
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: 10px;
+  box-shadow: 0 28px 70px -30px rgba(0, 0, 0, .55);
+}
+
+.flt-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--text-3);
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: color .18s, background .18s;
+}
+.flt-x:hover { color: var(--text); background: var(--surface-2, rgba(0,0,0,.05)); }
+
+.flt-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  color: var(--text);
+  padding-right: 36px;
+}
+
+.flt-sub {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-3);
+}
+
+/* 标签区可滚，底栏固定 */
+.flt-groups {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 16px -4px 0;
+  padding: 0 4px;
+}
+
+.flt-group { margin-bottom: 18px; }
+
+.flt-gname {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-3);
+  margin-bottom: 9px;
+}
+
+.flt-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 标签按钮 */
+.flt-tag {
+  padding: 7px 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  background: var(--surface);
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .16s;
+}
+.flt-tag:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+/* 选中：深色底 */
+.flt-tag.is-on {
+  color: var(--surface);
+  background: var(--text);
+  border-color: var(--text);
+  font-weight: 700;
+}
+
+/* 底栏 */
+.flt-foot {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 -26px;
+  padding: 14px 26px;
+  border-top: 1px solid var(--border, rgba(0,0,0,.08));
+  background: var(--surface);
+  border-radius: 0 0 10px 10px;
+}
+
+.flt-count {
+  flex: 1 1 auto;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.flt-clear {
+  padding: 9px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  background: transparent;
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all .16s;
+}
+.flt-clear:hover { color: var(--text); border-color: var(--text); }
+
+.flt-apply {
+  padding: 9px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  color: var(--surface);
+  background: var(--text);
+  border: 1px solid var(--text);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity .16s;
+}
+.flt-apply:hover { opacity: .86; }
+
+/* ---------- 标签 chips（和分类 chips 长得一样，只是换个位置） ---------- */
+.as-chips-tag { margin-top: 8px; }
+
+.as-chip-tag {
+  background: var(--text);
+  color: var(--surface);
+}
+
+/* 手机端：弹窗贴边，标签再小一档 */
+@media (max-width: 600px) {
+  .flt-mask { padding: 12px; }
+  .flt-box { max-height: 90vh; padding: 20px 18px 0; }
+  .flt-foot { margin: 0 -18px; padding: 12px 18px; }
+  .flt-tag { padding: 6px 11px; font-size: 12.5px; }
+}
+
+
+/* ---- 修正：标签区高度算成 0 ----
+   .flt-box 是 flex 列但没有固定高度（高度按内容撑），
+   里面的 .flt-groups 写了 flex: 1 1 0 —— basis 0 没有剩余空间可分配，
+   于是整块塌成 0，弹窗只剩标题和底栏。
+   改成按内容排 + 给一个上限，超过才滚。 */
+.flt-groups {
+  flex: 0 1 auto;
+  max-height: 52vh;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 16px -4px 0;
+  padding: 0 4px;
+}
