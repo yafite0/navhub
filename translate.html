@@ -7,16 +7,16 @@
 <meta name="description" content="提示词预设：左边选预设，中间改提示词正文，右边直接去 AI 对话。复制粘贴就能用，不需要 API key。" />
 <meta name="theme-color" content="#4D6BFE" />
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-<link rel="stylesheet" href="css/style.css?v=20261025y" />
+<link rel="stylesheet" href="css/style.css?v=20261027r" />
 
 
-<link rel="stylesheet" href="css/translate.css?v=20261025y" />
+<link rel="stylesheet" href="css/translate.css?v=20261027r" />
 
 
-<link rel="stylesheet" href="css/presets.css?v=20261025y" />
-<link rel="stylesheet" href="css/skin-b.css?v=20261025y" />
-<link rel="stylesheet" href="css/skin-c.css?v=20261025y" />
-  <link rel="stylesheet" href="css/mobile.css?v=20261025y" media="(max-width: 600px)" />
+<link rel="stylesheet" href="css/presets.css?v=20261027r" />
+<link rel="stylesheet" href="css/skin-b.css?v=20261027r" />
+<link rel="stylesheet" href="css/skin-c.css?v=20261027r" />
+  <link rel="stylesheet" href="css/mobile.css?v=20261027r" media="(max-width: 600px)" />
 
 
 </head>
@@ -32,21 +32,26 @@
   <section class="tr-head">
     <div class="page-head">
       <div class="page-head-text">
-        <h1>提示词预设</h1>
-        <p>不调用任何接口、不需要 API key、不花一分钱。左边选<strong>预设</strong>，
-          中间改<strong>正文</strong>，右边直接去 <strong>AI 对话</strong> —— 复制粘贴就能用。</p>
+        <h1>提示词</h1>
+        <p>准确的提示词能把 AI 变成趁手的工具。比起传统软件，它效率更高、出错更少，
+          改起来也简单。不满意直接说，就像跟人对话一样。</p>
       </div>
       <a class="back-home" href="index.html">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6l-6 6 6 6"/></svg>
         <span>返回主页</span>
       </a>
+      <!-- 手机端才有：三层界面来回切的时候用。桌面端三栏同时可见，不需要 -->
+      <button class="pm-back" id="pmBack" type="button">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6l-6 6 6 6"/></svg>
+        <span>返回上一页</span>
+      </button>
     </div>
   </section>
 
   <!-- 全站唯一装提示词的地方：网页翻译 + 其余 16 条都在这一个页面里。
        旧的 tools.html?tool=prompts 由 js/tools.js 转到这里，锚点也带着。 -->
   <div class="card pm-card">
-    <div class="pm-layout">
+    <div class="pm-layout" data-step="1">
 
       <!-- ① 提示词预设 -->
       <aside class="pm-side">
@@ -54,11 +59,9 @@
           <span class="pm-step">1</span>
           <div class="pm-head-text">
             <h2>提示词预设</h2>
-            <p>这里放的是全部预设，翻译只是其中一项</p>
           </div>
         </header>
         <div class="pm-nav" id="pmNav"></div>
-        <p class="pm-foot">所有提示词都配同一批 AI 对话入口 —— 就在右边那一列。</p>
       </aside>
 
       <!-- ② 提示词 -->
@@ -90,6 +93,10 @@
             <button class="primary-btn" id="pmCopy" type="button">复制提示词</button>
             <button class="mini-btn" id="pmReset" type="button">重置为默认</button>
           </div>
+
+          <!-- 复制完直接去第三页挑 AI。手机端才显示。
+               放在 .cnt-actions 外面 —— 在里面会被那行的 flex 挤成 0 宽。 -->
+          <button class="mini-btn pm-goto-ai" id="pmGoAi" type="button">去 AI 对话 →</button>
 
           <p class="pm-foot">提示词可以直接改 —— 复制出去的是你改过的版本，点「重置为默认」能还原。</p>
         </div>
@@ -154,9 +161,10 @@
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="js/data.js?v=20261025y"></script>
-<script src="js/translate.js?v=20261025y"></script>
-<script src="js/presets.js?v=20261025y"></script>
-<script src="js/topbar.js?v=20261025y"></script>
+<script src="js/data.js?v=20261027r"></script>
+<script src="js/translate.js?v=20261027r"></script>
+<script src="js/presets-step.js?v=20261027r"></script>
+<script src="js/presets.js?v=20261027r"></script>
+<script src="js/topbar.js?v=20261027r"></script>
 </body>
 </html>

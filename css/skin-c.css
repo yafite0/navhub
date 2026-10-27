@@ -993,3 +993,47 @@ html[data-theme="c"] .fav-bar.is-empty {
   overflow: visible;
 }
 
+
+
+/* ============================================================
+   天气卡次要文字：跟主题走，不写死白色
+   ------------------------------------------------------------
+   style.css 里这几条是给原站「深色渐变背景」写的：
+     .wx-meta      { color: rgba(255,255,255,.8) }
+     .wx-now em    { color: rgba(255,255,255,.72) }
+     .wx-now b small { color: rgba(255,255,255,.7) }
+   简约档案是米白底，白色字直接看不见；黑夜模式下换了底色，
+   这些写死的白又和背景太接近，同样看不清。
+   改用变量 —— 日间是深灰，黑夜自动变浅灰。
+   ============================================================ */
+html[data-theme="c"] .wx-meta,
+html[data-theme="c"] .wx-now em,
+html[data-theme="c"] .wx-now b small {
+  color: var(--text-2) !important;
+}
+
+/* 黑夜模式再压一档亮度，保证和深色卡片的对比度 */
+html[data-theme="c"][data-mode="dark"] .wx-meta,
+html[data-theme="c"][data-mode="dark"] .wx-now em,
+html[data-theme="c"][data-mode="dark"] .wx-now b small {
+  color: #C6C3BC !important;
+}
+
+/* 城市按钮同理 —— 原站给它的是半透明白底白字 */
+html[data-theme="c"] .wx .city-btn,
+html[data-theme="c"] .hero-block .city-btn {
+  color: var(--text-2) !important;
+  background: var(--surface-2) !important;
+  border-color: var(--border-strong) !important;
+}
+html[data-theme="c"][data-mode="dark"] .wx .city-btn,
+html[data-theme="c"][data-mode="dark"] .hero-block .city-btn {
+  color: #C6C3BC !important;
+  background: rgba(255, 255, 255, .06) !important;
+  border-color: rgba(255, 255, 255, .16) !important;
+}
+
+/* 温度主体和图标也跟着主题，避免黑夜下白字发灰 */
+html[data-theme="c"] .wx-now b { color: var(--text); }
+html[data-theme="c"][data-mode="dark"] .wx-now b { color: #F2F0EC; }
+

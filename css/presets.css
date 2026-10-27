@@ -443,3 +443,486 @@
   .pg-body { padding: 0 2px 16px; }
   .pm-detail-head h3 { font-size: 17.5px; }
 }
+
+
+/* ============================================================
+   手机端：预设页拆成三层
+   ------------------------------------------------------------
+   桌面是三栏并排（① 选预设 / ② 提示词 / ③ AI 入口），
+   手机上并排只剩三条窄缝，有用的内容全被挤到底部看不见。
+
+   改成一层一屏，靠「返回上一页」往回走：
+     step=1  选预设        ← 所有预设共用
+     step=2  看提示词、复制 ← 每个预设各自的内容
+     step=3  去 AI 对话     ← 所有预设共用
+
+   状态挂在 .pm-layout 的 data-step 上，JS 只改这个属性。
+   ============================================================ */
+@media (max-width: 600px) {
+
+  /* ---------- 三栏变一栏 ---------- */
+  .pm-layout {
+    display: block;
+  }
+
+  .pm-layout > .pm-side,
+  .pm-layout > .pm-main,
+  .pm-layout > .pm-ai {
+    display: none;
+  }
+
+  .pm-layout[data-step="1"] > .pm-side,
+  .pm-layout[data-step="2"] > .pm-main,
+  .pm-layout[data-step="3"] > .pm-ai {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  /* 每层自己的滚动区不要再套一层，否则滚两次才动 */
+  .pm-layout > .pm-side .pm-nav,
+  .pm-layout > .pm-main,
+  .pm-layout > .pm-ai .pm-ai-list {
+    overflow: visible;
+  }
+
+  /* ---------- 预设列表：横排一行 ----------
+     竖排三个条目就吃掉大半屏，横排才放得下。 */
+  .pm-nav {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 2px 2px 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .pm-nav::-webkit-scrollbar { display: none; }
+
+  .pm-nav > * {
+    flex: 1 0 auto;
+    min-width: 0;
+    padding: 10px 12px;
+  }
+
+  /* 横排时条目里的说明最多两行，再多就把行高撑开了 */
+  .pm-nav > * p,
+  .pm-nav > * .pm-nav-desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* 「返回上一页」只在手机端、且不在第一层时出现 */
+.pm-back { display: none; }
+
+@media (max-width: 600px) {
+  .pm-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 36px;
+    padding: 0 13px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-2);
+    background: transparent;
+    border: 1px solid var(--border-strong, var(--border));
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .pm-back:hover { color: var(--text); border-color: var(--text); }
+
+  /* 第一层不显示「返回上一页」—— 由 JS 设 hidden，这里不用选择器兜 */
+}
+
+
+
+/* ---- 手机端：提示词变体三个排一行 ----
+   截图里那三张（双向翻译规则 / 更换翻译语言 / 更换语气风格）
+   在 .pm-nav-items 里，默认是竖排，三个就吃掉大半屏。
+   横排一行，每个占 1/3。 */
+@media (max-width: 600px) {
+
+  .pm-nav-items {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  /* hidden 的时候还是要藏住，别被 display: flex 顶出来 */
+  .pm-nav-items[hidden] { display: none; }
+
+  .pm-nav-item {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 10px 9px;
+    box-sizing: border-box;
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  /* 标题收到 12.5px，说明最多两行 */
+  .pm-nav-item .pm-nav-name {
+    font-size: 12.5px;
+    line-height: 1.4;
+    white-space: normal;
+  }
+
+  .pm-nav-item .pm-nav-dot { display: none; }
+
+  .pm-nav-item p,
+  .pm-nav-item small {
+    font-size: 11px;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+
+
+/* ---- 手机端：三个提示词变体排一行 ----
+   截图里那三张（双向翻译规则 / 更换翻译语言 / 更换语气风格）
+   真实类名是 .tr-prompt-item，容器是 .tr-prompts。
+   上一版按 .pm-nav-items 去改，改错了地方，所以没生效。
+   竖排三个要吃掉大半屏，横排一行才放得下。 */
+@media (max-width: 600px) {
+
+  .tr-prompts {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .tr-prompt-item {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: left;
+  }
+
+  .tr-prompt-item b,
+  .tr-prompt-item strong {
+    font-size: 12.5px;
+    line-height: 1.4;
+    display: block;
+    white-space: normal;
+  }
+
+  .tr-prompt-item small,
+  .tr-prompt-item em,
+  .tr-prompt-item span {
+    font-size: 11px;
+    line-height: 1.45;
+  }
+}
+
+
+
+/* ============================================================
+   预设页页头：手机端收拢
+   ============================================================ */
+@media (max-width: 600px) {
+
+  /* ---------- 一、标题和返回按钮同一行 ----------
+     原来 page-head 会换行，标题独占一行、按钮掉到下面，
+     一上一下把首屏切成两段。 */
+  .tr-head .page-head {
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .tr-head .page-head-text {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .tr-head .page-head-text h1 {
+    font-size: 24px;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .tr-head .back-home,
+  .tr-head .pm-back {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+
+  /* 两个按钮并排时文字收一档，不然 360 宽会挤 */
+  .tr-head .back-home {
+    font-size: 12.5px;
+    padding: 0 10px;
+    height: 32px;
+  }
+  .tr-head .back-home svg { width: 13px; height: 13px; }
+
+  .tr-head .pm-back {
+    font-size: 12.5px;
+    padding: 0 10px;
+    height: 32px;
+  }
+  .tr-head .pm-back svg { width: 13px; height: 13px; }
+
+  /* ---------- 二、页头描述只在第一层显示 ----------
+     第 2、3 层内容已经占满屏，这段介绍再占三四行就挤掉正文了。 */
+  .tr-head .page-head-text p {
+    font-size: 12.5px;
+    line-height: 1.7;
+    margin: 6px 0 0;
+  }
+}
+
+/* 到了第 2 层 / 第 3 层，把页头描述折起来 */
+@media (max-width: 600px) {
+  body:has(.pm-layout[data-step="2"]) .tr-head .page-head-text p,
+  body:has(.pm-layout[data-step="3"]) .tr-head .page-head-text p {
+    display: none;
+  }
+}
+
+
+
+/* ============================================================
+   手机端：预设页与顶栏的收尾调整
+   ============================================================ */
+@media (max-width: 600px) {
+
+  /* ---------- 一、语言选择横排 ----------
+     原来是三个块竖着堆（语言A / 交换 / 语言B），一屏高度被吃掉一半。
+     改成「语言A | ⇄ | 语言B」一行，语气风格另起一行。 */
+  .tr-selects {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 8px;
+    align-items: end;
+  }
+
+  .tr-pick {
+    min-width: 0;
+    display: block;
+  }
+
+  /* 标签一行放不下就截断，完整说明留在 title 里 */
+  .tr-pick > span {
+    display: block;
+    font-size: 11px;
+    line-height: 1.4;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tr-pick .conv-select {
+    width: 100%;
+    min-width: 0;
+    height: 42px;
+    font-size: 13.5px;
+    padding: 0 8px;
+  }
+
+  /* 交换按钮：跟两个下拉同高，贴在中间 */
+  .swap-btn {
+    grid-column: 2;
+    align-self: end;
+    width: 38px;
+    height: 42px;
+    margin: 0;
+  }
+
+  /* 语气风格独占一整行 */
+  .tr-pick-tone {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+  }
+
+  /* ---------- 二、返回按钮挂到第 2 / 3 页的标题右侧 ---------- */
+  .pm-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .pm-head .pm-head-text {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .pm-head .pm-back {
+    flex: 0 0 auto;
+    margin: 0 0 0 auto;
+    height: 30px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+  .pm-head .pm-back svg { width: 12px; height: 12px; }
+
+  /* ---------- 三、「去 AI 对话」只手机端出现 ---------- */
+  .cnt-actions .pm-go-ai {
+    display: inline-flex;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  /* ---------- 四、顶栏「关于本站」：只留感叹号，放大 1.5 倍 ---------- */
+  .top-actions .top-btn {
+    width: 39px;
+    height: 39px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    justify-content: center;
+  }
+
+  /* 文字藏起来，只留图标 */
+  .top-actions .top-btn span { display: none; }
+
+  .top-actions .top-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* 桌面端不显示「去 AI 对话」—— 那边三栏并排，右栏就是入口 */
+/* ---- 修正：三个按钮挤一行放不下 ----
+   「复制提示词 + 重置为默认 + 去 AI 对话」在 500 宽下超出屏幕，
+   最后一个直接被裁掉。三个都收窄，保证同一行放下。 */
+@media (max-width: 600px) {
+  .cnt-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cnt-actions .primary-btn,
+  .cnt-actions .mini-btn {
+    padding: 0 12px;
+    height: 38px;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+
+  /* 「去 AI 对话」靠右；实在放不下就掉到第二行，不影响其他两个 */
+  .cnt-actions .pm-go-ai {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* ---- 修正：语言标签截得太狠 ----
+     允许折成两行，比截成「语言A · 对方语言（需要进行翻译…」好看。 */
+  .tr-pick > span {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    font-size: 10.5px;
+    line-height: 1.35;
+    max-height: 2.7em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+
+/* ---- 修正：「去 AI 对话」被全局 display:none 盖掉了 ----
+   文件末尾那条 ``（桌面端不该显示）
+   写在了 @media 之后，特异性相同、又后加载，
+   把手机端那条 display: inline-flex 顶掉了，按钮直接消失。
+   这里用 !important 拉回来。 */
+
+
+/* ---- 修正：「去 AI 对话」被算成 0 宽 ----
+   实测 display=flex 但 getBoundingClientRect 全是 0，
+   说明在 flex-wrap 里被 margin-left: auto 挤成零宽了。
+   改成强制占一整行，内容靠右，保证看得见。 */
+
+
+/* ---- 再修：「去 AI 对话」掉到滚动区外了 ----
+   上一版让它独占一行，结果在长表单里被推到视口下面，用户得滚到底才看见。
+   改回同一行，三个按钮都收窄，500 宽正好放得下。 */
+@media (max-width: 600px) {
+  .cnt-actions {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .cnt-actions .primary-btn,
+  .cnt-actions .mini-btn {
+    flex: 0 0 auto !important;
+    height: 36px;
+    padding: 0 9px !important;
+    font-size: 11.5px !important;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+
+  .cnt-actions .pm-go-ai {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    margin: 0 0 0 auto !important;
+    justify-content: center;
+  }
+}
+
+/* 「去 AI 对话」：独立一行，靠右。手机端才显示 */
+.pm-goto-ai { display: none; }
+
+@media (max-width: 600px) {
+  .pm-goto-ai {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 40px;
+    margin: 10px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--surface-2, transparent);
+    border: 1px solid var(--border-strong, var(--border));
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .pm-goto-ai:hover { border-color: var(--text); }
+}
+
+/* 「去 AI 对话」：贴在复制按钮那一排的正下方 */
+@media (max-width: 600px) {
+  .pm-goto-ai {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 38px;
+    margin: 10px 0 0;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--border-strong, var(--border));
+    border-radius: 6px;
+    cursor: pointer;
+    order: 10;
+  }
+  .pm-goto-ai:hover { border-color: var(--text); }
+}

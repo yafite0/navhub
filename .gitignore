@@ -1,36 +1,22 @@
-# 编辑器 / IDE 的本地数据（保留在本地，不提交）
+# ---------- 系统 / 编辑器 ----------
 .codebuddy/
 .vscode/
 .idea/
-
-# 系统文件
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# 本地验证时产生的临时文件
+# ---------- 临时文件 ----------
 tmp-*.html
 tmp-*.js
+_*.ps1
 
-# 内部用的工作文档，不公开
-*.txt
+# ---------- 测试区（固定本地，不上传）----------
+# lab.html / lab.css / lab.js / shots/ 都在里面
+test/
 
-# 首页改版的布局测试稿，只在本地看，不跟着站点发布
-layout-test/
-
-# 「工具试验田」（lab.html + css/lab.css + js/lab.js）——
-# 一批还没定要不要上主站的小工具，只在本地开着用，不进仓库、不上线。
-# 三个文件照旧留在工作区，直接开 lab.html 就能用。
-lab.html
-css/lab.css
-js/lab.js
-
-
-# 项目制作要求（给 AI 看的施工规范），只在本机流转，不进仓库
-PROJECT-REQUIREMENTS.txt
-
-# 踩坑记录（给自己看的经验库），不进仓库
-PITFALLS.txt
-
-# 临时诊断页
+# ---------- 诊断页 ----------
 diag.html
+
+# ---------- 说明 ----------
+# docs/ 里的 txt 是项目的一部分，跟随项目公开，所以这里不排除 *.txt

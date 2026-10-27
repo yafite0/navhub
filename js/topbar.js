@@ -433,13 +433,6 @@
         '</div>' +
         '<div class="set-body">' +
           '<section class="set-group">' +
-            '<h4>外观</h4>' +
-            '<div class="set-seg" id="setTheme">' +
-              '<button type="button" data-theme-set="light">浅色</button>' +
-              '<button type="button" data-theme-set="dark">深色</button>' +
-            '</div>' +
-          '</section>' +
-          '<section class="set-group">' +
             '<h4>天气城市</h4>' +
             '<p class="set-desc">首屏右上角那个天气，按这里选的城市取数。</p>' +
             '<button class="set-btn" id="setCity" type="button"><span id="setCityName">北京</span><em>更换 →</em></button>' +

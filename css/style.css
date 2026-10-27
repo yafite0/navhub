@@ -3458,3 +3458,173 @@ html[data-mode="dark"] #modeBtn .ico-night { display: block; }
   outline-offset: 2px;
 }
 
+
+
+/* ============================================================
+   简约档案 · 黑夜模式的按钮配色
+   ------------------------------------------------------------
+   规则很朴素：
+     日间  米白底 + 黑字 + 黑边
+     黑夜  黑底 + 米白字 + 米白边
+   问题是很多按钮写的是「background: var(--text) / color: var(--surface)」，
+   黑夜下 --text 变浅、--surface 变深，这套配色就整个翻过来了 ——
+   本该深色的按钮变成白底，字反而变暗。
+   这里把「实心按钮」统一纠正回黑底米白字。
+   ============================================================ */
+
+/* ---------- 实心按钮：黑底 + 米白字 + 米白边 ---------- */
+html[data-theme="c"][data-mode="dark"] .search-go,
+html[data-theme="c"][data-mode="dark"] .as-go,
+html[data-theme="c"][data-mode="dark"] .as-cat-open,
+html[data-theme="c"][data-mode="dark"] .pm-step,
+html[data-theme="c"][data-mode="dark"] .set-btn,
+html[data-theme="c"][data-mode="dark"] .fd-btn.is-primary,
+html[data-theme="c"][data-mode="dark"] .flt-apply,
+html[data-theme="c"][data-mode="dark"] .flt-tag.is-on,
+html[data-theme="c"][data-mode="dark"] .mob-toggle.is-on {
+  background: #14161A !important;
+  color: #F4F3EF !important;
+  border-color: #F4F3EF !important;
+}
+
+/* 悬停时提一点亮，别和常态一样看不出反馈 */
+html[data-theme="c"][data-mode="dark"] .search-go:hover,
+html[data-theme="c"][data-mode="dark"] .as-go:hover,
+html[data-theme="c"][data-mode="dark"] .as-cat-open:hover,
+html[data-theme="c"][data-mode="dark"] .flt-apply:hover {
+  background: #24272C !important;
+}
+
+/* ---------- 描边按钮：透明底 + 米白字米白边 ---------- */
+html[data-theme="c"][data-mode="dark"] .icon-btn,
+html[data-theme="c"][data-mode="dark"] .top-btn,
+html[data-theme="c"][data-mode="dark"] .back-home,
+html[data-theme="c"][data-mode="dark"] .pm-back,
+html[data-theme="c"][data-mode="dark"] .flt-tag,
+html[data-theme="c"][data-mode="dark"] .flt-clear,
+html[data-theme="c"][data-mode="dark"] .mob-toggle,
+html[data-theme="c"][data-mode="dark"] .set-btn.is-danger {
+  background: transparent !important;
+  color: #E4E2DC !important;
+  border-color: rgba(244, 243, 239, .28) !important;
+}
+html[data-theme="c"][data-mode="dark"] .icon-btn:hover,
+html[data-theme="c"][data-mode="dark"] .flt-tag:hover,
+html[data-theme="c"][data-mode="dark"] .flt-clear:hover {
+  background: rgba(255, 255, 255, .08) !important;
+  border-color: #F4F3EF !important;
+}
+
+/* 危险操作（清空本地记录）保留红调 */
+html[data-theme="c"][data-mode="dark"] .set-btn.is-danger {
+  color: #FF8A6A !important;
+  border-color: rgba(255, 138, 106, .45) !important;
+}
+
+/* ---------- 编号徽章：黑底米白字 ---------- */
+html[data-theme="c"][data-mode="dark"] .pm-step {
+  border-color: transparent !important;
+}
+
+/* ---------- 分段选择器（单位换算那排「长度 / 重量 / 面积」） ----------
+   选中的那块在黑夜下是浅白底 + 浅字，等于看不见。
+   换成黑底米白字，和日间正好反过来。 */
+html[data-theme="c"][data-mode="dark"] .seg-btn.is-on,
+html[data-theme="c"][data-mode="dark"] .tool-seg-btn.is-on,
+html[data-theme="c"][data-mode="dark"] [class*="seg"] .is-on,
+html[data-theme="c"][data-mode="dark"] [class*="-tab"].is-on {
+  background: #14161A !important;
+  color: #F4F3EF !important;
+  border-color: #F4F3EF !important;
+}
+
+
+
+/* ---- 补：渐变按钮要显式清掉 background-image ----
+   .pm-step 等的底色是 `background: var(--brand-grad)`（线性渐变），
+   而黑夜模式下 --brand-grad 是「白到白」的渐变 ——
+   只写 background-color 盖不住它，得把 background-image 也归零。 */
+html[data-theme="c"][data-mode="dark"] .search-go,
+html[data-theme="c"][data-mode="dark"] .as-go,
+html[data-theme="c"][data-mode="dark"] .as-cat-open,
+html[data-theme="c"][data-mode="dark"] .set-btn,
+html[data-theme="c"][data-mode="dark"] .fd-btn.is-primary,
+html[data-theme="c"][data-mode="dark"] .flt-apply,
+html[data-theme="c"][data-mode="dark"] .flt-tag.is-on,
+html[data-theme="c"][data-mode="dark"] .mob-toggle.is-on,
+html[data-theme="c"][data-mode="dark"] .seg-btn.is-on,
+html[data-theme="c"][data-mode="dark"] [class*="seg"] .is-on {
+  background-image: none !important;
+  background-color: #14161A !important;
+  color: #F4F3EF !important;
+  border-color: #F4F3EF !important;
+  box-shadow: none !important;
+}
+
+/* 编号徽章本来就是渐变方块，黑夜下改成纯黑底米白字 */
+html[data-theme="c"][data-mode="dark"] .pm-step {
+  background-image: none !important;
+  background-color: #F4F3EF !important;
+  color: #14161A !important;
+  border: 1px solid #F4F3EF !important;
+}
+
+/* 「重置为默认」这类次要按钮：透明底 + 米白边 */
+html[data-theme="c"][data-mode="dark"] .pm-reset,
+html[data-theme="c"][data-mode="dark"] .pm-tools-reset,
+html[data-theme="c"][data-mode="dark"] button.is-ghost {
+  background-image: none !important;
+  background-color: transparent !important;
+  color: #E4E2DC !important;
+  border-color: rgba(244, 243, 239, .28) !important;
+}
+
+
+
+/* ---- 补：「重置为默认」这类小按钮 ----
+   类名是 .mini-btn，上一版按 .pm-reset 去写，没对上。 */
+html[data-theme="c"][data-mode="dark"] .mini-btn,
+html[data-theme="c"][data-mode="dark"] .set-btn.is-ghost {
+  background-image: none !important;
+  background-color: transparent !important;
+  color: #E4E2DC !important;
+  border-color: rgba(244, 243, 239, .3) !important;
+  box-shadow: none !important;
+}
+html[data-theme="c"][data-mode="dark"] .mini-btn:hover {
+  background-color: rgba(255, 255, 255, .08) !important;
+  border-color: #F4F3EF !important;
+}
+
+/* ---- 补：主按钮（复制提示词） ---- */
+html[data-theme="c"][data-mode="dark"] .primary-btn {
+  background-image: none !important;
+  background-color: #F4F3EF !important;
+  color: #14161A !important;
+  border-color: #F4F3EF !important;
+  box-shadow: none !important;
+}
+
+/* ---- 补：手机端标题和返回按钮强行同行 ----
+   .page-head 基础是 flex + space-between，但实测在窄屏会被挤成两行，
+   按钮掉到标题下面。这里把方向、换行、对齐全锁死。 */
+@media (max-width: 600px) {
+  .tr-head .page-head {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+
+  .tr-head .page-head-text { flex: 1 1 auto !important; min-width: 0; }
+
+  /* 返回按钮组靠右，不参与压缩 */
+  .tr-head .back-home,
+  .tr-head .pm-back {
+    flex: 0 0 auto !important;
+    align-self: flex-start;
+  }
+}
+

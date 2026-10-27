@@ -276,7 +276,7 @@
       b.appendChild(el('span', 'pm-nav-emoji', t.icon || '🧰'));
       var tx = el('span', 'pm-nav-txt');
       tx.appendChild(el('b', null, t.name));
-      tx.appendChild(el('small', null, '完整工具 · 就在这一页'));
+      tx.appendChild(el('small', null, t.desc || '把 AI 变成翻译工具，逐句对照，批量进行'));
       b.appendChild(tx);
       b.addEventListener('click', function () { onPick({ tool: ti }); });
       nav.appendChild(b);
